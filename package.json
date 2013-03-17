@@ -1,7 +1,7 @@
 {
   "name": "grunt-markdown-blog",
   "description": "Generates a blog from markdown posts & underscore templates",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/testdouble/grunt-markdown-blog",
   "author": {
     "name": "Justin Searls",
@@ -25,12 +25,10 @@
     "node": "~>0.8.20"
   },
   "dependencies": {
+    "grunt": "~>0.4.0",
     "marked": "~>0.2.8",
     "underscore": "~>1.4.4",
     "highlight.js": "~>7.3.0"
-  },
-  "devDependencies": {
-    "grunt": "~>0.4.0"
   },
   "keywords": [
     "gruntplugin", "markdown", "blog", "grunt", "lineman"
