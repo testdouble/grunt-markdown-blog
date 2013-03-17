@@ -45,7 +45,7 @@ module.exports = (grunt) ->
 class MarkdownTask
   constructor: (@config) ->
     @writesHtml = new WritesHtml(@config.dest)
-    @site = new Site(@config.title, @buildPosts(), new Layout(@config.layouts.post))
+    @site = new Site(@config, @buildPosts(), new Layout(@config.layouts.post))
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
   run: ->
@@ -101,7 +101,8 @@ class Layout
 #--- models the site
 
 class Site
-  constructor: (@title, posts, @postLayout) ->
+  constructor: (config, posts, @postLayout) ->
+    _(@).extend(config)
     @posts = _(posts).sortBy (p) -> p.fileName()
 
   olderPost: (post) ->
@@ -120,8 +121,7 @@ class Post
   constructor: (@path, @htmlDirPath) ->
 
   content: ->
-    source = grunt.file.read(@path)
-    markdown = _(source).template({})
+    markdown = grunt.file.read(@path)
     content = marked.parser(marked.lexer(markdown))
 
   title: ->
