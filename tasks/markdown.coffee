@@ -10,6 +10,7 @@ _ = require('underscore')
 fs = require('fs')
 highlight = require('highlight.js')
 grunt = require('grunt')
+moment = require('moment')
 
 marked.setOptions
   highlight: (code, lang) ->
@@ -43,9 +44,9 @@ module.exports = (grunt) ->
 
 class MarkdownTask
   constructor: (@config) ->
-    @wrapper = new Layout(@config.layouts.wrapper, @config.context)
     @writesHtml = new WritesHtml(@config.dest)
-    @posts = @buildPosts()
+    @site = new Site(@config.title, @buildPosts())
+    @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
   run: ->
     @createPosts()
@@ -53,52 +54,33 @@ class MarkdownTask
     @createArchive()
 
   createPosts: ->
-    generatesHtml = new GeneratesPostHtml(@wrapper, new Layout(@config.layouts.post), @config.title)
-    _(@posts).each (post) =>
+    generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.post), @site)
+    _(@site.posts).each (post) =>
       html = generatesHtml.generate(post)
       @writesHtml.write(html, post.htmlPath())
 
   createIndex: ->
-    html = new GeneratesPostsHtml(@wrapper, new Layout(@config.layouts.index), @config.title).
-      generate(@posts)
+    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate()
     @writesHtml.write(html, @config.paths.index)
 
   createArchive: ->
-    html = new GeneratesPostsHtml(@wrapper, new Layout(@config.layouts.archive), @config.title).
-      generate(@posts)
+    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.archive), @site).generate()
     @writesHtml.write(html, @config.paths.archive)
 
   buildPosts: ->
-    markdownPaths = @allMarkdownPosts() #if @anyLayoutsChanged() then @allMarkdownPosts() else @workingFiles()
-    _(markdownPaths).chain().
-      reject((p) -> p.match(/\.us$/) != null). #<--sometimes the underscore layouts are in .changed
-      map (markdownPath) =>
-        new Post(markdownPath, @config.paths.posts)
+    _(@allMarkdownPosts()).map (markdownPath) =>
+        new Post(markdownPath, @config.paths.posts, new Layout(@config.layouts.post, site: @site))
 
   #private
-
-  # workingFiles: -> @_workingFiles ||= grunt.file.expand(grunt.file.watchFiles?.changed || @config.paths.markdown)
-
   allMarkdownPosts: -> grunt.file.expand(@config.paths.markdown)
 
-  # anyLayoutsChanged: -> _(@workingFiles()).any((p) -> p.match(/\.us$/) != null)
-
-
-class GeneratesPostHtml
-  constructor: (@wrapper, @post, @title) ->
+class GeneratesHtml
+  constructor: (@wrapper, @template, @site) ->
 
   generate: (post) ->
-    @wrapper.htmlFor
-      title: "#{@title} - #{post.title()}"
-      content: @post.htmlFor({post})
-
-class GeneratesPostsHtml
-  constructor: (@wrapper, @index, @title) ->
-
-  generate: (posts) ->
-    @wrapper.htmlFor
-      title: @title
-      content: @index.htmlFor({posts})
+    context = site: @site, post: post
+    @wrapper.htmlFor _(context).extend
+      yield: @template.htmlFor(context)
 
 class WritesHtml
   constructor: (@dest) ->
@@ -113,16 +95,24 @@ class Layout
     @layout = _(grunt.file.read(layoutPath)).template()
     @context = context
 
-  htmlFor: (title, content) ->
-    @layout(_(@context).extend(title, content))
+  htmlFor: (specificContext) ->
+    @layout(_(@context).extend(specificContext))
+
+#--- models the site
+
+class Site
+  constructor: (@title, @posts) ->
 
 class Post
-  constructor: (@path, @htmlDirPath) ->
+  constructor: (@path, @htmlDirPath, @postLayout) ->
 
   content: ->
     source = grunt.file.read(@path)
     markdown = _(source).template({})
     content = marked.parser(marked.lexer(markdown))
+
+  toHtml: ->
+    @postLayout.htmlFor(post: this)
 
   title: ->
     dasherized = @path.match(/\/\d{4}-\d{2}-\d{2}-([^/]*).md/)?[1]
@@ -135,3 +125,6 @@ class Post
   fileName: ->
     name = @path.match(/\/([^/]*).md/)?[1]
     "#{name}.html"
+
+  date: ->
+    dasherized = @path.match(/\/(\d{4}-\d{2}-\d{2})/)?[1]

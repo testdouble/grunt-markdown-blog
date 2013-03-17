@@ -28,7 +28,8 @@
     "grunt": "~>0.4.0",
     "marked": "~>0.2.8",
     "underscore": "~>1.4.4",
-    "highlight.js": "~>7.3.0"
+    "highlight.js": "~>7.3.0",
+    "moment": "~>2.0.0"
   },
   "keywords": [
     "gruntplugin", "markdown", "blog", "grunt", "lineman"
