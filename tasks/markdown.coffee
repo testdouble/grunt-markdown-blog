@@ -45,7 +45,7 @@ module.exports = (grunt) ->
 class MarkdownTask
   constructor: (@config) ->
     @writesHtml = new WritesHtml(@config.dest)
-    @site = new Site(@config.title, @buildPosts())
+    @site = new Site(@config.title, @buildPosts(), new Layout(@config.layouts.post))
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
   run: ->
@@ -69,7 +69,7 @@ class MarkdownTask
 
   buildPosts: ->
     _(@allMarkdownPosts()).map (markdownPath) =>
-        new Post(markdownPath, @config.paths.posts, new Layout(@config.layouts.post, site: @site))
+      new Post(markdownPath, @config.paths.posts)
 
   #private
   allMarkdownPosts: -> grunt.file.expand(@config.paths.markdown)
@@ -79,8 +79,8 @@ class GeneratesHtml
 
   generate: (post) ->
     context = site: @site, post: post
-    @wrapper.htmlFor _(context).extend
-      yield: @template.htmlFor(context)
+    context.yield = @template.htmlFor(context)
+    @wrapper.htmlFor(context)
 
 class WritesHtml
   constructor: (@dest) ->
@@ -101,18 +101,28 @@ class Layout
 #--- models the site
 
 class Site
-  constructor: (@title, @posts) ->
+  constructor: (@title, posts, @postLayout) ->
+    @posts = _(posts).sortBy (p) -> p.fileName()
+
+  olderPost: (post) ->
+    return if _(@posts).first() == post
+    @posts[_(@posts).indexOf(post) - 1]
+
+  newerPost: (post) ->
+    return if _(@posts).last() == post
+    @posts[_(@posts).indexOf(post) + 1]
+
+  htmlFor: (post) ->
+    @postLayout.htmlFor(post: post, site: this)
+
 
 class Post
-  constructor: (@path, @htmlDirPath, @postLayout) ->
+  constructor: (@path, @htmlDirPath) ->
 
   content: ->
     source = grunt.file.read(@path)
     markdown = _(source).template({})
     content = marked.parser(marked.lexer(markdown))
-
-  toHtml: ->
-    @postLayout.htmlFor(post: this)
 
   title: ->
     dasherized = @path.match(/\/\d{4}-\d{2}-\d{2}-([^/]*).md/)?[1]
@@ -127,4 +137,5 @@ class Post
     "#{name}.html"
 
   date: ->
-    dasherized = @path.match(/\/(\d{4}-\d{2}-\d{2})/)?[1]
+    if date = @path.match(/\/(\d{4}-\d{2}-\d{2})/)?[1]
+      moment(date).format('MMMM Do YYYY').toLowerCase()
