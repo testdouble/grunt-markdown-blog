@@ -1,0 +1,38 @@
+{
+  "name": "grunt-markdown-blog",
+  "description": "Generates a blog from markdown posts & underscore templates",
+  "version": "0.0.1",
+  "homepage": "https://github.com/testdouble/grunt-markdown-blog",
+  "author": {
+    "name": "Justin Searls",
+    "email": "justin@testdouble.com",
+    "url": "http://testdouble.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/testdouble/grunt-markdown-blog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/testdouble/grunt-markdown-blog/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/testdouble/grunt-markdown-blog/blob/master/LICENSE-MIT"
+    }
+  ],
+  "engines": {
+    "node": "~>0.8.20"
+  },
+  "dependencies": {
+    "marked": "~>0.2.8",
+    "underscore": "~>1.4.4",
+    "highlight.js": "~>7.3.0"
+  },
+  "devDependencies": {
+    "grunt": "~>0.4.0"
+  },
+  "keywords": [
+    "gruntplugin", "markdown", "blog", "grunt", "lineman"
+  ]
+}
