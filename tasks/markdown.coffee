@@ -24,7 +24,12 @@ marked.setOptions
 module.exports = (grunt) ->
   grunt.registerMultiTask "markdown", "generates HTML from markdown", ->
     config = _(
+      author: "Full Name"
       title: "my blog"
+      description: "the blog where I write things"
+      url: "http://www.myblog.com"
+      disqus: "agile" #<-- just remove or comment this line to disable disqus support
+      rssCount: 10 #<-- remove, comment, or set to zero to disable RSS generation
       layouts:
         wrapper: "app/templates/wrapper.us"
         index: "app/templates/index.us"
@@ -35,6 +40,7 @@ module.exports = (grunt) ->
         posts: "posts"
         index: "index.html"
         archive: "archive.html"
+        rss: "index.xml"
       dest: "dist"
       context:
         js: "app.js"
@@ -44,7 +50,7 @@ module.exports = (grunt) ->
 
 class MarkdownTask
   constructor: (@config) ->
-    @writesHtml = new WritesHtml(@config.dest)
+    @writesFile = new WritesFile(@config.dest)
     @site = new Site(@config, @buildPosts(), new Layout(@config.layouts.post))
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
@@ -52,20 +58,26 @@ class MarkdownTask
     @createPosts()
     @createIndex()
     @createArchive()
+    @createRss()
 
   createPosts: ->
     generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.post), @site)
     _(@site.posts).each (post) =>
       html = generatesHtml.generate(post)
-      @writesHtml.write(html, post.htmlPath())
+      @writesFile.write(html, post.htmlPath())
 
   createIndex: ->
     html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate()
-    @writesHtml.write(html, @config.paths.index)
+    @writesFile.write(html, @config.paths.index)
 
   createArchive: ->
     html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.archive), @site).generate()
-    @writesHtml.write(html, @config.paths.archive)
+    @writesFile.write(html, @config.paths.archive)
+
+  createRss: ->
+    return unless @site.paths.rss? && @site.rssCount
+    rss = new GeneratesRss(@site).generate()
+    @writesFile.write(rss, @site.paths.rss)
 
   buildPosts: ->
     _(@allMarkdownPosts()).map (markdownPath) =>
@@ -82,13 +94,39 @@ class GeneratesHtml
     context.yield = @template.htmlFor(context)
     @wrapper.htmlFor(context)
 
-class WritesHtml
+class GeneratesRss
+  constructor: (@site) ->
+    @Rss = require('rss')
+
+  generate: ->
+    feed = @createFeed()
+    @addPostsTo(feed)
+    feed.xml()
+
+  createFeed: ->
+    new @Rss
+      title: @site.title
+      description: @site.description
+      feed_url: "#{@site.url}/#{@site.paths.rss}"
+      site_url: @site.url
+      author: @site.author
+
+  addPostsTo: (feed) ->
+    _(@site.posts).chain().first(@site.rssCount).each (post) =>
+      feed.item
+        title: post.title()
+        description: post.content()
+        url: @site.urlFor(post)
+        date: post.time()
+
+
+class WritesFile
   constructor: (@dest) ->
 
-  write: (html, filePath) ->
+  write: (content, filePath) ->
     path = "#{@dest}/#{filePath}"
-    grunt.log.writeln("Writing #{html.length} characters of html to #{path}")
-    grunt.file.write(path, html)
+    grunt.log.writeln("Writing #{content.length} characters to #{path}")
+    grunt.file.write(path, content)
 
 class Layout
   constructor: (layoutPath, context = {}) ->
@@ -116,6 +154,9 @@ class Site
   htmlFor: (post) ->
     @postLayout.htmlFor(post: post, site: this)
 
+  urlFor: (post) ->
+    "#{@url}/#{post.htmlPath()}"
+
 
 class Post
   constructor: (@path, @htmlDirPath) ->
@@ -137,5 +178,8 @@ class Post
     "#{name}.html"
 
   date: ->
-    if date = @path.match(/\/(\d{4}-\d{2}-\d{2})/)?[1]
+    if date = @time()
       moment(date).format('MMMM Do YYYY').toLowerCase()
+
+  time: ->
+    @path.match(/\/(\d{4}-\d{2}-\d{2})/)?[1]
