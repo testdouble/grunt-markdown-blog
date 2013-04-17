@@ -28,8 +28,8 @@ module.exports = (grunt) ->
       title: "my blog"
       description: "the blog where I write things"
       url: "http://www.myblog.com"
-      disqus: "agile" #<-- just remove or comment this line to disable disqus support
-      rssCount: 10 #<-- remove, comment, or set to zero to disable RSS generation
+      # disqus: "agile" #<-- define a disqus name for use in your templates
+      rssCount: 10
       layouts:
         wrapper: "app/templates/wrapper.us"
         index: "app/templates/index.us"
