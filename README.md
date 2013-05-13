@@ -2,7 +2,7 @@
 
 This is a grunt multi-task for generating static blogs with markdown. It was designed to be used with [Lineman](https://github.com/testdouble/lineman), but should be generally useful to someone trying to accomplish the same.
 
-Here's an example repo that'll be using it. [testdouble/lineman-blog](https://github.com/searls/lineman-blog)
+Here's an example repo that'll be using it. [testdouble/lineman-blog](https://github.com/testdouble/lineman-blog)
 
 Here's an example configuration (in CoffeeScript, just imagine more `{` & `}` if you prefer JavaScript):
 
