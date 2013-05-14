@@ -23,6 +23,7 @@ markdown:
     paths:
       markdown: "app/posts/*.md"
       posts: "posts"
+      pages: "pages"
       index: "index.html"
       archive: "archive.html"
       rss: "index.xml"
