@@ -19,11 +19,11 @@ markdown:
       wrapper: "app/templates/wrapper.us"
       index: "app/templates/index.us"
       post: "app/templates/post.us"
+      page: "app/templates/page.us" #<-- optional static pages
       archive: "app/templates/archive.us"
     paths:
-      markdown: "app/posts/*.md"
-      posts: "posts"
-      pages: "pages"
+      posts: "posts/*.md"
+      pages: "pages/**/*.md" #<-- optional static pages
       index: "index.html"
       archive: "archive.html"
       rss: "index.xml"
@@ -47,6 +47,6 @@ If you use a watch plugin with grunt, you can also do something like this for de
 ``` coffeescript
 watch:
   markdown:
-    files: ["app/posts/*.md", "app/templates/*.us"]
+    files: ["app/posts/*.md", "app/pages/**/*.md", "app/templates/*.us"]
     tasks: ["markdown:dev"]
 ```
