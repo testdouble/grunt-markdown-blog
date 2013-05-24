@@ -11,6 +11,7 @@ fs = require('fs')
 highlight = require('highlight.js')
 grunt = require('grunt')
 moment = require('moment')
+pathlib = require('path')
 
 marked.setOptions
   highlight: (code, lang) ->
@@ -34,10 +35,11 @@ module.exports = (grunt) ->
         wrapper: "app/templates/wrapper.us"
         index: "app/templates/index.us"
         post: "app/templates/post.us"
+        page: "app/templates/page.us"
         archive: "app/templates/archive.us"
       paths:
-        markdown: "app/posts/*.md"
-        posts: "posts"
+        posts: "posts/*.md"
+        pages: "pages/**/*.md"
         index: "index.html"
         archive: "archive.html"
         rss: "index.xml"
@@ -52,10 +54,13 @@ class MarkdownTask
   constructor: (@config) ->
     @writesFile = new WritesFile(@config.dest)
     @site = new Site(@config, @buildPosts(), new Layout(@config.layouts.post))
+    @site.addPages(@buildPages(), new Layout(@config.layouts.page)) if @config.layouts.page?
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
   run: ->
     @createPosts()
+    if @config.layouts.page?
+      @createPages()
     @createIndex()
     @createArchive()
     @createRss()
@@ -65,6 +70,12 @@ class MarkdownTask
     _(@site.posts).each (post) =>
       html = generatesHtml.generate(post)
       @writesFile.write(html, post.htmlPath())
+
+  createPages: ->
+    generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.page), @site)
+    _(@site.pages).each (page) =>
+      html = generatesHtml.generate(page)
+      @writesFile.write(html, page.htmlPath())
 
   createIndex: ->
     html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate()
@@ -83,8 +94,14 @@ class MarkdownTask
     _(@allMarkdownPosts()).map (markdownPath) =>
       new Post(markdownPath, @config.paths.posts)
 
+  buildPages: ->
+    if @config.paths.pages
+      _(@allMarkdownPages()).map (markdownPath) =>
+        new Page(markdownPath, @config.paths.pages)
+
   #private
-  allMarkdownPosts: -> grunt.file.expand(@config.paths.markdown)
+  allMarkdownPosts: -> grunt.file.expand(@config.paths.posts)
+  allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
 
 class GeneratesHtml
   constructor: (@wrapper, @template, @site) ->
@@ -143,6 +160,8 @@ class Site
     _(@).extend(config)
     @posts = _(posts).sortBy (p) -> p.fileName()
 
+  addPages: (@pages, @pageLayout) ->
+
   olderPost: (post) ->
     return if _(@posts).first() == post
     @posts[_(@posts).indexOf(post) - 1]
@@ -158,7 +177,7 @@ class Site
     "#{@url}/#{post.htmlPath()}"
 
 
-class Post
+class Page
   constructor: (@path, @htmlDirPath) ->
 
   content: ->
@@ -171,12 +190,13 @@ class Post
     title || @fileName()
 
   htmlPath: ->
-    "#{@htmlDirPath}/#{@fileName()}"
+    pathlib.join(@path.replace('.md', '.html'))
 
   fileName: ->
     name = @path.match(/\/([^/]*).md/)?[1]
     "#{name}.html"
 
+class Post extends Page
   date: ->
     if date = @time()
       moment(date).format('MMMM Do YYYY').toLowerCase()
