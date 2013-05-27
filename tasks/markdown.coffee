@@ -43,7 +43,6 @@ module.exports = (grunt) ->
         index: "index.html"
         archive: "archive.html"
         rss: "index.xml"
-        root: "."
       dest: "dist"
       context:
         js: "app.js"
