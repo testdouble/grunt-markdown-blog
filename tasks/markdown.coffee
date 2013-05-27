@@ -99,9 +99,8 @@ class MarkdownTask
       new Post(markdownPath, @config.paths.posts)
 
   buildPages: ->
-    if @generatePages()
-      _(@allMarkdownPages()).map (markdownPath) =>
-        new Page(markdownPath, @config.paths.pages)
+    _(@allMarkdownPages()).map (markdownPath) =>
+      new Page(markdownPath, @config.paths.pages)
 
   #private
   allMarkdownPosts: ->
