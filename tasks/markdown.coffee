@@ -38,11 +38,12 @@ module.exports = (grunt) ->
         page: "app/templates/page.us"
         archive: "app/templates/archive.us"
       paths:
-        posts: "posts/*.md"
-        pages: "pages/**/*.md"
+        posts: "app/posts/*.md"
+        pages: "app/pages/**/*.md"
         index: "index.html"
         archive: "archive.html"
         rss: "index.xml"
+        root: "."
       dest: "dist"
       context:
         js: "app.js"
@@ -54,16 +55,19 @@ class MarkdownTask
   constructor: (@config) ->
     @writesFile = new WritesFile(@config.dest)
     @site = new Site(@config, @buildPosts(), new Layout(@config.layouts.post))
-    @site.addPages(@buildPages(), new Layout(@config.layouts.page)) if @config.layouts.page?
+    @site.addPages(@buildPages(), new Layout(@config.layouts.page)) if @generatePages()
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
   run: ->
     @createPosts()
-    if @config.layouts.page?
+    if @generatePages()
       @createPages()
     @createIndex()
     @createArchive()
     @createRss()
+
+  generatePages: ->
+    @config.layouts.page? && grunt.file.exists(@config.layouts.page)
 
   createPosts: ->
     generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.post), @site)
@@ -95,12 +99,17 @@ class MarkdownTask
       new Post(markdownPath, @config.paths.posts)
 
   buildPages: ->
-    if @config.paths.pages
+    if @generatePages()
       _(@allMarkdownPages()).map (markdownPath) =>
         new Page(markdownPath, @config.paths.pages)
 
   #private
-  allMarkdownPosts: -> grunt.file.expand(@config.paths.posts)
+  allMarkdownPosts: ->
+    if @config.paths.markdown? #backwards compatibility for lineman blog
+      grunt.file.expand(@config.paths.markdown)
+    else
+      grunt.file.expand(@config.paths.posts)
+
   allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
 
 class GeneratesHtml
@@ -146,8 +155,8 @@ class WritesFile
     grunt.file.write(path, content)
 
 class Layout
-  constructor: (layoutPath, context = {}) ->
-    @layout = _(grunt.file.read(layoutPath)).template()
+  constructor: (@layoutPath, context = {}) ->
+    @layout = _(grunt.file.read(@layoutPath)).template()
     @context = context
 
   htmlFor: (specificContext) ->
@@ -190,7 +199,10 @@ class Page
     title || @fileName()
 
   htmlPath: ->
-    pathlib.join(@path.replace('.md', '.html'))
+    if @htmlDirPath.match(/\*/) #path contains wildcard use htmldirpath
+      pathlib.join(@path.replace('.md', '.html'))
+    else
+      "#{@htmlDirPath}/#{@fileName()}"
 
   fileName: ->
     name = @path.match(/\/([^/]*).md/)?[1]
