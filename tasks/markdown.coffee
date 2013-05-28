@@ -43,6 +43,9 @@ module.exports = (grunt) ->
         index: "index.html"
         archive: "archive.html"
         rss: "index.xml"
+      pathRoots:
+        posts: "posts"
+        pages: "pages"
       dest: "dist"
       context:
         js: "app.js"
@@ -95,11 +98,11 @@ class MarkdownTask
 
   buildPosts: ->
     _(@allMarkdownPosts()).map (markdownPath) =>
-      new Post(markdownPath, @config.paths.posts)
+      new Post(markdownPath, @config.pathRoots.posts)
 
   buildPages: ->
     _(@allMarkdownPages()).map (markdownPath) =>
-      new Page(markdownPath, @config.paths.pages)
+      new Page(markdownPath, @config.pathRoots.pages)
 
   #private
   allMarkdownPosts: ->
