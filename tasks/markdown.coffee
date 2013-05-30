@@ -31,6 +31,7 @@ module.exports = (grunt) ->
       url: "http://www.myblog.com"
       # disqus: "agile" #<-- define a disqus name for use in your templates
       rssCount: 10
+      dateFormat: 'MMMM Do YYYY'
       layouts:
         wrapper: "app/templates/wrapper.us"
         index: "app/templates/index.us"
@@ -98,7 +99,7 @@ class MarkdownTask
 
   buildPosts: ->
     _(@allMarkdownPosts()).map (markdownPath) =>
-      new Post(markdownPath, @config.pathRoots.posts)
+      new Post(markdownPath, @config.pathRoots.posts, @config.dateFormat)
 
   buildPages: ->
     _(@allMarkdownPages()).map (markdownPath) =>
@@ -188,7 +189,7 @@ class Site
 
 
 class Page
-  constructor: (@path, @htmlDirPath) ->
+  constructor: (@path, @htmlDirPath, @dateFormat) ->
 
   content: ->
     markdown = grunt.file.read(@path)
@@ -212,7 +213,7 @@ class Page
 class Post extends Page
   date: ->
     if date = @time()
-      moment(date).format('MMMM Do YYYY').toLowerCase()
+      moment(date).format(@dateFormat)
 
   time: ->
     @path.match(/\/(\d{4}-\d{2}-\d{2})/)?[1]
