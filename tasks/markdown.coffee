@@ -86,7 +86,8 @@ class MarkdownTask
       @writesFile.write(html, page.htmlPath())
 
   createIndex: ->
-    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate()
+    post = _(@site.posts).last()
+    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate(post)
     @writesFile.write(html, @config.paths.index)
 
   createArchive: ->
