@@ -30,7 +30,8 @@
     "underscore": "~>1.4.4",
     "highlight.js": "~>7.3.0",
     "moment": "~>2.0.0",
-    "rss": "~>0.0.4"
+    "rss": "~>0.0.4",
+    "coffee-script": "~1.6.2"
   },
   "keywords": [
     "gruntplugin", "markdown", "blog", "grunt", "lineman"

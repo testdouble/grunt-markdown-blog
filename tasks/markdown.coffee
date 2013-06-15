@@ -12,6 +12,7 @@ highlight = require('highlight.js')
 grunt = require('grunt')
 moment = require('moment')
 pathlib = require('path')
+MarkdownSplitter = require("./../lib/markdown_splitter")
 
 marked.setOptions
   highlight: (code, lang) ->
@@ -190,12 +191,21 @@ class Site
 
 class Page
   constructor: (@path, @htmlDirPath, @dateFormat) ->
+    source = grunt.file.read(@path)
+    splitted = new MarkdownSplitter().split(source)
+    @markdown = splitted.markdown
+    @attributes = splitted.header
 
   content: ->
-    markdown = grunt.file.read(@path)
-    content = marked.parser(marked.lexer(markdown))
+    marked.parser(marked.lexer(@markdown))
+
+  get: (name) ->
+    attr = @attributes?[name]
+    return unless attr?
+    if _(attr).isFunction() then attr() else attr
 
   title: ->
+    return @attributes?['title'] if @attributes?['title']?
     dasherized = @path.match(/\/\d{4}-\d{2}-\d{2}-([^/]*).md/)?[1]
     title = dasherized?.replace(/-/g, " ")
     title || @fileName()
