@@ -5,8 +5,6 @@ grunt = require('grunt')
 module.exports = class MarkdownSplitter
 
   split: (source = "") ->
-    lines = source.split("\n")
-
     inHeader = false
     header = []
     markdown = []
