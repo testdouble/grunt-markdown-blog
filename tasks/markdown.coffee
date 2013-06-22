@@ -7,6 +7,7 @@ Contributor: @searls
 
 marked = require('marked')
 _ = require('underscore')
+_.mixin(require('underscore.string').exports())
 fs = require('fs')
 highlight = require('highlight.js')
 grunt = require('grunt')
