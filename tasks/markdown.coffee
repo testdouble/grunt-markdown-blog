@@ -221,6 +221,9 @@ class Page
   fileName: ->
     name = @path.match(/\/([^/]*).md/)?[1]
     "#{name}.html"
+    
+  date: ->
+    undefined
 
 class Post extends Page
   date: ->
