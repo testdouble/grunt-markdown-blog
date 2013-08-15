@@ -1,7 +1,7 @@
 {
   "name": "grunt-markdown-blog",
   "description": "Generates a blog from markdown posts & underscore templates",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "homepage": "https://github.com/testdouble/grunt-markdown-blog",
   "author": {
     "name": "Justin Searls",
@@ -35,6 +35,10 @@
     "coffee-script": "~1.6.2"
   },
   "keywords": [
-    "gruntplugin", "markdown", "blog", "grunt", "lineman"
+    "gruntplugin",
+    "markdown",
+    "blog",
+    "grunt",
+    "lineman"
   ]
 }
