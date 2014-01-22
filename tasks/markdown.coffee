@@ -5,29 +5,17 @@ Dependencies: grunt, marked
 Contributor: @searls
 ###
 
-marked = require('marked')
 _ = require('underscore')
 _.mixin(require('underscore.string').exports())
 fs = require('fs')
-highlight = require('highlight.js')
 grunt = require('grunt')
 moment = require('moment')
-pathlib = require('path')
-MarkdownSplitter = require("./../lib/markdown_splitter")
 GeneratesHtml = require("./../lib/generates_html")
 GeneratesRss = require("./../lib/generates_rss")
 WritesFile = require("./../lib/writes_file")
 Layout = require("./../lib/layout")
 Site = require("./../lib/site")
-
-marked.setOptions
-  highlight: (code, lang) ->
-    highlighted = if highlight.LANGUAGES[lang]?
-      highlight.highlight(lang, code, true)
-    else
-      highlight.highlightAuto(code)
-    highlighted.value
-
+Page = require("./../lib/page")
 
 module.exports = (grunt) ->
   grunt.registerMultiTask "markdown", "generates HTML from markdown", ->
@@ -123,40 +111,6 @@ class MarkdownTask
   allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
 
 #--- models the site
-
-class Page
-  constructor: (@path, @htmlDirPath, @dateFormat) ->
-    source = grunt.file.read(@path)
-    splitted = new MarkdownSplitter().split(source)
-    @markdown = splitted.markdown
-    @attributes = splitted.header
-
-  content: ->
-    marked.parser(marked.lexer(@markdown))
-
-  get: (name) ->
-    attr = @attributes?[name]
-    return unless attr?
-    if _(attr).isFunction() then attr() else attr
-
-  title: ->
-    return @attributes?['title'] if @attributes?['title']?
-    dasherized = @path.match(/\/\d{4}-\d{2}-\d{2}-([^/]*).md/)?[1]
-    title = dasherized?.replace(/-/g, " ")
-    title || @fileName()
-
-  htmlPath: ->
-    if @htmlDirPath.match(/\*/) #path contains wildcard use htmldirpath
-      pathlib.join(@path.replace('.md', '.html'))
-    else
-      "#{@htmlDirPath}/#{@fileName()}"
-
-  fileName: ->
-    name = @path.match(/\/([^/]*).md/)?[1]
-    "#{name}.html"
-    
-  date: ->
-    undefined
 
 class Post extends Page
   date: ->
