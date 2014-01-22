@@ -16,6 +16,7 @@ pathlib = require('path')
 MarkdownSplitter = require("./../lib/markdown_splitter")
 GeneratesHtml = require("./../lib/generates_html")
 GeneratesRss = require("./../lib/generates_rss")
+WritesFile = require("./../lib/writes_file")
 
 marked.setOptions
   highlight: (code, lang) ->
@@ -118,14 +119,6 @@ class MarkdownTask
       grunt.file.expand(@config.paths.posts)
 
   allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
-
-class WritesFile
-  constructor: (@dest) ->
-
-  write: (content, filePath) ->
-    path = "#{@dest}/#{filePath}"
-    grunt.log.writeln("Writing #{content.length} characters to #{path}")
-    grunt.file.write(path, content)
 
 class Layout
   constructor: (@layoutPath, context = {}) ->
