@@ -6,8 +6,6 @@ Contributor: @searls
 ###
 
 _ = require('underscore')
-_.mixin(require('underscore.string').exports())
-fs = require('fs')
 MarkdownTask = require('./../lib/markdown_task')
 
 module.exports = (grunt) ->
