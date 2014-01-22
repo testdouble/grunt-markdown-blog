@@ -14,6 +14,7 @@ grunt = require('grunt')
 moment = require('moment')
 pathlib = require('path')
 MarkdownSplitter = require("./../lib/markdown_splitter")
+GeneratesHtml = require("./../lib/generates_html")
 
 marked.setOptions
   highlight: (code, lang) ->
@@ -116,14 +117,6 @@ class MarkdownTask
       grunt.file.expand(@config.paths.posts)
 
   allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
-
-class GeneratesHtml
-  constructor: (@wrapper, @template, @site) ->
-
-  generate: (post) ->
-    context = site: @site, post: post
-    context.yield = @template.htmlFor(context)
-    @wrapper.htmlFor(context)
 
 class GeneratesRss
   constructor: (@site) ->
