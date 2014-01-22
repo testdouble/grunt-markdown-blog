@@ -17,6 +17,7 @@ MarkdownSplitter = require("./../lib/markdown_splitter")
 GeneratesHtml = require("./../lib/generates_html")
 GeneratesRss = require("./../lib/generates_rss")
 WritesFile = require("./../lib/writes_file")
+Layout = require("./../lib/layout")
 
 marked.setOptions
   highlight: (code, lang) ->
@@ -119,14 +120,6 @@ class MarkdownTask
       grunt.file.expand(@config.paths.posts)
 
   allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
-
-class Layout
-  constructor: (@layoutPath, context = {}) ->
-    @layout = _(grunt.file.read(@layoutPath)).template()
-    @context = context
-
-  htmlFor: (specificContext) ->
-    @layout(_(@context).extend(specificContext))
 
 #--- models the site
 
