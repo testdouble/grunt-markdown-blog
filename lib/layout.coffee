@@ -1,4 +1,5 @@
 _ = require('underscore')
+_.mixin(require('underscore.string').exports())
 grunt = require('grunt')
 
 module.exports = class Layout
