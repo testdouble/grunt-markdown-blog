@@ -5,11 +5,11 @@ Dependencies: grunt, marked
 Contributor: @searls
 ###
 
-_ = require('underscore')
-MarkdownTask = require('./../lib/markdown_task')
-
 module.exports = (grunt) ->
   grunt.registerMultiTask "markdown", "generates HTML from markdown", ->
+    _ = require('underscore')
+    MarkdownTask = require('./../lib/markdown_task')
+
     config = _(
       author: "Full Name"
       title: "my blog"
@@ -38,4 +38,5 @@ module.exports = (grunt) ->
         js: "app.js"
         css: "app.css"
     ).extend(@options(@data))
+
     new MarkdownTask(config).run()
