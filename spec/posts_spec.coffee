@@ -9,14 +9,17 @@ describe "Posts", ->
   describe "is array-like", ->
     markdownFiles = [ spy(), spy() ]
 
-    Given -> @subject = new Posts(markdownFiles)
+    Given -> @subject = new Posts(markdownFiles, spy())
     Then -> @subject instanceof Posts
     And -> @subject instanceof Array
     And -> @subject.length == 2
 
 
   describe "builds posts", ->
-    markdownFiles = [ p1 = spy('p1') ]
+    markdownFiles = [ post1 = spy('post1') ]
+    config =
+      htmlDir: spy('htmlDir')
+      dateFormat: spy('dateFormat')
 
-    Given -> @subject = new Posts(markdownFiles)
-    Then -> expect(Post).toHaveBeenCalledWith(p1)
+    Given -> @subject = new Posts(markdownFiles, config)
+    Then -> expect(Post).toHaveBeenCalledWith(post1, config.htmlDir, config.dateFormat)
