@@ -17,9 +17,9 @@ describe "Posts", ->
 
   describe "builds posts", ->
     markdownFiles = [ post1 = spy('post1') ]
-    config =
-      htmlDir: spy('htmlDir')
-      dateFormat: spy('dateFormat')
+    config = htmlDir: spy('htmlDir'), dateFormat: spy('dateFormat')
 
     Given -> @subject = new Posts(markdownFiles, config)
+    Then -> @subject.length == 1
+    Then -> @subject[0] instanceof Post
     Then -> expect(Post).toHaveBeenCalledWith(post1, config.htmlDir, config.dateFormat)
