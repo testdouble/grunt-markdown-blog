@@ -1,4 +1,4 @@
-Posts = require '../lib/posts'
+Posts = require('sandboxed-module').require '../lib/posts'
 
 describe "Posts", ->
 
