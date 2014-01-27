@@ -34,6 +34,13 @@
     "rss": "~>0.0.4",
     "coffee-script": "~1.6.2"
   },
+  "peerDependencies": {
+    "grunt": "~0.4.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-jasmine-bundle": "~0.1.4"
+  },
   "keywords": [
     "gruntplugin",
     "markdown",
