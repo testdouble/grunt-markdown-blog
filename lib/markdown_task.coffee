@@ -5,6 +5,7 @@ GeneratesRss = require('./../lib/generates_rss')
 Layout = require('./../lib/layout')
 Page = require('./../lib/page')
 Post = require('./../lib/post')
+Posts = require('./../lib/posts')
 Site = require('./../lib/site')
 WritesFile = require('./../lib/writes_file')
 
@@ -53,8 +54,9 @@ module.exports = class MarkdownTask
     @writesFile.write(rss, @site.paths.rss)
 
   buildPosts: ->
-    _(@allMarkdownPosts()).map (markdownPath) =>
-      new Post(markdownPath, @config.pathRoots.posts, @config.dateFormat)
+    new Posts @allMarkdownPosts(),
+      htmlDir: @config.pathRoots.posts
+      dateFormat: @config.dateFormat
 
   buildPages: ->
     _(@allMarkdownPages()).map (markdownPath) =>
