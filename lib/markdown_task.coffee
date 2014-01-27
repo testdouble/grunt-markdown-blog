@@ -12,7 +12,10 @@ WritesFile = require('./../lib/writes_file')
 module.exports = class MarkdownTask
   constructor: (@config) ->
     @writesFile = new WritesFile(@config.dest)
-    @site = new Site(@config, @buildPosts(), new Layout(@config.layouts.post))
+    posts = new Posts @_allMarkdownPosts(),
+      htmlDir: @config.pathRoots.posts
+      dateFormat: @config.dateFormat
+    @site = new Site(@config, posts, new Layout(@config.layouts.post))
     @site.addPages(@buildPages(), new Layout(@config.layouts.page)) if @generatePages()
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
@@ -53,20 +56,15 @@ module.exports = class MarkdownTask
     rss = new GeneratesRss(@site).generate()
     @writesFile.write(rss, @site.paths.rss)
 
-  buildPosts: ->
-    new Posts @allMarkdownPosts(),
-      htmlDir: @config.pathRoots.posts
-      dateFormat: @config.dateFormat
-
   buildPages: ->
-    _(@allMarkdownPages()).map (markdownPath) =>
+    _(@_allMarkdownPages()).map (markdownPath) =>
       new Page(markdownPath, @config.pathRoots.pages)
 
   #private
-  allMarkdownPosts: ->
+  _allMarkdownPosts: ->
     if @config.paths.markdown? #backwards compatibility for lineman blog
       grunt.file.expand(@config.paths.markdown)
     else
       grunt.file.expand(@config.paths.posts)
 
-  allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
+  _allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
