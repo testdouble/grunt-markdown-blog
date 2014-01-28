@@ -3,7 +3,7 @@ _ = require('underscore')
 module.exports = class Site
   constructor: (config, posts, @postLayout) ->
     _(@).extend(config)
-    @posts = _(posts).sortBy (p) -> p.fileName()
+    @posts = _(posts).sortBy((p) -> p.time())
 
   addPages: (@pages, @pageLayout) ->
 

@@ -18,7 +18,7 @@ module.exports = class GeneratesRss
       author: @site.author
 
   addPostsTo: (feed) ->
-    _(@site.posts).chain().first(@site.rssCount).each (post) =>
+    _(@site.posts).chain().reverse().first(@site.rssCount).each (post) =>
       feed.item
         title: post.title()
         description: post.content()
