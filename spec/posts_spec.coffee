@@ -5,28 +5,23 @@ Posts = require('sandboxed-module').require '../lib/posts',
 
 
 describe "Posts", ->
+  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'dateFormat', 'comparator']
+  Given -> @markdownFiles = [ spy(), spy() ]
+
+  When -> @subject = new Posts(@markdownFiles, @config)
 
   describe "is array-like", ->
-    markdownFiles = [ spy(), spy() ]
-
-    Given -> @subject = new Posts(markdownFiles, comparator: spy() )
     Then -> @subject instanceof Posts
-    And -> @subject instanceof Array
-    And -> @subject.length == 2
+    Then -> @subject instanceof Array
+    Then -> @subject.length == 2
 
 
   describe "builds posts", ->
-    markdownFiles = [ post1 = spy('post1') ]
-    config = htmlDir: spy('htmlDir'), dateFormat: spy('dateFormat'), comparator: spy()
+    Given -> @markdownFiles = [ @post1 = spy('post1') ]
 
-    Given -> @subject = new Posts(markdownFiles, config)
     Then -> expect(@subject).toEqual [jasmine.any(Post)]
-    Then -> expect(Post).toHaveBeenCalledWith(post1, config.htmlDir, config.dateFormat)
+    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
 
 
   describe "is sorted automatically", ->
-    markdownFiles = [ spy(), spy() ]
-    comparator = spy('comparator')
-
-    Given -> @subject = new Posts(markdownFiles, comparator: comparator )
-    Then -> expect(comparator).toHaveBeenCalled()
+    Then -> expect(@config.comparator).toHaveBeenCalled()
