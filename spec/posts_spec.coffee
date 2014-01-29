@@ -1,7 +1,15 @@
 spy = jasmine.createSpy
-Posts = require('sandboxed-module').require '../lib/posts',
-  requires:
-    './post': Post = spy('Post')
+Post = null
+Posts = null
+
+beforeEach ->
+  class (foo = {}).Post
+    filename: ->
+  Post = spyOnConstructor(foo, "Post", "fileName")
+
+  Posts = require('sandboxed-module').require '../lib/posts',
+    requires:
+      './post': foo.Post
 
 
 describe "Posts", ->
@@ -19,8 +27,8 @@ describe "Posts", ->
   describe "builds posts", ->
     Given -> @markdownFiles = [ @post1 = spy('post1') ]
 
-    Then -> expect(@subject).toEqual [jasmine.any(Post)]
-    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
+    Then -> expect(@subject).toEqual [jasmine.any(Post.constructor.fake)]
+    Then -> expect(Post.constructor).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
 
 
   describe "is sorted automatically", ->
