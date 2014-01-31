@@ -1,17 +1,22 @@
 Layout = null
+NullLayout = null
 SandboxedModule = require('sandboxed-module')
 
 Given -> @extendedContext = jasmine.createSpy("extendedContext")
 Given -> @layout = jasmine.createSpy("layout").andReturn(@html = jasmine.createSpy("html"))
 Given -> Layout = SandboxedModule.require '../lib/layout',
   requires:
-    'grunt': @grunt = file: read: jasmine.createSpy("grunt.file.read")
+    'grunt': @grunt =
+      file:
+        exists: jasmine.createSpy("grunt.file.exists").andReturn(true)
+        read: jasmine.createSpy("grunt.file.read")
     'underscore': @_ = do =>
       _ = jasmine.createSpy("underscore")
       _.mixin = ->
       _.extend = jasmine.createSpy("extend").andReturn(@extendedContext)
       _.template = jasmine.createSpy("template").andReturn(@layout)
       _.andReturn(_)
+    './null_layout': NullLayout = jasmine.createSpy("NullLayout")
 
 
 describe "Layout", ->
@@ -39,3 +44,7 @@ describe "Layout", ->
     describe "hydrates template with context", ->
       Then -> expect(@layout).toHaveBeenCalledWith @extendedContext
       Then -> @resultHtml == @html
+
+  describe "returns NullLayout for invalid template paths", ->
+    Given -> @grunt.file.exists.andReturn(false)
+    Then -> @subject instanceof NullLayout
