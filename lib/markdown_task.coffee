@@ -27,24 +27,24 @@ module.exports = class MarkdownTask
     @config.layouts.page? && grunt.file.exists(@config.layouts.page)
 
   createPosts: ->
-    generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.post), @site)
+    generatesHtml = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.post))
     _(@site.posts).each (post) =>
       html = generatesHtml.generate(post)
       @writesFile.write(html, post.htmlPath())
 
   createPages: ->
-    generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.page), @site)
+    generatesHtml = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.page))
     _(@site.pages).each (page) =>
       html = generatesHtml.generate(page)
       @writesFile.write(html, page.htmlPath())
 
   createIndex: ->
     post = _(@site.posts).last()
-    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate(post)
+    html = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.index)).generate(post)
     @writesFile.write(html, @config.paths.index)
 
   createArchive: ->
-    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.archive), @site).generate()
+    html = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.archive)).generate()
     @writesFile.write(html, @config.paths.archive)
 
   createRss: ->

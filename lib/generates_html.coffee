@@ -1,5 +1,5 @@
 module.exports = class GeneratesHtml
-  constructor: (@wrapper, @template, @site) ->
+  constructor: (@site, @wrapper, @template) ->
 
   generate: (post) ->
     context = site: @site, post: post

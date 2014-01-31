@@ -10,7 +10,7 @@ describe "GeneratesHtml", ->
     Given -> @template = jasmine.createStubObj("template", htmlFor: @templateHtml)
     Given -> @wrapper = jasmine.createStubObj("wrapper", htmlFor: @fullHtml)
 
-    When -> @resultHtml = new GeneratesHtml(@wrapper, @template, @site).generate(@post)
+    When -> @resultHtml = new GeneratesHtml(@site, @wrapper, @template).generate(@post)
 
     Then -> expect(@template.htmlFor).toHaveBeenCalledWith jasmine.argThat (context) =>
         context.site == @site && context.post == @post
