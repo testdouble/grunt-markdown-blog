@@ -8,7 +8,7 @@ module.exports = (grunt) ->
       unit:
         options:
           minijasminenode:
-            isVerbose: true
+            isVerbose: false
             showColors: true
 
   grunt.registerTask 'default', ['spec']
