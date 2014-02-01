@@ -1,35 +1,30 @@
 spy = jasmine.createSpy
-Post = null
-Posts = null
+Page = null
+Pages = null
 SandboxedModule = require('sandboxed-module')
 
 beforeEach ->
-  Posts = SandboxedModule.require '../lib/posts',
+  Pages = SandboxedModule.require '../lib/pages',
     requires:
-      './post': Post = jasmine.constructSpy("Post", ["fileName"])
+      './page': Page = jasmine.constructSpy("Page", ["fileName"])
 
-
-describe "Posts", ->
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'dateFormat', 'comparator']
+describe "Pages", ->
+  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir']
   Given -> @markdownFiles = [ spy(), spy() ]
 
-  When -> @subject = new Posts(@markdownFiles, @config)
+  When -> @subject = new Pages(@markdownFiles, @config)
 
   describe "is array-like", ->
-    Then -> @subject instanceof Posts
+    Then -> @subject instanceof Pages
     Then -> @subject instanceof Array
     Then -> @subject.length == 2
 
 
-  describe "builds posts", ->
-    Given -> @markdownFiles = [ @post1 = spy('post1') ]
+  describe "builds pages", ->
+    Given -> @markdownFiles = [ @page = spy('page') ]
 
-    Then -> @subject[0] instanceof Post
-    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
-
-
-  describe "is sorted automatically", ->
-    Then -> expect(@config.comparator).toHaveBeenCalled()
+    Then -> @subject[0] instanceof Page
+    Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
 
 
   describe "#writeHtml", ->
@@ -37,16 +32,16 @@ describe "Posts", ->
     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
     Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
 
-    context "without posts", ->
+    context "without pages", ->
       Given -> @markdownFiles = []
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
       Then -> expect(@writesFile.write).not.toHaveBeenCalled()
 
-    context "with 3 posts", ->
+    context "with 3 pages", ->
       Given -> @htmlPath = "htmlPath"
-      Given -> @post = jasmine.createStubObj('post', htmlPath: @htmlPath)
-      When -> @subject.splice 0, @subject.length, @post, @post, @post
+      Given -> @page = jasmine.createStubObj('page', htmlPath: @htmlPath)
+      When -> @subject.splice 0, @subject.length, @page, @page, @page
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3
       Then -> @writesFile.write.callCount == 3
