@@ -10,3 +10,8 @@ module.exports = class Posts
     posts.sort(comparator || timeComparator)
     posts.__proto__ = Posts::
     return posts
+
+  writeHtml: (generatesHtml, writesFile) ->
+    for post in @
+      html = generatesHtml.generate(post)
+      writesFile.write(html, post.htmlPath())

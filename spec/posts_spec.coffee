@@ -30,3 +30,23 @@ describe "Posts", ->
 
   describe "is sorted automatically", ->
     Then -> expect(@config.comparator).toHaveBeenCalled()
+
+  describe "#writeHtml", ->
+    Given -> @html = "html"
+    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
+    Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
+
+    context "without posts", ->
+      Given -> @markdownFiles = []
+      When -> @subject.writeHtml(@generatesHtml, @writesFile)
+      Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
+      Then -> expect(@writesFile.write).not.toHaveBeenCalled()
+
+    context "with 3 posts", ->
+      Given -> @htmlPath = "htmlPath"
+      Given -> @post = jasmine.createStubObj('post', htmlPath: @htmlPath)
+      When -> @subject.splice 0, @subject.length, @post, @post, @post
+      When -> @subject.writeHtml(@generatesHtml, @writesFile)
+      Then -> @generatesHtml.generate.callCount == 3
+      Then -> @writesFile.write.callCount == 3
+      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
