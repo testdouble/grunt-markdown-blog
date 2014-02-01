@@ -1,4 +1,5 @@
 grunt = require('grunt')
+Archive = require('./../lib/archive')
 GeneratesHtml = require('./../lib/generates_html')
 GeneratesRss = require('./../lib/generates_rss')
 Index = require('./../lib/index')
@@ -18,6 +19,8 @@ module.exports = class MarkdownTask
       htmlDir: @config.pathRoots.pages
     @index = new Index @posts.latest(),
       htmlPath: @config.paths.index
+    @archive = new Archive
+      htmlPath: @config.paths.archive
     @site = new Site(@config, @posts, new Layout(@config.layouts.post))
     @site.addPages @pages
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
@@ -26,12 +29,8 @@ module.exports = class MarkdownTask
     @posts.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.post)), @writesFile)
     @pages.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.page)), @writesFile)
     @index.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.index)), @writesFile)
-    @createArchive()
+    @archive.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.archive)), @writesFile)
     @createRss()
-
-  createArchive: ->
-    html = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.archive)).generate()
-    @writesFile.write(html, @config.paths.archive)
 
   createRss: ->
     return unless @site.paths.rss? && @site.rssCount
