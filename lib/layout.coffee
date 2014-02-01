@@ -13,5 +13,5 @@ module.exports = class Layout
     @layout(_(@context).extend(specificContext))
 
   _templateExists: ->
-    _.tap grunt.file.exists(@layoutPath), (fileExists) =>
+    _.tap @layoutPath? and grunt.file.exists(@layoutPath), (fileExists) =>
       grunt.warn("Unable to read '#{@layoutPath}' file") if @layoutPath? and !fileExists
