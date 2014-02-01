@@ -24,7 +24,7 @@ describe "Posts", ->
   describe "builds posts", ->
     Given -> @markdownFiles = [ @post1 = spy('post1') ]
 
-    Then -> expect(@subject).toEqual [jasmine.any(Post)]
+    Then -> @subject[0] instanceof Post
     Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
 
 
