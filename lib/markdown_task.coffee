@@ -1,7 +1,7 @@
-_ = require('underscore')
 grunt = require('grunt')
 GeneratesHtml = require('./../lib/generates_html')
 GeneratesRss = require('./../lib/generates_rss')
+Index = require('./../lib/index')
 Layout = require('./../lib/layout')
 Pages = require('./../lib/pages')
 Posts = require('./../lib/posts')
@@ -16,6 +16,8 @@ module.exports = class MarkdownTask
       dateFormat: @config.dateFormat
     @pages = new Pages @_allMarkdownPages(),
       htmlDir: @config.pathRoots.pages
+    @index = new Index @posts.latest(),
+      htmlPath: @config.paths.index
     @site = new Site(@config, @posts, new Layout(@config.layouts.post))
     @site.addPages @pages
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
@@ -23,14 +25,9 @@ module.exports = class MarkdownTask
   run: ->
     @posts.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.post)), @writesFile)
     @pages.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.page)), @writesFile)
-    @createIndex()
+    @index.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.index)), @writesFile)
     @createArchive()
     @createRss()
-
-  createIndex: ->
-    post = _(@site.posts).last()
-    html = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.index)).generate(post)
-    @writesFile.write(html, @config.paths.index)
 
   createArchive: ->
     html = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.archive)).generate()
