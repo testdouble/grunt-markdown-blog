@@ -26,11 +26,12 @@ module.exports = class MarkdownTask
 
   run: ->
     wrapper = new Layout(@config.layouts.wrapper, @config.context)
+    generator = (layout) => new GeneratesHtml @site, wrapper, new Layout(layout)
 
-    @posts.writeHtml(new GeneratesHtml(@site, wrapper, new Layout(@config.layouts.post)), @writesFile)
-    @pages.writeHtml(new GeneratesHtml(@site, wrapper, new Layout(@config.layouts.page)), @writesFile)
-    @index.writeHtml(new GeneratesHtml(@site, wrapper, new Layout(@config.layouts.index)), @writesFile)
-    @archive.writeHtml(new GeneratesHtml(@site, wrapper, new Layout(@config.layouts.archive)), @writesFile)
+    @posts.writeHtml generator(@config.layouts.post), @writesFile
+    @pages.writeHtml generator(@config.layouts.page), @writesFile
+    @index.writeHtml generator(@config.layouts.index), @writesFile
+    @archive.writeHtml generator(@config.layouts.archive), @writesFile
     @createRss()
 
   createRss: ->
