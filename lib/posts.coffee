@@ -11,6 +11,9 @@ module.exports = class Posts
     posts.__proto__ = Posts::
     return posts
 
+  latest: ->
+    @[@length - 1]
+
   writeHtml: (generatesHtml, writesFile) ->
     for post in @
       html = generatesHtml.generate(post)

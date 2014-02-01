@@ -32,6 +32,12 @@ describe "Posts", ->
     Then -> expect(@config.comparator).toHaveBeenCalled()
 
 
+  describe "#latest", ->
+    Given -> @mostRecentPost = "most recent post"
+    When -> @subject.splice 0, @subject.length, "first", "second", @mostRecentPost
+    When -> @latest = @subject.latest()
+    Then -> @latest == @mostRecentPost
+
   describe "#writeHtml", ->
     Given -> @html = "html"
     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
