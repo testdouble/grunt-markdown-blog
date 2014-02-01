@@ -3,7 +3,7 @@ grunt = require('grunt')
 GeneratesHtml = require('./../lib/generates_html')
 GeneratesRss = require('./../lib/generates_rss')
 Layout = require('./../lib/layout')
-Page = require('./../lib/page')
+Pages = require('./../lib/pages')
 Posts = require('./../lib/posts')
 Site = require('./../lib/site')
 WritesFile = require('./../lib/writes_file')
@@ -14,26 +14,18 @@ module.exports = class MarkdownTask
     @posts = new Posts @_allMarkdownPosts(),
       htmlDir: @config.pathRoots.posts
       dateFormat: @config.dateFormat
+    @pages = new Pages @_allMarkdownPages(),
+      htmlDir: @config.pathRoots.pages
     @site = new Site(@config, @posts, new Layout(@config.layouts.post))
-    @site.addPages(@buildPages(), new Layout(@config.layouts.page)) if @generatePages()
+    @site.addPages @pages
     @wrapper = new Layout(@config.layouts.wrapper, @config.context)
 
   run: ->
     @posts.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.post)), @writesFile)
-    if @generatePages()
-      @createPages()
+    @pages.writeHtml(new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.page)), @writesFile)
     @createIndex()
     @createArchive()
     @createRss()
-
-  generatePages: ->
-    @config.layouts.page? && grunt.file.exists(@config.layouts.page)
-
-  createPages: ->
-    generatesHtml = new GeneratesHtml(@site, @wrapper, new Layout(@config.layouts.page))
-    _(@site.pages).each (page) =>
-      html = generatesHtml.generate(page)
-      @writesFile.write(html, page.htmlPath())
 
   createIndex: ->
     post = _(@site.posts).last()
@@ -48,10 +40,6 @@ module.exports = class MarkdownTask
     return unless @site.paths.rss? && @site.rssCount
     rss = new GeneratesRss(@site).generate()
     @writesFile.write(rss, @site.paths.rss)
-
-  buildPages: ->
-    _(@_allMarkdownPages()).map (markdownPath) =>
-      new Page(markdownPath, @config.pathRoots.pages)
 
   #private
   _allMarkdownPosts: ->
