@@ -48,14 +48,14 @@ describe "GeneratesRss", ->
       Given -> @site.rssCount = 1
       Then -> Rss::item.callCount == 1
       Then -> expect(Rss::item).toHaveBeenCalledWith
-        title: "post1 title", description: "post1 content", url: "url/post1 title", date: "post1 time"
+        title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time"
 
     context "rssCount equal to number of posts", ->
       Given -> @site.rssCount = 2
       Then -> Rss::item.callCount == 2
       Then -> expect(Rss::item).toHaveBeenCalledWith
         title: "post1 title", description: "post1 content", url: "url/post1 title", date: "post1 time"
-      Then -> expect(Rss::item).toHaveBeenCalledWith
+      And -> expect(Rss::item).toHaveBeenCalledWith
         title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time"
 
     context "rssCount greater than number of posts", ->
@@ -63,5 +63,5 @@ describe "GeneratesRss", ->
       Then -> Rss::item.callCount == 2
       Then -> expect(Rss::item).toHaveBeenCalledWith
         title: "post1 title", description: "post1 content", url: "url/post1 title", date: "post1 time"
-      Then -> expect(Rss::item).toHaveBeenCalledWith
+      And -> expect(Rss::item).toHaveBeenCalledWith
         title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time"
