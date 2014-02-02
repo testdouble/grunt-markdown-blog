@@ -1,4 +1,3 @@
-spy = jasmine.createSpy
 Post = null
 Posts = null
 SandboxedModule = require('sandboxed-module')
@@ -10,7 +9,7 @@ beforeEach ->
 
 
 describe "Posts", ->
-  Given -> @markdownFiles = [ spy(), spy() ]
+  Given -> @markdownFiles = [ "md1", "md2" ]
   Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'layout', 'dateFormat', 'comparator']
 
   When -> @subject = new Posts(@markdownFiles, @config)
@@ -22,7 +21,7 @@ describe "Posts", ->
 
 
   describe "builds posts", ->
-    Given -> @markdownFiles = [ @post1 = spy('post1') ]
+    Given -> @markdownFiles = [ @post1 = jasmine.createSpy('post1') ]
 
     Then -> @subject[0] instanceof Post
     Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
