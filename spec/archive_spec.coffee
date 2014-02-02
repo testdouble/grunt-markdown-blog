@@ -12,6 +12,6 @@ describe "Archive", ->
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
-    Then -> expect(@generatesHtml.generate).toHaveBeenCalled
+    Then -> expect(@generatesHtml.generate).toHaveBeenCalled()
     Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
 
