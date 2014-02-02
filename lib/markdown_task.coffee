@@ -24,8 +24,7 @@ module.exports = class MarkdownTask
     @feed = new Feed
       rssPath: @config.paths.rss
       postCount: @config.rssCount
-    @site = new Site(@config, @posts)
-    @site.addPages @pages
+    @site = new Site(@config, @posts, @pages)
 
   run: ->
     writesFile = new WritesFile(@config.dest)

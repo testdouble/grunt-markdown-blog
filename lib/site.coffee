@@ -1,10 +1,8 @@
 _ = require('underscore')
 
 module.exports = class Site
-  constructor: (config, @posts) ->
+  constructor: (config, @posts, @pages) ->
     _(@).extend(config)
-
-  addPages: (@pages, @pageLayout) ->
 
   olderPost: (post) ->
     @posts.older post # should be deprecated in favor of posts.older directly
