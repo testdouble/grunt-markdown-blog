@@ -11,10 +11,9 @@ beforeEach ->
 
 describe "Posts", ->
   Given -> @markdownFiles = [ spy(), spy() ]
-  Given -> @layout = jasmine.createSpyObj 'layout', ['htmlFor']
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'dateFormat', 'comparator']
+  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'layout', 'dateFormat', 'comparator']
 
-  When -> @subject = new Posts(@markdownFiles, @layout, @config)
+  When -> @subject = new Posts(@markdownFiles, @config)
 
   describe "is array-like", ->
     Then -> @subject instanceof Posts
@@ -36,9 +35,10 @@ describe "Posts", ->
   describe "#htmlFor", ->
     Given -> @site = "site"
     Given -> @post = "post"
-    Given -> @layout.htmlFor.andReturn(@html = "html")
+    Given -> @html = "html"
+    Given -> @config.layout.htmlFor = jasmine.createSpy('layout.htmlFor').andReturn(@html)
     When -> @htmlFor = @subject.htmlFor(@site, @post)
-    Then -> expect(@layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @post)
+    Then -> expect(@config.layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @post)
     Then -> @htmlFor == @html
 
   describe "#writeHtml", ->
@@ -58,6 +58,7 @@ describe "Posts", ->
       When -> @subject.splice 0, @subject.length, @post, @post, @post
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3
+      Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @post)
       Then -> @writesFile.write.callCount == 3
       Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
 

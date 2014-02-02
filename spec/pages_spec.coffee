@@ -9,7 +9,7 @@ beforeEach ->
       './page': Page = jasmine.constructSpy("Page", ["fileName"])
 
 describe "Pages", ->
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir']
+  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'layout']
   Given -> @markdownFiles = [ spy(), spy() ]
 
   When -> @subject = new Pages(@markdownFiles, @config)
@@ -44,5 +44,6 @@ describe "Pages", ->
       When -> @subject.splice 0, @subject.length, @page, @page, @page
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3
+      Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @page)
       Then -> @writesFile.write.callCount == 3
       Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)

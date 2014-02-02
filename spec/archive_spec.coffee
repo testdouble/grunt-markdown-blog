@@ -1,9 +1,9 @@
 Archive = require('../lib/archive')
 
 describe "Archive", ->
-  Given -> @htmlPath = "htmlPath"
+  Given -> @config = jasmine.createSpyObj 'config', ['htmlPath', 'layout']
 
-  When -> @subject = new Archive(htmlPath: @htmlPath)
+  When -> @subject = new Archive(@config)
 
   describe "#writeHtml", ->
     Given -> @html = "html"
@@ -12,6 +12,6 @@ describe "Archive", ->
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
-    Then -> expect(@generatesHtml.generate).toHaveBeenCalled()
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+    Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout)
+    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @config.htmlPath)
 
