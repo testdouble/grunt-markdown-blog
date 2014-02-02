@@ -1,18 +1,17 @@
 grunt = require('grunt')
-Archive = require('./../lib/archive')
+Archive = require('../lib/archive')
 Feed = require('../lib/feed')
-GeneratesHtml = require('./../lib/generates_html')
-GeneratesRss = require('./../lib/generates_rss')
-Index = require('./../lib/index')
-Layout = require('./../lib/layout')
-Pages = require('./../lib/pages')
-Posts = require('./../lib/posts')
-Site = require('./../lib/site')
-WritesFile = require('./../lib/writes_file')
+GeneratesHtml = require('../lib/generates_html')
+GeneratesRss = require('../lib/generates_rss')
+Index = require('../lib/index')
+Layout = require('../lib/layout')
+Pages = require('../lib/pages')
+Posts = require('../lib/posts')
+Site = require('../lib/site')
+WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
   constructor: (@config) ->
-    @writesFile = new WritesFile(@config.dest)
     @posts = new Posts @_allMarkdownPosts(),
       htmlDir: @config.pathRoots.posts
       dateFormat: @config.dateFormat
@@ -29,15 +28,16 @@ module.exports = class MarkdownTask
     @site.addPages @pages
 
   run: ->
+    writesFile = new WritesFile(@config.dest)
     wrapper = new Layout(@config.layouts.wrapper, @config.context)
-    generator = (layout) => new GeneratesHtml @site, wrapper, new Layout(layout)
+    generatesHtml = (layout) => new GeneratesHtml @site, wrapper, new Layout(layout)
 
-    @posts.writeHtml generator(@config.layouts.post), @writesFile
-    @pages.writeHtml generator(@config.layouts.page), @writesFile
-    @index.writeHtml generator(@config.layouts.index), @writesFile
-    @archive.writeHtml generator(@config.layouts.archive), @writesFile
+    @posts.writeHtml generatesHtml(@config.layouts.post), writesFile
+    @pages.writeHtml generatesHtml(@config.layouts.page), writesFile
+    @index.writeHtml generatesHtml(@config.layouts.index), writesFile
+    @archive.writeHtml generatesHtml(@config.layouts.archive), writesFile
 
-    @feed.writeRss new GeneratesRss(@site), @writesFile
+    @feed.writeRss new GeneratesRss(@site), writesFile
 
   #private
   _allMarkdownPosts: ->
