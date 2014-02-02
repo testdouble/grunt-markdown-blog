@@ -7,12 +7,10 @@ module.exports = class Site
   addPages: (@pages, @pageLayout) ->
 
   olderPost: (post) ->
-    return if _(@posts).first() == post
-    @posts[_(@posts).indexOf(post) - 1]
+    @posts.older post # should be deprecated in favor of posts.older directly
 
   newerPost: (post) ->
-    return if _(@posts).last() == post
-    @posts[_(@posts).indexOf(post) + 1]
+    @posts.newer post # should be deprecated in favor of posts.newer directly
 
   htmlFor: (post) -> # should be deprecated in favor of posts.htmlFor directly
     @posts.htmlFor this, post
