@@ -1,16 +1,16 @@
 GeneratesHtml = require('../lib/generates_html')
 
 describe "GeneratesHtml", ->
+  Given -> @site = "siteStub"
+  Given -> @fullHtml = "fullHtmlStub"
+  Given -> @wrapper = jasmine.createStubObj("wrapper", htmlFor: @fullHtml)
 
   describe "#generate", ->
     Given -> @post = "postStub"
-    Given -> @site = "siteStub"
     Given -> @templateHtml = "templateHtmlStub"
-    Given -> @fullHtml = "fullHtmlStub"
     Given -> @template = jasmine.createStubObj("template", htmlFor: @templateHtml)
-    Given -> @wrapper = jasmine.createStubObj("wrapper", htmlFor: @fullHtml)
 
-    When -> @resultHtml = new GeneratesHtml(@site, @wrapper, @template).generate(@post)
+    When -> @resultHtml = new GeneratesHtml(@site, @wrapper).generate(@template, @post)
 
     Then -> expect(@template.htmlFor).toHaveBeenCalledWith jasmine.argThat (context) =>
         context.site == @site && context.post == @post

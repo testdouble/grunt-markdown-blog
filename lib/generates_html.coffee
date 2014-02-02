@@ -1,7 +1,7 @@
 module.exports = class GeneratesHtml
-  constructor: (@site, @wrapper, @template) ->
+  constructor: (@site, @wrapper) ->
 
-  generate: (post) ->
+  generate: (template, post) ->
     context = site: @site, post: post
-    context.yield = @template.htmlFor(context)
+    context.yield = template.htmlFor(context)
     @wrapper.htmlFor(context)
