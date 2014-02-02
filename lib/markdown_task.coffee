@@ -17,7 +17,7 @@ module.exports = class MarkdownTask
       dateFormat: @config.dateFormat
     @pages = new Pages @_allMarkdownPages(),
       htmlDir: @config.pathRoots.pages
-    @index = new Index @posts.latest(),
+    @index = new Index @posts.newest(),
       htmlPath: @config.paths.index
     @archive = new Archive
       htmlPath: @config.paths.archive

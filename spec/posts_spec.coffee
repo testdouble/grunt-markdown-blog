@@ -41,12 +41,6 @@ describe "Posts", ->
     Then -> expect(@layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @post)
     Then -> @htmlFor == @html
 
-  describe "#latest", ->
-    Given -> @mostRecentPost = "most recent post"
-    When -> @subject.splice 0, @subject.length, "first", "second", @mostRecentPost
-    When -> @latest = @subject.latest()
-    Then -> @latest == @mostRecentPost
-
   describe "#writeHtml", ->
     Given -> @html = "html"
     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
@@ -67,29 +61,36 @@ describe "Posts", ->
       Then -> @writesFile.write.callCount == 3
       Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
 
-
-  describe "#older", ->
+  describe '', ->
     Given -> [@post1, @post2, @post3] = ["oldest", "middle", "newest"]
     When -> @subject.splice 0, @subject.length, @post1, @post2, @post3
-    When -> @older = @subject.older(@post)
 
-    context "given the oldest post", ->
-      Given -> @post = @post1
-      Then -> expect(@older).toBeUndefined()
+    describe "#oldest", ->
+      When -> @oldest = @subject.oldest()
+      Then -> @oldest == @post1
 
-    context "given a newer post", ->
-      Given -> @post = @post2
-      Then -> expect(@older).toBe(@post1)
+    describe "#newest", ->
+      When -> @newest = @subject.newest()
+      Then -> @newest == @post3
 
-  describe "#newer", ->
-    Given -> [@post1, @post2, @post3] = ["oldest", "middle", "newest"]
-    When -> @subject.splice 0, @subject.length, @post1, @post2, @post3
-    When -> @newer = @subject.newer(@post)
+    describe "#older", ->
+      When -> @older = @subject.older(@post)
 
-    context "given the latest post", ->
-      Given -> @post = @post3
-      Then -> expect(@newer).toBeUndefined()
+      context "given the oldest post", ->
+        Given -> @post = @post1
+        Then -> expect(@older).toBeUndefined()
 
-    context "given an older post", ->
-      Given -> @post = @post2
-      Then -> expect(@newer).toBe(@post3)
+      context "given a newer post", ->
+        Given -> @post = @post2
+        Then -> @older == @post1
+
+    describe "#newer", ->
+      When -> @newer = @subject.newer(@post)
+
+      context "given the latest post", ->
+        Given -> @post = @post3
+        Then -> expect(@newer).toBeUndefined()
+
+      context "given an older post", ->
+        Given -> @post = @post2
+        Then -> @newer == @post3

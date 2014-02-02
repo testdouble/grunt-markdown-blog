@@ -15,7 +15,7 @@ module.exports = class Posts
   oldest: ->
     @[0]
 
-  latest: ->
+  newest: ->
     @[@length - 1]
 
   htmlFor: (site, post) ->
@@ -30,4 +30,4 @@ module.exports = class Posts
     @[@indexOf(post) - 1] unless post is @oldest
 
   newer: (post) ->
-    @[@indexOf(post) + 1] unless post is @latest
+    @[@indexOf(post) + 1] unless post is @newest
