@@ -1,5 +1,6 @@
 grunt = require('grunt')
 Archive = require('./../lib/archive')
+Feed = require('../lib/feed')
 GeneratesHtml = require('./../lib/generates_html')
 GeneratesRss = require('./../lib/generates_rss')
 Index = require('./../lib/index')
@@ -21,6 +22,9 @@ module.exports = class MarkdownTask
       htmlPath: @config.paths.index
     @archive = new Archive
       htmlPath: @config.paths.archive
+    @feed = new Feed
+      rssPath: @config.paths.rss
+      postCount: @config.rssCount
     @site = new Site(@config, @posts, new Layout(@config.layouts.post))
     @site.addPages @pages
 
@@ -32,12 +36,8 @@ module.exports = class MarkdownTask
     @pages.writeHtml generator(@config.layouts.page), @writesFile
     @index.writeHtml generator(@config.layouts.index), @writesFile
     @archive.writeHtml generator(@config.layouts.archive), @writesFile
-    @createRss()
 
-  createRss: ->
-    return unless @site.paths.rss? && @site.rssCount
-    rss = new GeneratesRss(@site).generate()
-    @writesFile.write(rss, @site.paths.rss)
+    @feed.writeRss new GeneratesRss(@site), @writesFile
 
   #private
   _allMarkdownPosts: ->
