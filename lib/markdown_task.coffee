@@ -12,7 +12,7 @@ WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
   constructor: (@config) ->
-    @posts = new Posts @_allMarkdownPosts(),
+    @posts = new Posts @_allMarkdownPosts(), new Layout(@config.layouts.post),
       htmlDir: @config.pathRoots.posts
       dateFormat: @config.dateFormat
     @pages = new Pages @_allMarkdownPages(),
@@ -24,7 +24,7 @@ module.exports = class MarkdownTask
     @feed = new Feed
       rssPath: @config.paths.rss
       postCount: @config.rssCount
-    @site = new Site(@config, @posts, new Layout(@config.layouts.post))
+    @site = new Site(@config, @posts)
     @site.addPages @pages
 
   run: ->

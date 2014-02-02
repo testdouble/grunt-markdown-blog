@@ -10,10 +10,11 @@ beforeEach ->
 
 
 describe "Posts", ->
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'dateFormat', 'comparator']
   Given -> @markdownFiles = [ spy(), spy() ]
+  Given -> @layout = jasmine.createSpyObj 'layout', ['htmlFor']
+  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'dateFormat', 'comparator']
 
-  When -> @subject = new Posts(@markdownFiles, @config)
+  When -> @subject = new Posts(@markdownFiles, @layout, @config)
 
   describe "is array-like", ->
     Then -> @subject instanceof Posts
@@ -31,6 +32,14 @@ describe "Posts", ->
   describe "is sorted automatically", ->
     Then -> expect(@config.comparator).toHaveBeenCalled()
 
+
+  describe "#htmlFor", ->
+    Given -> @site = "site"
+    Given -> @post = "post"
+    Given -> @layout.htmlFor.andReturn(@html = "html")
+    When -> @htmlFor = @subject.htmlFor(@site, @post)
+    Then -> expect(@layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @post)
+    Then -> @htmlFor == @html
 
   describe "#latest", ->
     Given -> @mostRecentPost = "most recent post"

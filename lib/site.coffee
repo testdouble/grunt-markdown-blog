@@ -1,7 +1,7 @@
 _ = require('underscore')
 
 module.exports = class Site
-  constructor: (config, @posts, @postLayout) ->
+  constructor: (config, @posts) ->
     _(@).extend(config)
 
   addPages: (@pages, @pageLayout) ->
@@ -14,8 +14,8 @@ module.exports = class Site
     return if _(@posts).last() == post
     @posts[_(@posts).indexOf(post) + 1]
 
-  htmlFor: (post) ->
-    @postLayout.htmlFor(post: post, site: this)
+  htmlFor: (post) -> # should be deprecated in favor of posts.htmlFor directly
+    @posts.htmlFor this, post
 
   urlFor: (post) ->
     "#{@url}/#{post.htmlPath()}"
