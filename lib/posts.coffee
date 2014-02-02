@@ -12,6 +12,9 @@ module.exports = class Posts
     posts.__proto__ = Posts::
     return posts
 
+  oldest: ->
+    @[0]
+
   latest: ->
     @[@length - 1]
 
@@ -22,3 +25,9 @@ module.exports = class Posts
     for post in @
       html = generatesHtml.generate(post)
       writesFile.write(html, post.htmlPath())
+
+  older: (post) ->
+    @[@indexOf(post) - 1] unless post is @oldest
+
+  newer: (post) ->
+    @[@indexOf(post) + 1] unless post is @latest

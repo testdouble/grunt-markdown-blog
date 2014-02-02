@@ -66,3 +66,30 @@ describe "Posts", ->
       Then -> @generatesHtml.generate.callCount == 3
       Then -> @writesFile.write.callCount == 3
       Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+
+
+  describe "#older", ->
+    Given -> [@post1, @post2, @post3] = ["oldest", "middle", "newest"]
+    When -> @subject.splice 0, @subject.length, @post1, @post2, @post3
+    When -> @older = @subject.older(@post)
+
+    context "given the oldest post", ->
+      Given -> @post = @post1
+      Then -> expect(@older).toBeUndefined()
+
+    context "given a newer post", ->
+      Given -> @post = @post2
+      Then -> expect(@older).toBe(@post1)
+
+  describe "#newer", ->
+    Given -> [@post1, @post2, @post3] = ["oldest", "middle", "newest"]
+    When -> @subject.splice 0, @subject.length, @post1, @post2, @post3
+    When -> @newer = @subject.newer(@post)
+
+    context "given the latest post", ->
+      Given -> @post = @post3
+      Then -> expect(@newer).toBeUndefined()
+
+    context "given an older post", ->
+      Given -> @post = @post2
+      Then -> expect(@newer).toBe(@post3)
