@@ -1,4 +1,11 @@
-Feed = require('../lib/feed')
+SandboxedModule = require('sandboxed-module')
+Feed = null
+grunt = null
+
+beforeEach ->
+  Feed = SandboxedModule.require '../lib/feed',
+    requires:
+      'grunt': grunt = log: error: jasmine.createSpy('grunt-log')
 
 describe "Feed", ->
 
@@ -12,17 +19,12 @@ describe "Feed", ->
     When -> @subject.writeRss(@generatesRss, @writesFile)
 
     context "without rss path", ->
+      Given -> @postCount = 2
       Given -> @rssPath = undefined
 
-      context "for zero posts", ->
-        Given -> @postCount = 0
-        Then -> expect(@generatesRss.generate).not.toHaveBeenCalled()
-        Then -> expect(@writesFile.write).not.toHaveBeenCalled()
-
-      context "for at least one post", ->
-        Given -> @postCount = 2
-        Then -> expect(@generatesRss.generate).not.toHaveBeenCalled()
-        Then -> expect(@writesFile.write).not.toHaveBeenCalled()
+      Then -> expect(@generatesRss.generate).not.toHaveBeenCalled()
+      Then -> expect(@writesFile.write).not.toHaveBeenCalled()
+      Then -> expect(grunt.log.error).toHaveBeenCalled()
 
     context "with rss path", ->
       Given -> @rssPath = "rssPath"
