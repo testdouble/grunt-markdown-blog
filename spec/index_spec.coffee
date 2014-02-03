@@ -1,4 +1,11 @@
-Index = require('../lib/index')
+SandboxedModule = require('sandboxed-module')
+Index = null
+grunt = null
+
+beforeEach ->
+  Index = SandboxedModule.require '../lib/index',
+    requires:
+      'grunt': grunt = log: error: jasmine.createSpy('grunt-log')
 
 describe "Index", ->
   Given -> @latestPost = "latestPost"
@@ -13,5 +20,13 @@ describe "Index", ->
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
-    Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @latestPost)
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @config.htmlPath)
+    context "with destination path", ->
+      Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @latestPost)
+      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @config.htmlPath)
+
+    context "without destination path", ->
+      Given -> @config.htmlPath = undefined
+
+      Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
+      Then -> expect(@writesFile.write).not.toHaveBeenCalled()
+      Then -> expect(grunt.log.error).toHaveBeenCalled()
