@@ -7,7 +7,7 @@ beforeEach ->
     requires:
       'grunt': grunt =
         log: error: jasmine.createSpy('grunt-log')
-        warn: jasmine.createSpy('grunt.warn')
+        fail: warn: jasmine.createSpy('grunt-fail')
 
 describe "NullLayout", ->
 
@@ -20,4 +20,4 @@ describe "NullLayout", ->
 
   context "with specified but invalid path", ->
     Given -> @layoutPath = "some/missing/file.ext"
-    Then -> expect(grunt.warn).toHaveBeenCalled()
+    Then -> expect(grunt.fail.warn).toHaveBeenCalled()

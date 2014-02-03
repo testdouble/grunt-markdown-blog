@@ -5,7 +5,7 @@ NullLayout = require('./null_layout')
 
 module.exports = class Layout
   constructor: (@layoutPath, context = {}) ->
-    return new NullLayout unless @_templateExists()
+    return new NullLayout(@layoutPath) unless @_templateExists()
     @layout = _(grunt.file.read(@layoutPath)).template()
     @context = context
 
@@ -13,5 +13,4 @@ module.exports = class Layout
     @layout(_(@context).extend(specificContext))
 
   _templateExists: ->
-    _.tap @layoutPath? and grunt.file.exists(@layoutPath), (fileExists) =>
-      grunt.warn("Unable to read '#{@layoutPath}' file") if @layoutPath? and !fileExists
+    @layoutPath? and grunt.file.exists(@layoutPath)

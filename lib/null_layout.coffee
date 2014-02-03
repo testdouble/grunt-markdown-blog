@@ -5,6 +5,6 @@ module.exports = class NullLayout
 
   htmlFor: ->
     if @layoutPath?
-      grunt.warn "Unable to read '#{@layoutPath}' file"
+      grunt.fail.warn "Unable to read '#{@layoutPath}' file"
     else
       grunt.log.error "Destination not written because source template is undefined"

@@ -7,7 +7,6 @@ Given -> @layout = jasmine.createSpy("layout").andReturn(@html = jasmine.createS
 Given -> Layout = SandboxedModule.require '../lib/layout',
   requires:
     'grunt': @grunt =
-      warn: jasmine.createSpy("grunt.warn")
       file:
         exists: jasmine.createSpy("grunt.file.exists").andReturn(true)
         read: jasmine.createSpy("grunt.file.read")
@@ -16,7 +15,6 @@ Given -> Layout = SandboxedModule.require '../lib/layout',
       _.mixin = ->
       _.extend = jasmine.createSpy("extend").andReturn(@extendedContext)
       _.template = jasmine.createSpy("template").andReturn(@layout)
-      _.tap = require('underscore').tap
       _.andReturn(_)
     './null_layout': NullLayout = jasmine.createSpy("NullLayout")
 
@@ -30,7 +28,6 @@ describe "Layout", ->
   context "with valid template file", ->
     Given -> @grunt.file.exists.andReturn(true)
     Then -> @subject instanceof Layout
-    Then -> expect(@grunt.warn).not.toHaveBeenCalled()
 
     describe "reads template file", ->
       Then -> expect(@grunt.file.read).toHaveBeenCalledWith @templatePath
@@ -43,17 +40,6 @@ describe "Layout", ->
   context "with invalid template file", ->
     Given -> @grunt.file.exists.andReturn(false)
     Then -> @subject instanceof NullLayout
-
-    context "non-empty template path", ->
-      Given -> @templatePath = "some/nonexistant/file.us"
-      Then -> expect(@grunt.warn).toHaveBeenCalled()
-
-    context "undefined template path", ->
-      Given -> @templatePath = undefined
-      Then -> expect(@grunt.warn).not.toHaveBeenCalled()
-    context "null template path", ->
-      Given -> @templatePath = null
-      Then -> expect(@grunt.warn).not.toHaveBeenCalled()
 
 
   describe "#htmlFor", ->
