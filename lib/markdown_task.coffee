@@ -46,7 +46,13 @@ module.exports = class MarkdownTask
   _allMarkdownPosts: ->
     if @config.paths.markdown? #backwards compatibility for lineman blog
       grunt.file.expand(@config.paths.markdown)
-    else
+    else if @config.paths.posts?
       grunt.file.expand(@config.paths.posts)
+    else
+      []
 
-  _allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
+  _allMarkdownPages: ->
+    if @config.paths.pages?
+      grunt.file.expand(@config.paths.pages)
+    else
+      []
