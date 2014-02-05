@@ -1,70 +1,58 @@
-_ = require('underscore')
 grunt = require('grunt')
-GeneratesHtml = require('./../lib/generates_html')
-GeneratesRss = require('./../lib/generates_rss')
-Layout = require('./../lib/layout')
-Page = require('./../lib/page')
-Post = require('./../lib/post')
-Site = require('./../lib/site')
-WritesFile = require('./../lib/writes_file')
+Archive = require('../lib/archive')
+Feed = require('../lib/feed')
+GeneratesHtml = require('../lib/generates_html')
+GeneratesRss = require('../lib/generates_rss')
+Index = require('../lib/index')
+Layout = require('../lib/layout')
+Pages = require('../lib/pages')
+Posts = require('../lib/posts')
+Site = require('../lib/site')
+WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
   constructor: (@config) ->
-    @writesFile = new WritesFile(@config.dest)
-    @site = new Site(@config, @buildPosts(), new Layout(@config.layouts.post))
-    @site.addPages(@buildPages(), new Layout(@config.layouts.page)) if @generatePages()
-    @wrapper = new Layout(@config.layouts.wrapper, @config.context)
+    @posts = new Posts @_allMarkdownPosts(),
+      htmlDir: @config.pathRoots.posts
+      layout: new Layout @config.layouts.post
+      dateFormat: @config.dateFormat
+    @pages = new Pages @_allMarkdownPages(),
+      htmlDir: @config.pathRoots.pages
+      layout: new Layout @config.layouts.page
+    @index = new Index @posts.newest(),
+      htmlPath: @config.paths.index
+      layout: new Layout @config.layouts.index
+    @archive = new Archive
+      htmlPath: @config.paths.archive
+      layout: new Layout @config.layouts.archive
+    @feed = new Feed
+      rssPath: @config.paths.rss
+      postCount: @config.rssCount
+    @site = new Site(@config, @posts, @pages)
 
   run: ->
-    @createPosts()
-    if @generatePages()
-      @createPages()
-    @createIndex()
-    @createArchive()
-    @createRss()
+    writesFile = new WritesFile(@config.dest)
+    wrapper = new Layout(@config.layouts.wrapper, @config.context)
+    generatesHtml = new GeneratesHtml(@site, wrapper)
 
-  generatePages: ->
-    @config.layouts.page? && grunt.file.exists(@config.layouts.page)
+    @posts.writeHtml generatesHtml, writesFile
+    @pages.writeHtml generatesHtml, writesFile
+    @index.writeHtml generatesHtml, writesFile
+    @archive.writeHtml generatesHtml, writesFile
 
-  createPosts: ->
-    generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.post), @site)
-    _(@site.posts).each (post) =>
-      html = generatesHtml.generate(post)
-      @writesFile.write(html, post.htmlPath())
-
-  createPages: ->
-    generatesHtml = new GeneratesHtml(@wrapper, new Layout(@config.layouts.page), @site)
-    _(@site.pages).each (page) =>
-      html = generatesHtml.generate(page)
-      @writesFile.write(html, page.htmlPath())
-
-  createIndex: ->
-    post = _(@site.posts).last()
-    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.index), @site).generate(post)
-    @writesFile.write(html, @config.paths.index)
-
-  createArchive: ->
-    html = new GeneratesHtml(@wrapper, new Layout(@config.layouts.archive), @site).generate()
-    @writesFile.write(html, @config.paths.archive)
-
-  createRss: ->
-    return unless @site.paths.rss? && @site.rssCount
-    rss = new GeneratesRss(@site).generate()
-    @writesFile.write(rss, @site.paths.rss)
-
-  buildPosts: ->
-    _(@allMarkdownPosts()).map (markdownPath) =>
-      new Post(markdownPath, @config.pathRoots.posts, @config.dateFormat)
-
-  buildPages: ->
-    _(@allMarkdownPages()).map (markdownPath) =>
-      new Page(markdownPath, @config.pathRoots.pages)
+    @feed.writeRss new GeneratesRss(@site), writesFile
 
   #private
-  allMarkdownPosts: ->
+  _allMarkdownPosts: ->
     if @config.paths.markdown? #backwards compatibility for lineman blog
       grunt.file.expand(@config.paths.markdown)
-    else
+    else if @config.paths.posts?
       grunt.file.expand(@config.paths.posts)
+    else
+      []
 
-  allMarkdownPages: -> grunt.file.expand(@config.paths.pages)
+  _allMarkdownPages: ->
+    if @config.paths.pages?
+      grunt.file.expand(@config.paths.pages)
+    else
+      []

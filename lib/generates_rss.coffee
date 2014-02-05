@@ -1,5 +1,3 @@
-_ = require('underscore')
-
 module.exports = class GeneratesRss
   constructor: (@site) ->
     @Rss = require('rss')
@@ -18,9 +16,10 @@ module.exports = class GeneratesRss
       author: @site.author
 
   addPostsTo: (feed) ->
-    _(@site.posts).chain().reverse().first(@site.rssCount).each (post) =>
-      feed.item
-        title: post.title()
-        description: post.content()
-        url: @site.urlFor(post)
-        date: post.time()
+    if @site.rssCount > 0
+      @site.posts.slice(-@site.rssCount).reverse().forEach (post) =>
+        feed.item
+          title: post.title()
+          description: post.content()
+          url: @site.urlFor(post)
+          date: post.time()
