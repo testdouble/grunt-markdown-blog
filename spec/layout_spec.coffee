@@ -48,8 +48,8 @@ describe "Layout", ->
     describe "merges contexts", ->
       Given -> @context = jasmine.createSpy("context")
       Given -> @specificContext = jasmine.createSpy("specificContext")
-      Then -> expect(@_).toHaveBeenCalledWith @context
-      Then -> expect(@_.extend).toHaveBeenCalledWith @specificContext
+      Then -> expect(@_).toHaveBeenCalledWith {}
+      Then -> expect(@_.extend).toHaveBeenCalledWith @context, @specificContext
 
     describe "hydrates template with context", ->
       Then -> expect(@layout).toHaveBeenCalledWith @extendedContext

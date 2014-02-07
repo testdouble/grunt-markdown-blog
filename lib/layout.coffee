@@ -10,7 +10,7 @@ module.exports = class Layout
     @context = context
 
   htmlFor: (specificContext) ->
-    @layout(_(@context).extend(specificContext))
+    @layout(_({}).extend(@context, specificContext))
 
   _templateExists: ->
     @layoutPath? and grunt.file.exists(@layoutPath)
