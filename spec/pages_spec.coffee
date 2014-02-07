@@ -27,6 +27,16 @@ describe "Pages", ->
     Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
 
 
+  describe "#htmlFor", ->
+    Given -> @site = "site"
+    Given -> @page = "page"
+    Given -> @html = "html"
+    Given -> @config.layout.htmlFor = jasmine.createSpy('layout.htmlFor').andReturn(@html)
+    When -> @htmlFor = @subject.htmlFor(@site, @page)
+    Then -> expect(@config.layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @page)
+    Then -> @htmlFor == @html
+
+
   describe "#writeHtml", ->
     Given -> @html = "html"
     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
