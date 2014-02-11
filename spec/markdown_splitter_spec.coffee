@@ -1,7 +1,11 @@
-MarkdownSplitter = require('../lib/markdown_splitter')
+SandboxedModule = require('sandboxed-module')
+
+Given ->
+  MarkdownSplitter = SandboxedModule.require '../lib/markdown_splitter',
+    requires: grunt: @grunt = jasmine.createSpyObj('grunt', ['warn'])
+  @subject = new MarkdownSplitter
 
 describe.only "splitting up markdown files", ->
-  Given -> @subject = new MarkdownSplitter
 
   Then -> @subject.split()
 
@@ -55,6 +59,7 @@ describe.only "splitting up markdown files", ->
                           Post stuff
                           """
       Then -> expect(=> @subject.split(@fixture)).toThrow()
+      And -> expect(@grunt.warn).toHaveBeenCalled()
 
 
   describe "it removes the header", ->
