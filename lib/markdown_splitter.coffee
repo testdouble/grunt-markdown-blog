@@ -1,5 +1,4 @@
 coffeeScript = require('coffee-script')
-_ = require('underscore')
 grunt = require('grunt')
 
 module.exports = class MarkdownSplitter
@@ -8,7 +7,7 @@ module.exports = class MarkdownSplitter
     inHeader = false
     header = []
     markdown = []
-    _(source.split("\n")).each (line) ->
+    source.split("\n").forEach (line) ->
       if line == "---"
         inHeader = !inHeader
         return
