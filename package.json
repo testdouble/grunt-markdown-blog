@@ -21,7 +21,7 @@
     "marked": "~0.2.8",
     "moment": "~2.0.0",
     "rss": "~0.0.4",
-    "underscore": "~1.4.4",
+    "underscore": "~1.6.0",
     "underscore.string": "~2.3.1"
   },
   "peerDependencies": {
