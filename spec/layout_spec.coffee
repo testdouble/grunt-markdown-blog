@@ -2,27 +2,25 @@ Layout = null
 NullLayout = null
 SandboxedModule = require('sandboxed-module')
 
-Given -> @extendedContext = jasmine.createSpy("extendedContext")
-Given -> @layout = jasmine.createSpy("layout").andReturn(@html = jasmine.createSpy("html"))
-Given -> Layout = SandboxedModule.require '../lib/layout',
-  requires:
-    'grunt': @grunt =
-      file:
-        exists: jasmine.createSpy("grunt.file.exists").andReturn(true)
-        read: jasmine.createSpy("grunt.file.read")
-    'underscore': @_ = do =>
-      _ = jasmine.createSpy("underscore")
-      _.mixin = ->
-      _.extend = jasmine.createSpy("extend").andReturn(@extendedContext)
-      _.template = jasmine.createSpy("template").andReturn(@layout)
-      _.andReturn(_)
-    './null_layout': NullLayout = jasmine.createSpy("NullLayout")
-
-
 describe "Layout", ->
   Given -> @templatePath = "somePath.us"
   Given -> @templateContents = "someFileContents"
-  Given -> @grunt.file.read.andReturn(@templateContents)
+  Given -> @extendedContext = jasmine.createSpy("extendedContext")
+  Given -> @layout = jasmine.createSpy("layout").andReturn(@html = jasmine.createSpy("html"))
+  Given -> Layout = SandboxedModule.require '../lib/layout',
+    requires:
+      'grunt': @grunt =
+        file:
+          exists: jasmine.createSpy("grunt.file.exists").andReturn(true)
+          read: jasmine.createSpy("grunt.file.read").andReturn(@templateContents)
+      'underscore': @_ = do =>
+        _ = jasmine.createSpy("underscore")
+        _.mixin = ->
+        _.extend = jasmine.createSpy("extend").andReturn(@extendedContext)
+        _.template = jasmine.createSpy("template").andReturn(@layout)
+        _.andReturn(_)
+      './null_layout': NullLayout = jasmine.createSpy("NullLayout")
+
   When -> @subject = new Layout @templatePath, @context
 
   context "with valid template file", ->
