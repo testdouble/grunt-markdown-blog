@@ -5,7 +5,7 @@ Given ->
     requires: grunt: @grunt = jasmine.createSpyObj('grunt', ['warn'])
   @subject = new MarkdownSplitter
 
-describe.only "splitting up markdown files", ->
+describe "splitting up markdown files", ->
 
   Then -> @subject.split()
 
