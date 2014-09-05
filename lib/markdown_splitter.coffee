@@ -8,6 +8,7 @@ module.exports = class MarkdownSplitter
     header = []
     markdown = []
     source.replace("\r\n", "\n").split("\n").forEach (line) ->
+      line = line.replace(/\s*$/gm,'')
       if line == "---"
         inHeader = !inHeader
         return
