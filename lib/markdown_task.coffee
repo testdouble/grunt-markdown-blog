@@ -35,6 +35,18 @@ module.exports = class MarkdownTask
     wrapper = new Layout(@config.layouts.wrapper, @config.context)
     generatesHtml = new GeneratesHtml(@site, wrapper)
 
+    # copy pages
+    pagesFiles = grunt.file.expandMapping('**/*.*', 'dist/pages', { cwd: 'app/pages' });
+    for fileMeta in pagesFiles
+      grunt.log.writeln("copying #{fileMeta.src} to #{fileMeta.dest}")
+      grunt.file.copy fileMeta.src, fileMeta.dest
+
+    # copy posts
+    postsFiles = grunt.file.expandMapping('**/*.*', 'dist/posts', { cwd: 'app/posts' });
+    for fileMeta in postsFiles
+      grunt.log.writeln("copying #{fileMeta.src} to #{fileMeta.dest}")
+      grunt.file.copy fileMeta.src, fileMeta.dest
+
     @posts.writeHtml generatesHtml, writesFile
     @pages.writeHtml generatesHtml, writesFile
     @index.writeHtml generatesHtml, writesFile
