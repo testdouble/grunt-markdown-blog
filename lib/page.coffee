@@ -14,11 +14,13 @@ marked.setOptions
     highlighted.value
 
 module.exports = class Page
-  constructor: (@path, @htmlDirPath, @dateFormat) ->
+  constructor: (@path, @dateFormat) ->
+    grunt.log.writeln("Reading #{@path} for processing")
     source = grunt.file.read(@path)
     splitted = new MarkdownSplitter().split(source)
     @markdown = splitted.markdown
     @attributes = splitted.header
+    grunt.log.writeln("Page or Post #{@path} processed")
 
   content: ->
     marked.parser(marked.lexer(@markdown))
@@ -35,6 +37,8 @@ module.exports = class Page
     title || @fileName()
 
   htmlPath: ->
+    return @path.replace(/\.md$/, ".html")
+    # crushing backward compat here; TODO: revisit for backward compat
     if @htmlDirPath.match(/\*/) #path contains wildcard use htmldirpath
       pathlib.join(@path.replace('.md', '.html'))
     else

@@ -1,9 +1,10 @@
 Page = require './page'
+pathlib = require('path')
 
 module.exports = class Pages
   @:: = new Array
-  constructor: (markdownFiles, {htmlDir, layout}) ->
-    pages = markdownFiles.map (file) -> new Page(file, htmlDir)
+  constructor: (markdownFiles, {htmlDir, layout, cwd}) ->
+    pages = markdownFiles.map (file) -> new Page(pathlib.join(cwd, file))
     pages.__proto__ = Pages::
     pages.layout = layout
     return pages

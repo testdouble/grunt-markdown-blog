@@ -24,6 +24,15 @@ module.exports = (grunt) ->
         post: "app/templates/post.us"
         page: "app/templates/page.us"
         archive: "app/templates/archive.us"
+      sources:
+        posts: "app/posts"
+        pages: "app/pages"
+      destinations:
+        posts: "posts"
+        pages: ""
+      process:
+        posts: "**/*.md"
+        pages: ["**/*.md", "!posts/**/*.md"]
       paths:
         posts: "app/posts/*.md"
         pages: "app/pages/**/*.md"

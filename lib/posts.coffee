@@ -1,12 +1,13 @@
 Post = require './post'
+pathlib = require('path')
 
 module.exports = class Posts
   timeComparator = (post1, post2) ->
     post1.time().localeCompare(post2.time(), numeric: true)
 
   @:: = new Array
-  constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator}) ->
-    posts = markdownFiles.map (file) -> new Post(file, htmlDir, dateFormat)
+  constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator, cwd}) ->
+    posts = markdownFiles.map (file) -> new Post(pathlib.join(cwd, file), dateFormat)
     posts.layout = layout
     posts.sort(comparator || timeComparator)
     posts.__proto__ = Posts::
