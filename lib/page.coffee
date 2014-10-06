@@ -14,7 +14,7 @@ marked.setOptions
     highlighted.value
 
 module.exports = class Page
-  constructor: (@path, @dateFormat) ->
+  constructor: (@htmlDir, @path, @dateFormat) ->
     source = grunt.file.read(@path)
     splitted = new MarkdownSplitter().split(source)
     @markdown = splitted.markdown
@@ -35,6 +35,15 @@ module.exports = class Page
     title || @fileName()
 
   htmlPath: ->
+    # the path as far as html is concerned
+    # 1. remove the @htmlDir
+    # 2. Strip starting slash /
+    # 3. Swap .md for .html
+    # 4. Remove index.html if that's how it ends, we don't need that jazz
+    @path.replace(new RegExp("^#{@htmlDir}"), "").replace(/^\//, "").replace(/\.md$/, ".html").replace(/index\.html$/, "")
+
+  diskPath: ->
+    # the path where the file is on disk
     @path.replace(/\.md$/, ".html")
 
   fileName: ->

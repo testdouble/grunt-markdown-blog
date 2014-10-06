@@ -24,12 +24,12 @@ module.exports = class MarkdownTask
     @_copyFiles(postsFiles)
 
     @posts = new Posts @_allMarkdownPosts(),
-      htmlDir: @config.pathRoots.posts
+      htmlDir: @config.dest
       layout: new Layout @config.layouts.post
       dateFormat: @config.dateFormat
       cwd: @_getPostsCwd()
     @pages = new Pages @_allMarkdownPages(),
-      htmlDir: @config.pathRoots.pages
+      htmlDir: @config.dest
       layout: new Layout @config.layouts.page
       cwd: @_getPagesCwd()
     @index = new Index @posts.newest(),

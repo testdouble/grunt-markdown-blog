@@ -7,7 +7,7 @@ module.exports = class Posts
 
   @:: = new Array
   constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator, cwd}) ->
-    posts = markdownFiles.map (file) -> new Post(pathlib.join(cwd, file), dateFormat)
+    posts = markdownFiles.map (file) -> new Post(htmlDir, pathlib.join(cwd, file), dateFormat)
     posts.layout = layout
     posts.sort(comparator || timeComparator)
     posts.__proto__ = Posts::
@@ -26,7 +26,7 @@ module.exports = class Posts
   writeHtml: (generatesHtml, writesFile) ->
     for post in @
       html = generatesHtml.generate(@layout, post)
-      writesFile.write(html, post.htmlPath())
+      writesFile.write(html, post.diskPath())
 
   older: (post) ->
     @[@indexOf(post) - 1] unless post is @oldest
