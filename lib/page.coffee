@@ -35,12 +35,7 @@ module.exports = class Page
     title || @fileName()
 
   htmlPath: ->
-    return @path.replace(/\.md$/, ".html")
-    # crushing backward compat here; TODO: revisit for backward compat
-    if @htmlDirPath.match(/\*/) #path contains wildcard use htmldirpath
-      pathlib.join(@path.replace('.md', '.html'))
-    else
-      "#{@htmlDirPath}/#{@fileName()}"
+    @path.replace(/\.md$/, ".html")
 
   fileName: ->
     name = @path.match(/\/([^/]*).md/)?[1]
