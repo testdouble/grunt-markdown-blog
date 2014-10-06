@@ -1,5 +1,5 @@
 Post = require './post'
-pathlib = require('path')
+pathlib = require('./maybe_path_lib')
 
 module.exports = class Posts
   timeComparator = (post1, post2) ->

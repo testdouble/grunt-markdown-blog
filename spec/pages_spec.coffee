@@ -24,7 +24,7 @@ describe "Pages", ->
     Given -> @markdownFiles = [ @page = spy('page') ]
 
     Then -> @subject[0] instanceof Page
-    Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
+#    Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
 
 
   describe "#htmlFor", ->

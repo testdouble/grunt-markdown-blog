@@ -1,5 +1,5 @@
 Page = require './page'
-pathlib = require('path')
+pathlib = require('./maybe_path_lib.coffee')
 
 module.exports = class Pages
   @:: = new Array

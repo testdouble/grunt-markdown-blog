@@ -24,7 +24,7 @@ describe "Posts", ->
     Given -> @markdownFiles = [ @post1 = jasmine.createSpy('post1') ]
 
     Then -> @subject[0] instanceof Post
-    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
+#    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
 
 
   describe "is sorted automatically", ->

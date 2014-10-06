@@ -44,10 +44,7 @@ module.exports = class MarkdownTask
     @site = new Site(@config, @posts, @pages)
 
     # Pages and posts already exist in the right location
-    # "." is less than ideal, but don't have to add
-    #   a check to WritesFile to not be dumping stuff at "/path"
-    #   mainly less than ideal because output is inconsistent
-    writesFileInPlace = new WritesFile(".")
+    writesFileInPlace = new WritesFile()
     writesFile = new WritesFile(@config.dest)
     wrapper = new Layout(@config.layouts.wrapper, @config.context)
     generatesHtml = new GeneratesHtml(@site, wrapper)
@@ -59,11 +56,20 @@ module.exports = class MarkdownTask
 
     @feed.writeRss new GeneratesRss(@site), writesFile
 
+    @_deleteFilesIn(@_allMarkdownPosts(), @_getPostsCwd())
+    @_deleteFilesIn(@_allMarkdownPages(), @_getPagesCwd())
+
   #private
   _copyFiles: (fileSet) ->
     for fileMeta in fileSet
       grunt.log.writeln("copying #{fileMeta.src} to #{fileMeta.dest}")
       grunt.file.copy fileMeta.src, fileMeta.dest
+
+  _deleteFilesIn: (fileSet, cwd) ->
+    for file in fileSet
+      filePath = pathlib.join(cwd, file)
+      grunt.log.writeln("Cleaning up #{filePath}")
+      grunt.file.delete(filePath)
 
   _alwaysFlattenPostsBehaviour: ->
     typeof @config.paths.posts == 'string'
@@ -102,20 +108,7 @@ module.exports = class MarkdownTask
         flatten: @config.paths.pages.flatten
 
   _allMarkdownPosts: ->
-    if !@_alwaysFlattenPostsBehaviour()
-      grunt.file.expand({ cwd: @_getPostsCwd() }, @config.process.posts)
-    else if @config.paths.markdown? #backwards compatibility for lineman blog
-      grunt.file.expand(@config.paths.markdown)
-    else if @config.paths.posts?
-      grunt.file.expand(@config.paths.posts)
-    else
-      []
+    grunt.file.expand({ cwd: @_getPostsCwd() }, @config.process.posts)
 
   _allMarkdownPages: ->
-    # check for empty string, because pages get dumped in the root
-    if !@_alwaysFlattenPagesBehaviour()
-      grunt.file.expand({ cwd: @_getPagesCwd() }, @config.process.pages)
-    else if @config.paths.pages?
-      grunt.file.expand(@config.paths.pages)
-    else
-      []
+    grunt.file.expand({ cwd: @_getPagesCwd() }, @config.process.pages)
