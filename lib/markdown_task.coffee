@@ -16,16 +16,12 @@ module.exports = class MarkdownTask
 
   run: ->
     # copy pages
-    pagesFiles = grunt.file.expandMapping('**/*.*', @_getPagesCwd(), { cwd: @config.sources.pages });
-    for fileMeta in pagesFiles
-      grunt.log.writeln("copying #{fileMeta.src} to #{fileMeta.dest}")
-      grunt.file.copy fileMeta.src, fileMeta.dest
+    pagesFiles = @_allPagesContentToCopy()
+    @_copyFiles(pagesFiles)
 
     # copy posts
-    postsFiles = grunt.file.expandMapping('**/*.*', @_getPostsCwd(), { cwd: @config.sources.posts });
-    for fileMeta in postsFiles
-      grunt.log.writeln("copying #{fileMeta.src} to #{fileMeta.dest}")
-      grunt.file.copy fileMeta.src, fileMeta.dest
+    postsFiles = @_allPostsContentToCopy()
+    @_copyFiles(postsFiles)
 
     @posts = new Posts @_allMarkdownPosts(),
       htmlDir: @config.pathRoots.posts
@@ -47,26 +43,66 @@ module.exports = class MarkdownTask
       postCount: @config.rssCount
     @site = new Site(@config, @posts, @pages)
 
+    # Pages and posts already exist in the right location
+    # "." is less than ideal, but don't have to add
+    #   a check to WritesFile to not be dumping stuff at "/path"
+    #   mainly less than ideal because output is inconsistent
+    writesFileInPlace = new WritesFile(".")
     writesFile = new WritesFile(@config.dest)
     wrapper = new Layout(@config.layouts.wrapper, @config.context)
     generatesHtml = new GeneratesHtml(@site, wrapper)
 
-    @posts.writeHtml generatesHtml, writesFile
-    @pages.writeHtml generatesHtml, writesFile
+    @posts.writeHtml generatesHtml, writesFileInPlace
+    @pages.writeHtml generatesHtml, writesFileInPlace
     @index.writeHtml generatesHtml, writesFile
     @archive.writeHtml generatesHtml, writesFile
 
     @feed.writeRss new GeneratesRss(@site), writesFile
 
   #private
+  _copyFiles: (fileSet) ->
+    for fileMeta in fileSet
+      grunt.log.writeln("copying #{fileMeta.src} to #{fileMeta.dest}")
+      grunt.file.copy fileMeta.src, fileMeta.dest
+
+  _alwaysFlattenPostsBehaviour: ->
+    typeof @config.paths.posts == 'string'
+
+  _alwaysFlattenPagesBehaviour: ->
+    typeof @config.paths.pages == 'string'
+
   _getPostsCwd: ->
-    pathlib.join(@config.dest, @config.destinations.posts)
+    if @_alwaysFlattenPostsBehaviour()
+      pathlib.join(@config.dest, @config.pathRoots.posts)
+    else
+      pathlib.join(@config.dest, @config.paths.posts.dest)
 
   _getPagesCwd: ->
-    pathlib.join(@config.dest, @config.destinations.pages)
+    if @_alwaysFlattenPagesBehaviour()
+      pathlib.join(@config.dest, @config.pathRoots.pages)
+    else
+      pathlib.join(@config.dest, @config.paths.pages.dest)
+
+  _allPostsContentToCopy: ->
+    if @_alwaysFlattenPostsBehaviour()
+      grunt.file.expandMapping @config.paths.posts, @_getPostsCwd(),
+        flatten: true
+    else
+      grunt.file.expandMapping @config.paths.posts.src, @_getPostsCwd(),
+        cwd: @config.paths.posts.cwd
+        flatten: @config.paths.posts.flatten
+
+  _allPagesContentToCopy: ->
+    if @_alwaysFlattenPagesBehaviour()
+      grunt.file.expandMapping @config.paths.pages, @_getPagesCwd(),
+        flatten: true
+    else
+      grunt.file.expandMapping @config.paths.pages.src, @_getPagesCwd(),
+        cwd: @config.paths.pages.cwd
+        flatten: @config.paths.pages.flatten
 
   _allMarkdownPosts: ->
-    if @config.destinations.posts || @config.destinations.posts == ""
+    if !@_alwaysFlattenPostsBehaviour()
       grunt.file.expand({ cwd: @_getPostsCwd() }, @config.process.posts)
     else if @config.paths.markdown? #backwards compatibility for lineman blog
       grunt.file.expand(@config.paths.markdown)
@@ -77,7 +113,7 @@ module.exports = class MarkdownTask
 
   _allMarkdownPages: ->
     # check for empty string, because pages get dumped in the root
-    if @config.destinations.pages || @config.destinations.pages == ""
+    if !@_alwaysFlattenPagesBehaviour()
       grunt.file.expand({ cwd: @_getPagesCwd() }, @config.process.pages)
     else if @config.paths.pages?
       grunt.file.expand(@config.paths.pages)
