@@ -53,7 +53,7 @@ describe "Posts", ->
 
     context "with 3 posts", ->
       Given -> @htmlPath = "htmlPath"
-      Given -> @post = jasmine.createStubObj('post', htmlPath: @htmlPath)
+      Given -> @post = jasmine.createStubObj('post', diskPath: @htmlPath)
       When -> @subject.splice 0, @subject.length, @post, @post, @post
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3
