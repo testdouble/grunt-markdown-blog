@@ -15,12 +15,10 @@ marked.setOptions
 
 module.exports = class Page
   constructor: (@path, @dateFormat) ->
-    grunt.log.writeln("Reading #{@path} for processing")
     source = grunt.file.read(@path)
     splitted = new MarkdownSplitter().split(source)
     @markdown = splitted.markdown
     @attributes = splitted.header
-    grunt.log.writeln("Page or Post #{@path} processed")
 
   content: ->
     marked.parser(marked.lexer(@markdown))
