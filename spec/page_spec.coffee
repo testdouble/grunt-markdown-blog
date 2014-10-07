@@ -50,3 +50,23 @@ describe "Page", ->
     context "function attribute", ->
       Given -> @subject.attributes = myattr: @value = -> 1
       Then -> @myattr == @value()
+
+  describe "#title", ->
+    Given -> @subject = new Page()
+    When -> @title = @subject.title()
+
+    context "from attribute", ->
+      Given -> @subject.attributes = title: "attribute title"
+      Then -> @title == "attribute title"
+
+    context "from path", ->
+      context "with date", ->
+        Given -> @subject.path = "some/path/1999-12-21-path-title.md"
+        Then -> @title == "path title"
+      context "without date", ->
+        Given -> @subject.path = "some/path/no-date-path-title.md"
+        Then -> @title == "no-date-path-title.html"
+
+    context "from filename", ->
+      Given -> @subject.path = "some/weird/path.md"
+      Then -> @title == "path.html"
