@@ -34,3 +34,19 @@ describe "Page", ->
     Then -> expect(@marked.lexer).toHaveBeenCalledWith(@markdown)
     Then -> expect(@marked.parser).toHaveBeenCalledWith(@lexed)
     Then -> @content == @parsedMarkdown
+
+  describe "#get", ->
+    Given -> @subject = new Page()
+    When -> @myattr = @subject.get('myattr')
+
+    context "undefined attribute", ->
+      Given -> @subject.attributes = {}
+      Then -> @myattr == undefined
+
+    context "value attribute", ->
+      Given -> @subject.attributes = myattr: @value = 1
+      Then -> @myattr == @value
+
+    context "function attribute", ->
+      Given -> @subject.attributes = myattr: @value = -> 1
+      Then -> @myattr == @value()
