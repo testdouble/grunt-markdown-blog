@@ -35,6 +35,14 @@ describe "Page", ->
       Given -> @subject.attributes = {}
       Then -> @myattr == undefined
 
+    context "null attribute", ->
+      Given -> @subject.attributes = myattr: null
+      Then -> @myattr == undefined
+
+    context "false attribute", ->
+      Given -> @subject.attributes = myattr: false
+      Then -> @myattr == false
+
     context "value attribute", ->
       Given -> @subject.attributes = myattr: @value = 1
       Then -> @myattr == @value
