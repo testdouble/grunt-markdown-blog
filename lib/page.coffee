@@ -13,9 +13,7 @@ module.exports = class Page
     @_markdown.compile()
 
   get: (name) ->
-    attr = @attributes?[name]
-    return unless attr?
-    if _(attr).isFunction() then attr() else attr
+    _(@attributes).result(name)
 
   title: ->
     return @attributes?['title'] if @attributes?['title']?
