@@ -8,9 +8,8 @@ module.exports = class Categories
     post1.time().localeCompare(post2.time(), numeric: true)
 
   @:: = new Array
-  constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator}) ->
+  constructor: (posts, {htmlDir, layout, dateFormat, comparator}) ->
     categories = []
-    posts = markdownFiles.map (file) -> new Post(file, htmlDir, dateFormat)
     posts.sort(comparator || timeComparator)
     posts.forEach (post) ->
       cats = if _.isArray(post.attributes.categories) then post.attributes.categories else []
