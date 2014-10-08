@@ -1,6 +1,7 @@
 grunt = require('grunt')
 pathlib = require('path')
 Archive = require('../lib/archive')
+Categories = require('../lib/categories')
 Feed = require('../lib/feed')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
@@ -28,6 +29,10 @@ module.exports = class MarkdownTask
       layout: new Layout @config.layouts.post
       dateFormat: @config.dateFormat
       cwd: @_getPostsCwd()
+    @categories = new Categories @_allMarkdownPosts(),
+      htmlDir: @config.pathRoots.categories
+      layout: new Layout @config.layouts.category
+      dateFormat: @config.dateFormat
     @pages = new Pages @_allMarkdownPages(),
       htmlDir: @config.dest
       layout: new Layout @config.layouts.page
@@ -53,6 +58,7 @@ module.exports = class MarkdownTask
     @pages.writeHtml generatesHtml, writesFileInPlace
     @index.writeHtml generatesHtml, writesFile
     @archive.writeHtml generatesHtml, writesFile
+    @categories.writeHtml generatesHtml, writesFile
 
     @feed.writeRss new GeneratesRss(@site), writesFile
 
