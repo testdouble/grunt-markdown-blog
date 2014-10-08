@@ -86,3 +86,7 @@ describe "Page", ->
   describe "#fileName", ->
     Given -> @subject = new Page("/path/to/pages/mypage.md")
     Then -> @subject.fileName() == "mypage.html"
+
+  describe "#date", ->
+    Given -> @subject = new Page()
+    Then -> @subject.date() == undefined
