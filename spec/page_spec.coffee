@@ -2,37 +2,29 @@ Page = null
 SandboxedModule = require('sandboxed-module')
 
 describe "Page", ->
-  Given -> @source = "source"
-  Given -> @markdown = "markdown"
-  Given -> @header = "attributes"
   Given -> Page = SandboxedModule.require '../lib/page',
     requires:
-      'grunt': @grunt = file: read: jasmine.createSpy('grunt.file.read').andReturn(@source)
-      'marked': @marked = jasmine.createSpyObj('marked', ['lexer', 'parser', 'setOptions'])
-      './markdown_splitter': @splitter = jasmine.constructSpy('MarkdownSplitter', ['split'])
-  Given -> @splitter::split.andReturn({@markdown, @header})
+      'grunt': @grunt = file: read: jasmine.createSpy('grunt.file.read')
+      './markdown': @markdown = jasmine.constructSpy('Markdown', ['compile'])
 
   describe "#constructor", ->
     Given -> @path = "path"
-    Given -> @htmlDirPath = "htmlDirPath"
-    Given -> @dateFormat = "dateFormat"
+    Given -> @grunt.file.read.andReturn(@source = "source")
+    Given -> @markdown::header = @header = "attributes"
 
-    When -> @subject = new Page(@path, @htmlDirPath, @dateFormat)
+    When -> @subject = new Page(@path)
 
     Then -> expect(@grunt.file.read).toHaveBeenCalledWith(@path)
-    When -> expect(@splitter::split).toHaveBeenCalledWith(@source)
-    Then -> @subject.markdown == @markdown
+    Then -> expect(@markdown).toHaveBeenCalledWith(@source)
     Then -> @subject.attributes == @header
 
   describe "#content", ->
     Given -> @subject = new Page()
-    Given -> @marked.lexer.andReturn(@lexed = "lexed")
-    Given -> @marked.parser.andReturn(@parsedMarkdown = "content")
+    Given -> @markdown::compile.andReturn(@parsedMarkdown = "content")
 
     When -> @content = @subject.content()
 
-    Then -> expect(@marked.lexer).toHaveBeenCalledWith(@markdown)
-    Then -> expect(@marked.parser).toHaveBeenCalledWith(@lexed)
+    Then -> expect(@markdown::compile).toHaveBeenCalled()
     Then -> @content == @parsedMarkdown
 
   describe "#get", ->
