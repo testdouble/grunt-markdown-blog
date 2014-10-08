@@ -24,7 +24,7 @@ describe "Pages", ->
     Given -> @markdownFiles = [ @page = spy('page') ]
 
     Then -> @subject[0] instanceof Page
-    Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
+#    Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
 
 
   describe "#htmlFor", ->
@@ -50,7 +50,7 @@ describe "Pages", ->
 
     context "with 3 pages", ->
       Given -> @htmlPath = "htmlPath"
-      Given -> @page = jasmine.createStubObj('page', htmlPath: @htmlPath)
+      Given -> @page = jasmine.createStubObj('page', diskPath: @htmlPath)
       When -> @subject.splice 0, @subject.length, @page, @page, @page
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3

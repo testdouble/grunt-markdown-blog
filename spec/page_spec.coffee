@@ -17,7 +17,7 @@ describe "Page", ->
     Given -> @htmlDirPath = "htmlDirPath"
     Given -> @dateFormat = "dateFormat"
 
-    When -> @subject = new Page(@path, @htmlDirPath, @dateFormat)
+    When -> @subject = new Page(@htmlDirPath, @path, @dateFormat)
 
     Then -> expect(@grunt.file.read).toHaveBeenCalledWith(@path)
     When -> expect(@splitter::split).toHaveBeenCalledWith(@source)
@@ -72,19 +72,18 @@ describe "Page", ->
       Then -> @title == "path.html"
 
   describe "#htmlPath", ->
-    Given -> @subject = new Page("#{@path = "path/to/pages"}/#{@name = "page"}.md")
     When -> @htmlPath = @subject.htmlPath()
 
-    context "with wildcards in htmlDirPath", ->
-      Given -> @subject.htmlDirPath = "some/*/path"
-      Then -> @htmlPath == "#{@path}/#{@name}.html"
+    context "strips out htmlDir", ->
+      Given -> @subject = new Page("generated", "generated/#{@path = "path/to/pages/page"}.md")
+      Then -> @htmlPath == "#{@path}.html"
 
-    context "without wildcards in htmlDirPath", ->
-      Given -> @subject.htmlDirPath = "some/path"
-      Then -> @htmlPath == "#{@subject.htmlDirPath}/#{@name}.html"
+    context "removes index.html", ->
+      Given -> @subject = new Page("", "#{@path = "path/to/slug/"}index.md")
+      Then -> @htmlPath == @path
 
   describe "#fileName", ->
-    Given -> @subject = new Page("/path/to/pages/mypage.md")
+    Given -> @subject = new Page("", "/path/to/pages/mypage.md")
     Then -> @subject.fileName() == "mypage.html"
 
   describe "#date", ->

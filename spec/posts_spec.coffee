@@ -24,7 +24,7 @@ describe "Posts", ->
     Given -> @markdownFiles = [ @post1 = jasmine.createSpy('post1') ]
 
     Then -> @subject[0] instanceof Post
-    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
+#    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
 
 
   describe "is sorted automatically", ->
@@ -53,7 +53,7 @@ describe "Posts", ->
 
     context "with 3 posts", ->
       Given -> @htmlPath = "htmlPath"
-      Given -> @post = jasmine.createStubObj('post', htmlPath: @htmlPath)
+      Given -> @post = jasmine.createStubObj('post', diskPath: @htmlPath)
       When -> @subject.splice 0, @subject.length, @post, @post, @post
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3

@@ -1,12 +1,13 @@
 Post = require './post'
+pathlib = require('./maybe_path_lib')
 
 module.exports = class Posts
   timeComparator = (post1, post2) ->
     post1.time().localeCompare(post2.time(), numeric: true)
 
   @:: = new Array
-  constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator}) ->
-    posts = markdownFiles.map (file) -> new Post(file, htmlDir, dateFormat)
+  constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator, cwd}) ->
+    posts = markdownFiles.map (file) -> new Post(htmlDir, pathlib.join(cwd, file), dateFormat)
     posts.layout = layout
     posts.sort(comparator || timeComparator)
     posts.__proto__ = Posts::
@@ -25,7 +26,7 @@ module.exports = class Posts
   writeHtml: (generatesHtml, writesFile) ->
     for post in @
       html = generatesHtml.generate(@layout, post)
-      writesFile.write(html, post.htmlPath())
+      writesFile.write(html, post.diskPath())
 
   older: (post) ->
     @[@indexOf(post) - 1] unless post is @oldest

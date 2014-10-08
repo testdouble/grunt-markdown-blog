@@ -1,9 +1,10 @@
 Page = require './page'
+pathlib = require('./maybe_path_lib.coffee')
 
 module.exports = class Pages
   @:: = new Array
-  constructor: (markdownFiles, {htmlDir, layout}) ->
-    pages = markdownFiles.map (file) -> new Page(file, htmlDir)
+  constructor: (markdownFiles, {htmlDir, layout, cwd}) ->
+    pages = markdownFiles.map (file) -> new Page(htmlDir, pathlib.join(cwd, file))
     pages.__proto__ = Pages::
     pages.layout = layout
     return pages
@@ -16,4 +17,4 @@ module.exports = class Pages
   writeHtml: (generatesHtml, writesFile) ->
     for page in @
       html = generatesHtml.generate(@layout, page)
-      writesFile.write(html, page.htmlPath())
+      writesFile.write(html, page.diskPath())
