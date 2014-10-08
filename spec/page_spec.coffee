@@ -82,3 +82,7 @@ describe "Page", ->
     context "without wildcards in htmlDirPath", ->
       Given -> @subject.htmlDirPath = "some/path"
       Then -> @htmlPath == "#{@subject.htmlDirPath}/#{@name}.html"
+
+  describe "#fileName", ->
+    Given -> @subject = new Page("/path/to/pages/mypage.md")
+    Then -> @subject.fileName() == "mypage.html"
