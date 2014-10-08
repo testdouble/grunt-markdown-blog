@@ -29,7 +29,7 @@ module.exports = class MarkdownTask
       layout: new Layout @config.layouts.post
       dateFormat: @config.dateFormat
       cwd: @_getPostsCwd()
-    @categories = new Categories @_allMarkdownPosts(),
+    @categories = new Categories @posts,
       htmlDir: @config.pathRoots.categories
       layout: new Layout @config.layouts.category
       dateFormat: @config.dateFormat
