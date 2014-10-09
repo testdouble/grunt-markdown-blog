@@ -2,13 +2,10 @@ Markdown = null
 SandboxedModule = require('sandboxed-module')
 
 describe "Markdown", ->
-  Given ->
-    @marked = jasmine.createSpy('marked')
-    @marked.setOptions = ->
   Given -> Markdown = SandboxedModule.require '../lib/markdown',
     requires:
       './markdown_splitter': @splitter = jasmine.constructSpy('MarkdownSplitter', ['split'])
-      'marked': @marked
+      'marked': @marked = jasmine.createSpy('marked')
 
   Given -> @header = "attributes"
   Given -> @markdown = "markdown"
@@ -29,5 +26,5 @@ describe "Markdown", ->
 
     When -> @html = @subject.compile()
 
-    Then -> expect(@marked).toHaveBeenCalledWith(@subject.source)
+    Then -> expect(@marked).toHaveBeenCalledWith(@subject.source, jasmine.any(Object))
     Then -> @html == @compiledHtml
