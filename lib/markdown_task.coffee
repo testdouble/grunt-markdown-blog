@@ -45,6 +45,7 @@ module.exports = class MarkdownTask
   #private
   _allMarkdownPosts: ->
     if @config.paths.markdown? #backwards compatibility for lineman blog
+      grunt.log.fail("Warning: config.paths.markdown is deprecated in favor of config.paths.posts")
       grunt.file.expand(@config.paths.markdown)
     else if @config.paths.posts?
       grunt.file.expand(@config.paths.posts)
