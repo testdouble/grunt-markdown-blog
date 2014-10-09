@@ -1,27 +1,16 @@
 _ = require('underscore')
 grunt = require('grunt')
-highlight = require('highlight.js')
-marked = require('marked')
 pathlib = require('path')
-MarkdownSplitter = require('./markdown_splitter')
-
-marked.setOptions
-  highlight: (code, lang) ->
-    highlighted = if highlight.LANGUAGES[lang]?
-      highlight.highlight(lang, code, true)
-    else
-      highlight.highlightAuto(code)
-    highlighted.value
+Markdown = require('./markdown')
 
 module.exports = class Page
   constructor: (@path, @htmlDirPath, @dateFormat) ->
-    source = grunt.file.read(@path)
-    splitted = new MarkdownSplitter().split(source)
-    @markdown = splitted.markdown
-    @attributes = splitted.header
+    @_markdown = new Markdown(grunt.file.read(@path))
+    @attributes = @_markdown.header
+    deprecateMarkdownProperty(@)
 
   content: ->
-    marked.parser(marked.lexer(@markdown))
+    @_markdown.compile()
 
   get: (name) ->
     attr = @attributes?[name]
@@ -46,3 +35,9 @@ module.exports = class Page
 
   date: ->
     undefined
+
+deprecateMarkdownProperty = (page) ->
+  Object.defineProperty page, 'markdown',
+    get: ->
+      grunt.log.error("Page#markdown has been deprecated")
+      @_markdown.source
