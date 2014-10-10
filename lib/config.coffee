@@ -5,9 +5,16 @@ module.exports = class Config
   constructor: (@raw) ->
 
   forFeed: ->
-    _.tap
-      rssPath: @raw.paths.rss
-      postCount: @raw.rssCount
-    , ({rssPath, postCount}) ->
-      log.writeln "RSS Feed skipped: destination path is undefined" unless rssPath?
-      log.writeln "RSS Feed skipped: 0 posts" unless postCount
+    feedConfig = {}
+
+    if @raw.paths.rss?
+      feedConfig.rssPath = @raw.paths.rss
+    else
+      log.writeln "RSS Feed skipped: destination path is undefined"
+
+    if @raw.rssCount
+      feedConfig.postCount = @raw.rssCount
+    else
+      log.writeln "RSS Feed skipped: 0 posts"
+
+    feedConfig

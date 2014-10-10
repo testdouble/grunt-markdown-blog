@@ -7,7 +7,7 @@ module.exports = class Feed
     writesFile.write generatesRss.generate(), @rssPath
 
   @create: ({rssPath, postCount}) ->
-    if rssPath? and postCount
+    if rssPath? and postCount?
       new @(arguments...)
     else
       new NullFeed

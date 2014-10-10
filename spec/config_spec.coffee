@@ -26,12 +26,12 @@ describe "Config", ->
 
       context "without posts", ->
         Given -> @raw.rssCount = @postCount = 0
-        # Then -> @feed instanceof NullFeed
         Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+        And -> @feedConfig.postCount is undefined
 
     context "without rss path", ->
       Given -> @raw.paths.rss = undefined
-      # Then -> @feed instanceof NullFeed
       Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+      And -> @feedConfig.rssPath is undefined
 
 
