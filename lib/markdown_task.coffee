@@ -22,7 +22,7 @@ module.exports = class MarkdownTask
     @index = new Index @posts.newest(),
       htmlPath: @config.paths.index
       layout: new Layout @config.layouts.index
-    @archive = new Archive
+    @archive = Archive.create
       htmlPath: @config.paths.archive
       layout: new Layout @config.layouts.archive
     @feed = Feed.create

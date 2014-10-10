@@ -1,10 +1,15 @@
 log = require('grunt').log
+NullArchive = require('./null_archive')
 
 module.exports = class Archive
   constructor: ({@htmlPath, @layout}) ->
 
   writeHtml: (generatesHtml, writesFile) ->
-    if @htmlPath?
-      writesFile.write generatesHtml.generate(@layout), @htmlPath
+    writesFile.write generatesHtml.generate(@layout), @htmlPath
+
+  @create: ({htmlPath, layout}) ->
+    if htmlPath?
+      new @({htmlPath, layout})
     else
-      log.error "Archive not written because destination path is undefined"
+      log.writeln "Archive skipped: destination path is undefined"
+      new NullArchive

@@ -1,31 +1,38 @@
 SandboxedModule = require('sandboxed-module')
 Archive = null
+NullArchive = require('../lib/null_archive')
 grunt = null
 
 beforeEach ->
   Archive = SandboxedModule.require '../lib/archive',
     requires:
-      'grunt': grunt = log: error: jasmine.createSpy('grunt-log')
+      'grunt': grunt = log: writeln: jasmine.createSpy('grunt-log')
+      './null_archive': NullArchive
 
 describe "Archive", ->
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlPath', 'layout']
 
-  When -> @subject = new Archive(@config)
+  describe "::create", ->
+    When -> @archive = Archive.create({@htmlPath, @layout})
+
+    context "with htmlPath", ->
+      Given -> @htmlPath = "htmlPath"
+      Then -> @archive instanceof Archive
+      And -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+
+    context "without htmlPath", ->
+      Given -> @htmlPath = undefined
+      Then -> @archive instanceof NullArchive
+      And -> expect(grunt.log.writeln).toHaveBeenCalled()
+
 
   describe "#writeHtml", ->
-    Given -> @html = "html"
-    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
+    Given -> @htmlPath = "htmlPath"
+    Given -> @layout = "layout"
+    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html = "html")
     Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
+    Given -> @subject = new Archive({@htmlPath, @layout})
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
-    context "with destination path", ->
-      Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout)
-      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @config.htmlPath)
-
-    context "without destination path", ->
-      Given -> @config.htmlPath = undefined
-
-      Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
-      Then -> expect(@writesFile.write).not.toHaveBeenCalled()
-      Then -> expect(grunt.log.error).toHaveBeenCalled()
+    Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@layout)
+    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
