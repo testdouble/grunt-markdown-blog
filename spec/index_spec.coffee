@@ -1,32 +1,41 @@
 SandboxedModule = require('sandboxed-module')
 Index = null
+NullIndex = require('../lib/null_index')
 grunt = null
 
 beforeEach ->
   Index = SandboxedModule.require '../lib/index',
     requires:
-      'grunt': grunt = log: error: jasmine.createSpy('grunt-log')
+      'grunt': grunt = log: writeln: jasmine.createSpy('grunt-log')
+      './null_index': NullIndex
+
 
 describe "Index", ->
   Given -> @latestPost = "latestPost"
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlPath', 'layout']
 
-  When -> @subject = new Index(@latestPost, @config)
+  describe "::create", ->
+    When -> @index = Index.create(@latestPost, {@htmlPath, @layout})
+
+    context "with htmlPath", ->
+      Given -> @htmlPath = "htmlPath"
+      Then -> @index instanceof Index
+      And -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+
+    context "without htmlPath", ->
+      Given -> @htmlPath = undefined
+      Then -> @index instanceof NullIndex
+      And -> expect(grunt.log.writeln).toHaveBeenCalled()
+
+
+  Given -> @htmlPath = "htmlPath"
+  Given -> @layout = "layout"
+  Given -> @subject = new Index(@latestPost, {@htmlPath, @layout})
 
   describe "#writeHtml", ->
-    Given -> @html = "html"
-    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
+    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html = "html")
     Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
-    context "with destination path", ->
-      Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @latestPost)
-      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @config.htmlPath)
-
-    context "without destination path", ->
-      Given -> @config.htmlPath = undefined
-
-      Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
-      Then -> expect(@writesFile.write).not.toHaveBeenCalled()
-      Then -> expect(grunt.log.error).toHaveBeenCalled()
+    Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@layout, @latestPost)
+    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)

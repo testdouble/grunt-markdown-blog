@@ -19,7 +19,7 @@ module.exports = class MarkdownTask
     @pages = new Pages @_allMarkdownPages(),
       htmlDir: @config.pathRoots.pages
       layout: new Layout @config.layouts.page
-    @index = new Index @posts.newest(),
+    @index = Index.create @posts.newest(),
       htmlPath: @config.paths.index
       layout: new Layout @config.layouts.index
     @archive = Archive.create
