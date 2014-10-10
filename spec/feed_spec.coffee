@@ -1,12 +1,10 @@
 SandboxedModule = require('sandboxed-module')
 Feed = null
 NullFeed = require('../lib/null_feed')
-grunt = null
 
 beforeEach ->
   Feed = SandboxedModule.require '../lib/feed',
     requires:
-      'grunt': grunt = log: writeln: jasmine.createSpy('grunt-log')
       './null_feed': NullFeed
 
 describe "Feed", ->
@@ -19,17 +17,14 @@ describe "Feed", ->
       context "with posts", ->
         Given -> @postCount = 2
         Then -> @feed instanceof Feed
-        And -> expect(grunt.log.writeln).not.toHaveBeenCalled()
 
       context "without posts", ->
         Given -> @postCount = 0
         Then -> @feed instanceof NullFeed
-        And -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "without rss path", ->
       Given -> @rssPath = undefined
       Then -> @feed instanceof NullFeed
-      And -> expect(grunt.log.writeln).toHaveBeenCalled()
 
   describe "#writeRss", ->
     Given -> @rssPath = "some/path"
