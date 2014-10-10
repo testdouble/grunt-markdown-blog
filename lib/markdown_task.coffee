@@ -25,7 +25,7 @@ module.exports = class MarkdownTask
     @archive = new Archive
       htmlPath: @config.paths.archive
       layout: new Layout @config.layouts.archive
-    @feed = new Feed
+    @feed = Feed.create
       rssPath: @config.paths.rss
       postCount: @config.rssCount
     @site = new Site(@config, @posts, @pages)
