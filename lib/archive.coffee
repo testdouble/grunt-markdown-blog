@@ -11,5 +11,4 @@ module.exports = class Archive
     if htmlPath?
       new @({htmlPath, layout})
     else
-      log.writeln "Archive skipped: destination path is undefined"
       new NullArchive

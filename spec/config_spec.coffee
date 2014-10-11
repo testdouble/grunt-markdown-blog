@@ -35,3 +35,16 @@ describe "Config", ->
       And -> @feedConfig.rssPath is undefined
 
 
+  describe "#forArchive", ->
+    When -> @archiveConfig = @subject.forArchive()
+
+    context "with htmlPath", ->
+      Given -> @raw.paths.archive = @htmlPath = "htmlPath"
+      Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+      Then -> expect(@archiveConfig).toEqual {@htmlPath}
+
+    context "without htmlPath", ->
+      Given -> @raw.paths.archive = undefined
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+      Then -> @archiveConfig.htmlPath is undefined
+
