@@ -1,7 +1,7 @@
 Config = require('../lib/config')
 
 describe "Config", ->
-  Given -> @raw = paths: {}
+  Given -> @raw = paths: {}, layouts: {}
   Given -> @subject = new Config(@raw)
 
   Invariant -> @raw == @subject.raw
@@ -12,16 +12,8 @@ describe "Config", ->
     When -> @feedConfig = @subject.forFeed()
     Then -> expect(@feedConfig).toEqual {@rssPath, @postCount}
 
-  # describe "#forArchive", ->
-  #   When -> @archiveConfig = @subject.forArchive()
-
-  #   context "with htmlPath", ->
-  #     Given -> @raw.paths.archive = @htmlPath = "htmlPath"
-  #     Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-  #     Then -> expect(@archiveConfig).toEqual {@htmlPath}
-
-  #   context "without htmlPath", ->
-  #     Given -> @raw.paths.archive = undefined
-  #     Then -> expect(grunt.log.writeln).toHaveBeenCalled()
-  #     Then -> @archiveConfig.htmlPath is undefined
-
+  describe "#forArchive", ->
+    Given -> @raw.paths.archive = @htmlPath = "htmlPath"
+    Given -> @raw.layouts.archive = @layoutPath = "layoutPath"
+    When -> @archiveConfig = @subject.forArchive()
+    Then -> expect(@archiveConfig).toEqual {@htmlPath, @layoutPath}

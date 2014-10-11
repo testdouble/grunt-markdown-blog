@@ -1,5 +1,3 @@
-log = require('grunt').log
-
 module.exports = class Config
   constructor: (@raw) ->
 
@@ -8,11 +6,5 @@ module.exports = class Config
     postCount: @raw.rssCount
 
   forArchive: ->
-    archiveConfig = {}
-
-    if @raw.paths.archive?
-      archiveConfig.htmlPath = @raw.paths.archive
-    else
-      log.writeln "Archive skipped: destination path is undefined"
-
-    archiveConfig
+    htmlPath: @raw.paths.archive
+    layoutPath: @raw.layouts.archive
