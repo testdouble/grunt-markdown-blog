@@ -4,6 +4,8 @@ grunt = null
 
 Feed = require('../lib/feed')
 NullFeed = require('../lib/null_feed')
+Archive = require('../lib/archive')
+NullArchive = require('../lib/null_archive')
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -11,6 +13,8 @@ beforeEach ->
       'grunt': grunt = log: writeln: jasmine.createSpy('grunt-log')
       './feed': Feed
       './null_feed': NullFeed
+      './archive': Archive
+      './null_archive': NullArchive
 
 describe "Factory", ->
 
@@ -33,4 +37,17 @@ describe "Factory", ->
     context "without rss path", ->
       Given -> @rssPath = undefined
       Then -> @feed instanceof NullFeed
+      And -> expect(grunt.log.writeln).toHaveBeenCalled()
+
+  describe "::archiveFrom", ->
+    When -> @archive = Factory.archiveFrom({@htmlPath, @layout})
+
+    context "with htmlPath", ->
+      Given -> @htmlPath = "htmlPath"
+      Then -> @archive instanceof Archive
+      And -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+
+    context "without htmlPath", ->
+      Given -> @htmlPath = undefined
+      Then -> @archive instanceof NullArchive
       And -> expect(grunt.log.writeln).toHaveBeenCalled()
