@@ -1,6 +1,7 @@
 grunt = require('grunt')
 Archive = require('../lib/archive')
 Config = require('../lib/config')
+Factory = require('../lib/factory')
 Feed = require('../lib/feed')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
@@ -27,7 +28,7 @@ module.exports = class MarkdownTask
     @archive = Archive.create
       htmlPath: @config.paths.archive
       layout: new Layout @config.layouts.archive
-    @feed = Feed.create @cfg.forFeed()
+    @feed = Factory.feedFrom @cfg.forFeed()
     @site = new Site(@config, @posts, @pages)
 
   run: ->
