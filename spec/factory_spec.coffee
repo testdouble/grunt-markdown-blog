@@ -20,27 +20,6 @@ beforeEach ->
 
 describe "Factory", ->
 
-  describe "::feedFrom", ->
-    When -> @feed = Factory.feedFrom({@rssPath, @postCount})
-
-    context "with rss path", ->
-      Given -> @rssPath = "some/path"
-
-      context "with posts", ->
-        Given -> @postCount = 2
-        Then -> @feed instanceof Feed
-        Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-
-      context "without posts", ->
-        Given -> @postCount = 0
-        Then -> @feed instanceof NullFeed
-        Then -> expect(grunt.log.writeln).toHaveBeenCalled()
-
-    context "without rss path", ->
-      Given -> @rssPath = undefined
-      Then -> @feed instanceof NullFeed
-      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
-
   describe "::archiveFrom", ->
     When -> @archive = Factory.archiveFrom({@htmlPath, @layoutPath})
 
@@ -71,6 +50,27 @@ describe "Factory", ->
           Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
           Then -> expect(grunt.log.error).not.toHaveBeenCalled()
           Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+
+  describe "::feedFrom", ->
+    When -> @feed = Factory.feedFrom({@rssPath, @postCount})
+
+    context "with rss path", ->
+      Given -> @rssPath = "some/path"
+
+      context "with posts", ->
+        Given -> @postCount = 2
+        Then -> @feed instanceof Feed
+        Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+
+      context "without posts", ->
+        Given -> @postCount = 0
+        Then -> @feed instanceof NullFeed
+        Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+
+    context "without rss path", ->
+      Given -> @rssPath = undefined
+      Then -> @feed instanceof NullFeed
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
   describe "::indexFrom", ->
     Given -> @latestPost = "latestPost"

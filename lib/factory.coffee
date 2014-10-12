@@ -7,16 +7,6 @@ Index = require('./index')
 NullHtml = require('./null_html')
 
 module.exports =
-  feedFrom: ({rssPath, postCount}) ->
-    if rssPath? and postCount
-      new Feed arguments...
-    else unless rssPath?
-      grunt.log.writeln "RSS Feed skipped: destination path undefined"
-      new NullFeed
-    else unless postCount
-      grunt.log.writeln "RSS Feed skipped: 0 posts"
-      new NullFeed
-
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
@@ -31,6 +21,16 @@ module.exports =
       new Archive
         htmlPath: htmlPath
         layout: new Layout(layoutPath)
+
+  feedFrom: ({rssPath, postCount}) ->
+    if rssPath? and postCount
+      new Feed arguments...
+    else unless rssPath?
+      grunt.log.writeln "RSS Feed skipped: destination path undefined"
+      new NullFeed
+    else unless postCount
+      grunt.log.writeln "RSS Feed skipped: 0 posts"
+      new NullFeed
 
   indexFrom: (latestPost, {htmlPath, layoutPath}) ->
     unless htmlPath?
