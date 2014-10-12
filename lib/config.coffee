@@ -12,3 +12,8 @@ module.exports = class Config
   forIndex: ->
     htmlPath: @raw.paths.index
     layoutPath: @raw.layouts.index
+
+  forPages: ->
+    htmlDir: @raw.pathRoots.pages
+    layoutPath: @raw.layouts.page
+    src: [].concat(@raw.paths.pages).filter (src) -> src

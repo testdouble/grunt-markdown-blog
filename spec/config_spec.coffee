@@ -1,7 +1,7 @@
 Config = require('../lib/config')
 
 describe "Config", ->
-  Given -> @raw = paths: {}, layouts: {}
+  Given -> @raw = layouts: {}, paths: {}, pathRoots: {}
   Given -> @subject = new Config(@raw)
 
   Invariant -> @raw == @subject.raw
@@ -23,3 +23,24 @@ describe "Config", ->
     Given -> @raw.layouts.index = @layoutPath = "layoutPath"
     When -> @indexConfig = @subject.forIndex()
     Then -> expect(@indexConfig).toEqual {@htmlPath, @layoutPath}
+
+  describe "#forPages", ->
+    Given -> @raw.pathRoots.pages = @htmlDir = "htmlDir"
+    Given -> @raw.layouts.page = @layoutPath = "layoutPath"
+    When -> @pagesConfig = @subject.forPages()
+
+    context "with single page source", ->
+      Given -> @raw.paths.pages = "some/path/**/*"
+      Then -> expect(@pagesConfig).toEqual {
+        @htmlDir,
+        @layoutPath,
+        src: ["some/path/**/*"]
+      }
+
+    context "with multiple page sources", ->
+      Given -> @raw.paths.pages = ["a", null, undefined, "", "b"]
+      Then -> expect(@pagesConfig).toEqual {
+        @htmlDir,
+        @layoutPath,
+        src: ["a", "b"]
+      }
