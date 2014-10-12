@@ -8,3 +8,7 @@ module.exports = class Config
   forArchive: ->
     htmlPath: @raw.paths.archive
     layoutPath: @raw.layouts.archive
+
+  forIndex: ->
+    htmlPath: @raw.paths.index
+    layoutPath: @raw.layouts.index

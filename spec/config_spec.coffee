@@ -17,3 +17,9 @@ describe "Config", ->
     Given -> @raw.layouts.archive = @layoutPath = "layoutPath"
     When -> @archiveConfig = @subject.forArchive()
     Then -> expect(@archiveConfig).toEqual {@htmlPath, @layoutPath}
+
+  describe "#forIndex", ->
+    Given -> @raw.paths.index = @htmlPath = "htmlPath"
+    Given -> @raw.layouts.index = @layoutPath = "layoutPath"
+    When -> @indexConfig = @subject.forIndex()
+    Then -> expect(@indexConfig).toEqual {@htmlPath, @layoutPath}
