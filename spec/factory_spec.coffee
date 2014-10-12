@@ -1,5 +1,5 @@
 SandboxedModule = require('sandboxed-module')
-{ Factory, grunt, Feed, NullFeed, Archive, NullHtml, Index } = {}
+{ Factory, grunt, Feed, NullFeed, Archive, NullHtml, Index, Pages, Layout } = {}
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -12,11 +12,14 @@ beforeEach ->
           warn: jasmine.createSpy('fail-warn')
         file:
           exists: jasmine.createSpy('file-exists')
+          expand: jasmine.createSpy('file-expand')
       './feed': Feed = jasmine.constructSpy('feed')
       './null_feed': NullFeed = jasmine.constructSpy('null_feed')
       './archive': Archive = jasmine.constructSpy('archive')
       './index': Index = jasmine.constructSpy('index')
       './null_html': NullHtml = jasmine.constructSpy('null_html')
+      './pages': Pages = jasmine.createSpy('pages')
+      './layout': Layout = jasmine.createSpy('layout')
 
 describe "Factory", ->
 
@@ -103,3 +106,31 @@ describe "Factory", ->
           Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
           Then -> expect(grunt.log.error).not.toHaveBeenCalled()
           Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+
+  describe "::pagesFrom", ->
+    Given -> @src = []
+    Given -> @htmlDir = "htmlDir"
+    Given -> grunt.file.expand.andReturn(@expandedSrc = "expandedSrc")
+    Given -> Layout.andReturn(@layout = jasmine.createStub("layout"))
+
+    When -> @pages = Factory.pagesFrom({@src, @htmlDir, @layoutPath})
+
+    context "without layout path", ->
+      Given -> @layoutPath = undefined
+      Then -> expect(Pages).toHaveBeenCalledWith([], {})
+      Then -> expect(grunt.log.error).toHaveBeenCalled()
+
+    context "with layout path", ->
+      Given -> @layoutPath = "layoutPath"
+
+      context "invalid", ->
+        Given -> grunt.file.exists.andReturn(false)
+        Then -> expect(Pages).toHaveBeenCalledWith([], {})
+        Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+
+      context "valid", ->
+        Given -> grunt.file.exists.andReturn(true)
+        Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
+        Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+        Then -> expect(grunt.log.error).not.toHaveBeenCalled()
+        Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()

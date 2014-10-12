@@ -5,6 +5,7 @@ NullFeed = require('./null_feed')
 Archive = require('./archive')
 Index = require('./index')
 NullHtml = require('./null_html')
+Pages = require('./pages')
 
 module.exports =
   archiveFrom: ({htmlPath, layoutPath}) ->
@@ -45,4 +46,16 @@ module.exports =
     else
       new Index latestPost,
         htmlPath: htmlPath
+        layout: new Layout(layoutPath)
+
+  pagesFrom: ({src, htmlDir, layoutPath}) ->
+    unless layoutPath?
+      grunt.log.error "Pages skipped: source template undefined"
+      new Pages([], {})
+    else unless grunt.file.exists(layoutPath)
+      grunt.fail.warn "Pages skipped: unable to read '#{layoutPath}'"
+      new Pages([], {})
+    else
+      new Pages grunt.file.expand(src),
+        htmlDir: htmlDir
         layout: new Layout(layoutPath)
