@@ -3,9 +3,8 @@ Layout = require('./layout')
 Feed = require('./feed')
 NullFeed = require('./null_feed')
 Archive = require('./archive')
-NullArchive = require('./null_archive')
 Index = require('./index')
-NullIndex = require('./null_index')
+NullHtml = require('./null_html')
 
 module.exports =
   feedFrom: ({rssPath, postCount}) ->
@@ -21,13 +20,13 @@ module.exports =
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
-      new NullArchive
+      new NullHtml
     else unless layoutPath?
       grunt.log.error "Archive skipped: source template undefined"
-      new NullArchive
+      new NullHtml
     else unless grunt.file.exists(layoutPath)
       grunt.fail.warn "Archive skipped: unable to read '#{layoutPath}'"
-      new NullArchive
+      new NullHtml
     else
       new Archive
         htmlPath: htmlPath
@@ -36,13 +35,13 @@ module.exports =
   indexFrom: (latestPost, {htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Index skipped: destination path undefined"
-      new NullIndex
+      new NullHtml
     else unless layoutPath?
       grunt.log.error "Index skipped: source template undefined"
-      new NullIndex
+      new NullHtml
     else unless grunt.file.exists(layoutPath)
       grunt.fail.warn "Index skipped: unable to read '#{layoutPath}'"
-      new NullIndex
+      new NullHtml
     else
       new Index latestPost,
         htmlPath: htmlPath

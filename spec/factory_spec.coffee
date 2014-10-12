@@ -1,5 +1,5 @@
 SandboxedModule = require('sandboxed-module')
-{ Factory, grunt, Feed, NullFeed, Archive, NullArchive, Index, NullIndex } = {}
+{ Factory, grunt, Feed, NullFeed, Archive, NullHtml, Index } = {}
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -15,9 +15,8 @@ beforeEach ->
       './feed': Feed = jasmine.constructSpy('feed')
       './null_feed': NullFeed = jasmine.constructSpy('null_feed')
       './archive': Archive = jasmine.constructSpy('archive')
-      './null_archive': NullArchive = jasmine.constructSpy('null_archive')
       './index': Index = jasmine.constructSpy('index')
-      './null_index': NullIndex = jasmine.constructSpy('null_index')
+      './null_html': NullHtml = jasmine.constructSpy('null_html')
 
 describe "Factory", ->
 
@@ -47,7 +46,7 @@ describe "Factory", ->
 
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
-      Then -> @archive instanceof NullArchive
+      Then -> @archive instanceof NullHtml
       Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with htmlPath", ->
@@ -55,7 +54,7 @@ describe "Factory", ->
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> @archive instanceof NullArchive
+        Then -> @archive instanceof NullHtml
         Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
@@ -63,7 +62,7 @@ describe "Factory", ->
 
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
-          Then -> @archive instanceof NullArchive
+          Then -> @archive instanceof NullHtml
           Then -> expect(grunt.fail.warn).toHaveBeenCalled()
 
         context "valid", ->
@@ -79,7 +78,7 @@ describe "Factory", ->
 
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
-      Then -> @index instanceof NullIndex
+      Then -> @index instanceof NullHtml
       And -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with htmlPath", ->
@@ -87,7 +86,7 @@ describe "Factory", ->
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> @index instanceof NullIndex
+        Then -> @index instanceof NullHtml
         Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
@@ -95,7 +94,7 @@ describe "Factory", ->
 
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
-          Then -> @index instanceof NullIndex
+          Then -> @index instanceof NullHtml
           Then -> expect(grunt.fail.warn).toHaveBeenCalled()
 
         context "valid", ->
