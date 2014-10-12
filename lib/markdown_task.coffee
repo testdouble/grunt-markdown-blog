@@ -25,9 +25,7 @@ module.exports = class MarkdownTask
     @index = Index.create @posts.newest(),
       htmlPath: @config.paths.index
       layout: new Layout @config.layouts.index
-    @archive = Archive.create
-      htmlPath: @config.paths.archive
-      layout: new Layout @config.layouts.archive
+    @archive = Factory.archiveFrom @cfg.forArchive()
     @feed = Factory.feedFrom @cfg.forFeed()
     @site = new Site(@config, @posts, @pages)
 
