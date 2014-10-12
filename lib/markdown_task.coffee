@@ -3,7 +3,6 @@ Config = require('../lib/config')
 Factory = require('../lib/factory')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
-Index = require('../lib/index')
 Layout = require('../lib/layout')
 Pages = require('../lib/pages')
 Posts = require('../lib/posts')
@@ -20,9 +19,7 @@ module.exports = class MarkdownTask
     @pages = new Pages @_allMarkdownPages(),
       htmlDir: @config.pathRoots.pages
       layout: new Layout @config.layouts.page
-    @index = Index.create @posts.newest(),
-      htmlPath: @config.paths.index
-      layout: new Layout @config.layouts.index
+    @index = Factory.indexFrom @posts.newest(), @cfg.forIndex()
     @archive = Factory.archiveFrom @cfg.forArchive()
     @feed = Factory.feedFrom @cfg.forFeed()
     @site = new Site(@config, @posts, @pages)
