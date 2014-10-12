@@ -1,5 +1,5 @@
 SandboxedModule = require('sandboxed-module')
-{ Factory, grunt, Feed, NullFeed, Archive, NullArchive } = {}
+{ Factory, grunt, Feed, NullFeed, Archive, NullArchive, Index, NullIndex } = {}
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -16,6 +16,8 @@ beforeEach ->
       './null_feed': NullFeed = jasmine.constructSpy('null_feed')
       './archive': Archive = jasmine.constructSpy('archive')
       './null_archive': NullArchive = jasmine.constructSpy('null_archive')
+      './index': Index = jasmine.constructSpy('index')
+      './null_index': NullIndex = jasmine.constructSpy('null_index')
 
 describe "Factory", ->
 
@@ -67,6 +69,38 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @archive instanceof Archive
+          Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+          Then -> expect(grunt.log.error).not.toHaveBeenCalled()
+          Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+
+  describe "::indexFrom", ->
+    Given -> @latestPost = "latestPost"
+    When -> @index = Factory.indexFrom(@latestPost, {@htmlPath, @layoutPath})
+
+    context "without htmlPath", ->
+      Given -> @htmlPath = undefined
+      Then -> @index instanceof NullIndex
+      And -> expect(grunt.log.writeln).toHaveBeenCalled()
+
+    context "with htmlPath", ->
+      Given -> @htmlPath = "htmlPath"
+
+      context "without layout path", ->
+        Given -> @layoutPath = undefined
+        Then -> @index instanceof NullIndex
+        Then -> expect(grunt.log.error).toHaveBeenCalled()
+
+      context "with layout path", ->
+        Given -> @layoutPath = "layoutPath"
+
+        context "invalid", ->
+          Given -> grunt.file.exists.andReturn(false)
+          Then -> @index instanceof NullIndex
+          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+
+        context "valid", ->
+          Given -> grunt.file.exists.andReturn(true)
+          Then -> @index instanceof Index
           Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
           Then -> expect(grunt.log.error).not.toHaveBeenCalled()
           Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
