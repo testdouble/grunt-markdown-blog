@@ -33,6 +33,9 @@ module.exports = (grunt) ->
       pathRoots:
         posts: "posts"
         pages: "pages"
+      rss:
+        feedInfo: (site, data) -> data
+        itemInfo: (site, post, data) -> data
       dest: "dist"
       context:
         js: "app.js"

@@ -16,6 +16,9 @@ describe "GeneratesRss", ->
     author: "author"
     posts: []
     urlFor: @urlFor = jasmine.createSpy('site.urlFor').andCallFake (post) -> "url/#{post.title()}"
+    rss:
+      feedInfo: (site, data) -> data
+      itemInfo: (site, post, data) -> data
 
   When -> @subject = new GeneratesRss @site
   When -> @feed = @subject.generate()
@@ -65,3 +68,17 @@ describe "GeneratesRss", ->
         title: "post1 title", description: "post1 content", url: "url/post1 title", date: "post1 time"
       And -> expect(Rss::item).toHaveBeenCalledWith
         title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time"
+
+    describe "invokes feed info callback", ->
+      Given -> @site.rssCount = 1
+      Given -> @site.rss.feedInfo = jasmine.createSpy('feedInfo').andReturn(@feedInfo = "info")
+
+      Then -> expect(@site.rss.feedInfo).toHaveBeenCalledWith(@site, jasmine.any(Object))
+      And -> expect(Rss).toHaveBeenCalledWith(@feedInfo)
+
+    describe "invokes item info callback", ->
+      Given -> @site.rssCount = 1
+      Given -> @site.rss.itemInfo = jasmine.createSpy('itemInfo').andReturn(@itemInfo = "info")
+
+      Then -> expect(@site.rss.itemInfo).toHaveBeenCalledWith(@site, @post2, jasmine.any(Object))
+      And -> expect(Rss::item).toHaveBeenCalledWith(@itemInfo)
