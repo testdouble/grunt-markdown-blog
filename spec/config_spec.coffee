@@ -1,4 +1,11 @@
-Config = require('../lib/config')
+SandboxedModule = require('sandboxed-module')
+{ grunt, Config } = {}
+
+
+beforeEach ->
+  Config = SandboxedModule.require '../lib/config',
+    requires:
+      'grunt': grunt = log: error: jasmine.createSpy('log-error')
 
 describe "Config", ->
   Given -> @raw = layouts: {}, paths: {}, pathRoots: {}
@@ -30,17 +37,52 @@ describe "Config", ->
     When -> @pagesConfig = @subject.forPages()
 
     context "with single page source", ->
-      Given -> @raw.paths.pages = "some/path/**/*"
+      Given -> @raw.paths.pages = @path = "some/path/**/*"
       Then -> expect(@pagesConfig).toEqual {
-        @htmlDir,
-        @layoutPath,
-        src: ["some/path/**/*"]
+        @htmlDir
+        @layoutPath
+        src: [@path]
       }
 
     context "with multiple page sources", ->
       Given -> @raw.paths.pages = ["a", null, undefined, "", "b"]
       Then -> expect(@pagesConfig).toEqual {
-        @htmlDir,
-        @layoutPath,
+        @htmlDir
+        @layoutPath
         src: ["a", "b"]
+      }
+
+  describe "#forPosts", ->
+    Given -> @raw.pathRoots.posts = @htmlDir = "htmlDir"
+    Given -> @raw.layouts.post = @layoutPath = "layoutPath"
+    Given -> @raw.dateFormat = @dateFormat = "dateFormat"
+
+    When -> @postsConfig = @subject.forPosts()
+
+    context "with single post source", ->
+      Given -> @raw.paths.posts = @path = "some/path/**/*"
+      Then -> expect(@postsConfig).toEqual {
+        @htmlDir
+        @layoutPath
+        @dateFormat
+        src: [@path]
+      }
+
+    context "with multiple post sources", ->
+      Given -> @raw.paths.posts = ["a", null, undefined, "", "b"]
+      Then -> expect(@postsConfig).toEqual {
+        @htmlDir
+        @layoutPath
+        @dateFormat
+        src: ["a", "b"]
+      }
+
+    context "with deprecated option (.markdown)", ->
+      Given -> @raw.paths.markdown = @path = "some/path/**/*"
+      Then -> expect(grunt.log.error).toHaveBeenCalled()
+      Then -> expect(@postsConfig).toEqual {
+        @htmlDir
+        @layoutPath
+        @dateFormat
+        src: [@path]
       }

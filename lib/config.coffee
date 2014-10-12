@@ -1,3 +1,5 @@
+log = require('grunt').log
+
 module.exports = class Config
   constructor: (@raw) ->
 
@@ -16,4 +18,16 @@ module.exports = class Config
   forPages: ->
     htmlDir: @raw.pathRoots.pages
     layoutPath: @raw.layouts.page
-    src: [].concat(@raw.paths.pages).filter (src) -> src
+    src: ensureCompactArray(@raw.paths.pages)
+
+  forPosts: ->
+    if @raw.paths.markdown?
+      log.error("Warning: config.paths.markdown is deprecated in favor of config.paths.posts")
+    src = @raw.paths.markdown || @raw.paths.posts
+    htmlDir: @raw.pathRoots.posts
+    layoutPath: @raw.layouts.post
+    dateFormat: @raw.dateFormat
+    src: ensureCompactArray(src)
+
+ensureCompactArray = (val) ->
+  [].concat(val).filter (v) -> v
