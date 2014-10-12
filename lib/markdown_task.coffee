@@ -4,7 +4,6 @@ Factory = require('../lib/factory')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
 Layout = require('../lib/layout')
-Pages = require('../lib/pages')
 Posts = require('../lib/posts')
 Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
@@ -16,9 +15,7 @@ module.exports = class MarkdownTask
       htmlDir: @config.pathRoots.posts
       layout: new Layout @config.layouts.post
       dateFormat: @config.dateFormat
-    @pages = new Pages @_allMarkdownPages(),
-      htmlDir: @config.pathRoots.pages
-      layout: new Layout @config.layouts.page
+    @pages = Factory.pagesFrom @cfg.forPages()
     @index = Factory.indexFrom @posts.newest(), @cfg.forIndex()
     @archive = Factory.archiveFrom @cfg.forArchive()
     @feed = Factory.feedFrom @cfg.forFeed()
@@ -43,11 +40,5 @@ module.exports = class MarkdownTask
       grunt.file.expand(@config.paths.markdown)
     else if @config.paths.posts?
       grunt.file.expand(@config.paths.posts)
-    else
-      []
-
-  _allMarkdownPages: ->
-    if @config.paths.pages?
-      grunt.file.expand(@config.paths.pages)
     else
       []
