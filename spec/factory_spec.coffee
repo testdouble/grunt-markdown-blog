@@ -1,5 +1,10 @@
 SandboxedModule = require('sandboxed-module')
-{ Factory, grunt, Feed, NullFeed, Archive, NullHtml, Index, Pages, Layout } = {}
+{ Factory, grunt, Archive, Feed, Index, Pages, NullFeed, NullHtml, Layout } = {}
+
+ThenExpectNoGruntLogging = ->
+  Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+  Then -> expect(grunt.log.error).not.toHaveBeenCalled()
+  Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -13,13 +18,13 @@ beforeEach ->
         file:
           exists: jasmine.createSpy('file-exists')
           expand: jasmine.createSpy('file-expand')
-      './feed': Feed = jasmine.constructSpy('feed')
-      './null_feed': NullFeed = jasmine.constructSpy('null_feed')
-      './archive': Archive = jasmine.constructSpy('archive')
-      './index': Index = jasmine.constructSpy('index')
-      './null_html': NullHtml = jasmine.constructSpy('null_html')
+      './archive': Archive = jasmine.createSpy('archive')
+      './feed': Feed = jasmine.createSpy('feed')
+      './index': Index = jasmine.createSpy('index')
       './pages': Pages = jasmine.createSpy('pages')
-      './layout': Layout = jasmine.createSpy('layout')
+      './null_feed': NullFeed = jasmine.createSpy('null_feed')
+      './null_html': NullHtml = jasmine.createSpy('null_html')
+      './layout': Layout = jasmine.createSpy('layout').andReturn(@layout = jasmine.createStub("layout"))
 
 describe "Factory", ->
 
@@ -50,30 +55,31 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @archive instanceof Archive
-          Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-          Then -> expect(grunt.log.error).not.toHaveBeenCalled()
-          Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+          Then -> expect(Archive).toHaveBeenCalledWith({@htmlPath, @layout})
+          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          ThenExpectNoGruntLogging()
 
   describe "::feedFrom", ->
     When -> @feed = Factory.feedFrom({@rssPath, @postCount})
 
+    context "without rss path", ->
+      Given -> @rssPath = undefined
+      Then -> @feed instanceof NullFeed
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+
     context "with rss path", ->
       Given -> @rssPath = "some/path"
-
-      context "with posts", ->
-        Given -> @postCount = 2
-        Then -> @feed instanceof Feed
-        Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
 
       context "without posts", ->
         Given -> @postCount = 0
         Then -> @feed instanceof NullFeed
         Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
-    context "without rss path", ->
-      Given -> @rssPath = undefined
-      Then -> @feed instanceof NullFeed
-      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+      context "with posts", ->
+        Given -> @postCount = 2
+        Then -> @feed instanceof Feed
+        Then -> expect(Feed).toHaveBeenCalledWith({@rssPath, @postCount})
+        ThenExpectNoGruntLogging()
 
   describe "::indexFrom", ->
     Given -> @latestPost = "latestPost"
@@ -103,15 +109,14 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @index instanceof Index
-          Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-          Then -> expect(grunt.log.error).not.toHaveBeenCalled()
-          Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+          Then -> expect(Index).toHaveBeenCalledWith(@latestPost, {@htmlPath, @layout})
+          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          ThenExpectNoGruntLogging()
 
   describe "::pagesFrom", ->
     Given -> @src = []
     Given -> @htmlDir = "htmlDir"
     Given -> grunt.file.expand.andReturn(@expandedSrc = "expandedSrc")
-    Given -> Layout.andReturn(@layout = jasmine.createStub("layout"))
 
     When -> @pages = Factory.pagesFrom({@src, @htmlDir, @layoutPath})
 
@@ -131,6 +136,5 @@ describe "Factory", ->
       context "valid", ->
         Given -> grunt.file.exists.andReturn(true)
         Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
-        Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-        Then -> expect(grunt.log.error).not.toHaveBeenCalled()
-        Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+        ThenExpectNoGruntLogging()
