@@ -1,11 +1,5 @@
 SandboxedModule = require('sandboxed-module')
-Factory = null
-grunt = null
-
-Feed = require('../lib/feed')
-NullFeed = require('../lib/null_feed')
-Archive = require('../lib/archive')
-NullArchive = require('../lib/null_archive')
+{ Factory, grunt, Feed, NullFeed, Archive, NullArchive } = {}
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -18,10 +12,10 @@ beforeEach ->
           warn: jasmine.createSpy('fail-warn')
         file:
           exists: jasmine.createSpy('file-exists')
-      './feed': Feed
-      './null_feed': NullFeed
-      './archive': Archive
-      './null_archive': NullArchive
+      './feed': Feed = jasmine.constructSpy('feed')
+      './null_feed': NullFeed = jasmine.constructSpy('null_feed')
+      './archive': Archive = jasmine.constructSpy('archive')
+      './null_archive': NullArchive = jasmine.constructSpy('null_archive')
 
 describe "Factory", ->
 
@@ -34,17 +28,17 @@ describe "Factory", ->
       context "with posts", ->
         Given -> @postCount = 2
         Then -> @feed instanceof Feed
-        And -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+        Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
 
       context "without posts", ->
         Given -> @postCount = 0
         Then -> @feed instanceof NullFeed
-        And -> expect(grunt.log.writeln).toHaveBeenCalled()
+        Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "without rss path", ->
       Given -> @rssPath = undefined
       Then -> @feed instanceof NullFeed
-      And -> expect(grunt.log.writeln).toHaveBeenCalled()
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
   describe "::archiveFrom", ->
     When -> @archive = Factory.archiveFrom({@htmlPath, @layoutPath})
@@ -52,7 +46,7 @@ describe "Factory", ->
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
       Then -> @archive instanceof NullArchive
-      And -> expect(grunt.log.writeln).toHaveBeenCalled()
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with htmlPath", ->
       Given -> @htmlPath = "htmlPath"
@@ -60,7 +54,7 @@ describe "Factory", ->
       context "without layout path", ->
         Given -> @layoutPath = undefined
         Then -> @archive instanceof NullArchive
-        And -> expect(grunt.log.error).toHaveBeenCalled()
+        Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
@@ -68,11 +62,11 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> @archive instanceof NullArchive
-          And -> expect(grunt.fail.warn).toHaveBeenCalled()
+          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @archive instanceof Archive
-          And -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-          And -> expect(grunt.log.error).not.toHaveBeenCalled()
-          And -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+          Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
+          Then -> expect(grunt.log.error).not.toHaveBeenCalled()
+          Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()

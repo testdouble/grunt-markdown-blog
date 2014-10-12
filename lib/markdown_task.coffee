@@ -1,8 +1,6 @@
 grunt = require('grunt')
-Archive = require('../lib/archive')
 Config = require('../lib/config')
 Factory = require('../lib/factory')
-Feed = require('../lib/feed')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
 Index = require('../lib/index')
