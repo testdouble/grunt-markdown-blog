@@ -6,6 +6,7 @@ Archive = require('./archive')
 Index = require('./index')
 NullHtml = require('./null_html')
 Pages = require('./pages')
+Posts = require('./posts')
 
 module.exports =
   archiveFrom: ({htmlPath, layoutPath}) ->
@@ -59,3 +60,16 @@ module.exports =
       new Pages grunt.file.expand(src),
         htmlDir: htmlDir
         layout: new Layout(layoutPath)
+
+  postsFrom: ({src, htmlDir, layoutPath, dateFormat}) ->
+    unless layoutPath?
+      grunt.log.error "Posts skipped: source template undefined"
+      new Posts([], {})
+    else unless grunt.file.exists(layoutPath)
+      grunt.fail.warn "Posts skipped: unable to read '#{layoutPath}'"
+      new Posts([], {})
+    else
+      new Posts grunt.file.expand(src),
+        htmlDir: htmlDir
+        layout: new Layout(layoutPath)
+        dateFormat: dateFormat

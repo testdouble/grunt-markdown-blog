@@ -1,5 +1,5 @@
 SandboxedModule = require('sandboxed-module')
-{ Factory, grunt, Archive, Feed, Index, Pages, NullFeed, NullHtml, Layout } = {}
+{ Factory, grunt, Archive, Feed, Index, Pages, Posts, NullFeed, NullHtml, Layout } = {}
 
 ThenExpectNoGruntLogging = ->
   Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
@@ -22,6 +22,7 @@ beforeEach ->
       './feed': Feed = jasmine.createSpy('feed')
       './index': Index = jasmine.createSpy('index')
       './pages': Pages = jasmine.createSpy('pages')
+      './posts': Posts = jasmine.createSpy('posts')
       './null_feed': NullFeed = jasmine.createSpy('null_feed')
       './null_html': NullHtml = jasmine.createSpy('null_html')
       './layout': Layout = jasmine.createSpy('layout').andReturn(@layout = jasmine.createStub("layout"))
@@ -136,5 +137,32 @@ describe "Factory", ->
       context "valid", ->
         Given -> grunt.file.exists.andReturn(true)
         Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
+        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+        ThenExpectNoGruntLogging()
+
+  describe "::postsFrom", ->
+    Given -> @src = ["path/to/posts/**/*"]
+    Given -> @htmlDir = "htmlDir"
+    Given -> @dateFormat = "dateFormat"
+    Given -> grunt.file.expand.andReturn(@expandedSrc = "expandedSrc")
+
+    When -> @posts = Factory.postsFrom({@src, @htmlDir, @layoutPath, @dateFormat})
+
+    context "without layout path", ->
+      Given -> @layoutPath = undefined
+      Then -> expect(Posts).toHaveBeenCalledWith([], {})
+      Then -> expect(grunt.log.error).toHaveBeenCalled()
+
+    context "with layout path", ->
+      Given -> @layoutPath = "layoutPath"
+
+      context "invalid", ->
+        Given -> grunt.file.exists.andReturn(false)
+        Then -> expect(Posts).toHaveBeenCalledWith([], {})
+        Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+
+      context "valid", ->
+        Given -> grunt.file.exists.andReturn(true)
+        Then -> expect(Posts).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout, @dateFormat})
         Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
         ThenExpectNoGruntLogging()
