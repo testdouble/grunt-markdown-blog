@@ -4,17 +4,13 @@ Factory = require('../lib/factory')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
 Layout = require('../lib/layout')
-Posts = require('../lib/posts')
 Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
   constructor: (@config) ->
     @cfg = new Config(@config)
-    @posts = new Posts @_allMarkdownPosts(),
-      htmlDir: @config.pathRoots.posts
-      layout: new Layout @config.layouts.post
-      dateFormat: @config.dateFormat
+    @posts = Factory.postsFrom @cfg.forPosts()
     @pages = Factory.pagesFrom @cfg.forPages()
     @index = Factory.indexFrom @posts.newest(), @cfg.forIndex()
     @archive = Factory.archiveFrom @cfg.forArchive()
@@ -32,13 +28,3 @@ module.exports = class MarkdownTask
     @archive.writeHtml generatesHtml, writesFile
 
     @feed.writeRss new GeneratesRss(@site), writesFile
-
-  #private
-  _allMarkdownPosts: ->
-    if @config.paths.markdown? #backwards compatibility for lineman blog
-      grunt.log.fail("Warning: config.paths.markdown is deprecated in favor of config.paths.posts")
-      grunt.file.expand(@config.paths.markdown)
-    else if @config.paths.posts?
-      grunt.file.expand(@config.paths.posts)
-    else
-      []
