@@ -117,52 +117,70 @@ describe "Factory", ->
   describe "::pagesFrom", ->
     Given -> @src = []
     Given -> @htmlDir = "htmlDir"
-    Given -> grunt.file.expand.andReturn(@expandedSrc = "expandedSrc")
 
     When -> @pages = Factory.pagesFrom({@src, @htmlDir, @layoutPath})
 
-    context "without layout path", ->
-      Given -> @layoutPath = undefined
+    context "without pages", ->
+      Given -> grunt.file.expand.andReturn(@expandedSrc = [])
+      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
       Then -> expect(Pages).toHaveBeenCalledWith([], {})
-      Then -> expect(grunt.log.error).toHaveBeenCalled()
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
-    context "with layout path", ->
-      Given -> @layoutPath = "layoutPath"
+    context "with pages", ->
+      Given -> grunt.file.expand.andReturn(@expandedSrc = ["some/page"])
+      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
 
-      context "invalid", ->
-        Given -> grunt.file.exists.andReturn(false)
+      context "without layout path", ->
+        Given -> @layoutPath = undefined
         Then -> expect(Pages).toHaveBeenCalledWith([], {})
-        Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+        Then -> expect(grunt.log.error).toHaveBeenCalled()
 
-      context "valid", ->
-        Given -> grunt.file.exists.andReturn(true)
-        Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
-        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
-        ThenExpectNoGruntLogging()
+      context "with layout path", ->
+        Given -> @layoutPath = "layoutPath"
+
+        context "invalid", ->
+          Given -> grunt.file.exists.andReturn(false)
+          Then -> expect(Pages).toHaveBeenCalledWith([], {})
+          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+
+        context "valid", ->
+          Given -> grunt.file.exists.andReturn(true)
+          Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
+          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          ThenExpectNoGruntLogging()
 
   describe "::postsFrom", ->
     Given -> @src = ["path/to/posts/**/*"]
     Given -> @htmlDir = "htmlDir"
     Given -> @dateFormat = "dateFormat"
-    Given -> grunt.file.expand.andReturn(@expandedSrc = "expandedSrc")
 
     When -> @posts = Factory.postsFrom({@src, @htmlDir, @layoutPath, @dateFormat})
 
-    context "without layout path", ->
-      Given -> @layoutPath = undefined
+    context "without posts", ->
+      Given -> grunt.file.expand.andReturn(@expandedSrc = [])
+      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
       Then -> expect(Posts).toHaveBeenCalledWith([], {})
-      Then -> expect(grunt.log.error).toHaveBeenCalled()
+      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
-    context "with layout path", ->
-      Given -> @layoutPath = "layoutPath"
+    context "with posts", ->
+      Given -> grunt.file.expand.andReturn(@expandedSrc = ["some/post"])
+      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
 
-      context "invalid", ->
-        Given -> grunt.file.exists.andReturn(false)
+      context "without layout path", ->
+        Given -> @layoutPath = undefined
         Then -> expect(Posts).toHaveBeenCalledWith([], {})
-        Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+        Then -> expect(grunt.log.error).toHaveBeenCalled()
 
-      context "valid", ->
-        Given -> grunt.file.exists.andReturn(true)
-        Then -> expect(Posts).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout, @dateFormat})
-        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
-        ThenExpectNoGruntLogging()
+      context "with layout path", ->
+        Given -> @layoutPath = "layoutPath"
+
+        context "invalid", ->
+          Given -> grunt.file.exists.andReturn(false)
+          Then -> expect(Posts).toHaveBeenCalledWith([], {})
+          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+
+        context "valid", ->
+          Given -> grunt.file.exists.andReturn(true)
+          Then -> expect(Posts).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout, @dateFormat})
+          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          ThenExpectNoGruntLogging()
