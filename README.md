@@ -92,3 +92,5 @@ watch:
     files: ["app/posts/*.md", "app/pages/**/*.md", "app/templates/*.us"]
     tasks: ["markdown:dev"]
 ```
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/testdouble/grunt-markdown-blog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
