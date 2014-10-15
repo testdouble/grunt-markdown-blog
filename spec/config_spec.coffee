@@ -76,13 +76,3 @@ describe "Config", ->
         @dateFormat
         src: ["a", "b"]
       }
-
-    context "with deprecated option (.markdown)", ->
-      Given -> @raw.paths.markdown = @path = "some/path/**/*"
-      Then -> expect(grunt.log.error).toHaveBeenCalled()
-      Then -> expect(@postsConfig).toEqual {
-        @htmlDir
-        @layoutPath
-        @dateFormat
-        src: [@path]
-      }
