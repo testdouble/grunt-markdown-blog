@@ -21,6 +21,8 @@ module.exports = class Config
     src: ensureCompactArray(@raw.paths.pages)
 
   forPosts: ->
+    if @raw.paths.markdown?
+      log.error("Warning: config.paths.markdown is deprecated in favor of config.paths.posts")
     src = @raw.paths.markdown || @raw.paths.posts
     htmlDir: @raw.pathRoots.posts
     layoutPath: @raw.layouts.post
