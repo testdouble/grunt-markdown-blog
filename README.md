@@ -1,5 +1,4 @@
 # grunt-markdown-blog
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/testdouble/grunt-markdown-blog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a grunt multi-task for generating static blogs from posts written in markdown. It was designed to be used with [Lineman](https://github.com/testdouble/lineman), but should be generally useful to someone trying to accomplish the same.
 
@@ -93,3 +92,5 @@ watch:
     files: ["app/posts/*.md", "app/pages/**/*.md", "app/templates/*.us"]
     tasks: ["markdown:dev"]
 ```
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/testdouble/grunt-markdown-blog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
