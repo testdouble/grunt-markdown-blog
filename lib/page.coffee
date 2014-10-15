@@ -7,7 +7,7 @@ module.exports = class Page
   constructor: (@path, @htmlDirPath, @dateFormat) ->
     @_markdown = new Markdown(grunt.file.read(@path))
     @attributes = @_markdown.header
-    deprecateMarkdownProperty(@)
+    @markdown = @_markdown.source #back-compat
 
   content: ->
     @_markdown.compile()
@@ -33,9 +33,3 @@ module.exports = class Page
 
   date: ->
     undefined
-
-deprecateMarkdownProperty = (page) ->
-  Object.defineProperty page, 'markdown',
-    get: ->
-      grunt.log.error("Page#markdown has been deprecated")
-      @_markdown.source
