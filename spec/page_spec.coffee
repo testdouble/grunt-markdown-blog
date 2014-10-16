@@ -1,30 +1,32 @@
-Page = null
 SandboxedModule = require('sandboxed-module')
+{ Page, grunt, Markdown } = {}
 
 describe "Page", ->
   Given -> Page = SandboxedModule.require '../lib/page',
     requires:
-      'grunt': @grunt = file: read: jasmine.createSpy('grunt.file.read')
-      './markdown': @markdown = jasmine.constructSpy('Markdown', ['compile'])
+      'grunt': grunt =
+        file: read: jasmine.createSpy('grunt.file.read')
+        log: error: jasmine.createSpy('grunt.log.error')
+      './markdown': Markdown = jasmine.constructSpy('Markdown', ['compile'])
 
   describe "#constructor", ->
     Given -> @path = "path"
-    Given -> @grunt.file.read.andReturn(@source = "source")
-    Given -> @markdown::header = @header = "attributes"
+    Given -> grunt.file.read.andReturn(@source = "source")
+    Given -> Markdown::header = @header = "attributes"
 
     When -> @subject = new Page(@path)
 
-    Then -> expect(@grunt.file.read).toHaveBeenCalledWith(@path)
-    Then -> expect(@markdown).toHaveBeenCalledWith(@source)
+    Then -> expect(grunt.file.read).toHaveBeenCalledWith(@path)
+    Then -> expect(Markdown).toHaveBeenCalledWith(@source)
     Then -> @subject.attributes == @header
 
   describe "#content", ->
     Given -> @subject = new Page()
-    Given -> @markdown::compile.andReturn(@parsedMarkdown = "content")
+    Given -> Markdown::compile.andReturn(@parsedMarkdown = "content")
 
     When -> @content = @subject.content()
 
-    Then -> expect(@markdown::compile).toHaveBeenCalled()
+    Then -> expect(Markdown::compile).toHaveBeenCalled()
     Then -> @content == @parsedMarkdown
 
   describe "#get", ->
@@ -90,3 +92,10 @@ describe "Page", ->
   describe "#date", ->
     Given -> @subject = new Page()
     Then -> @subject.date() == undefined
+
+  describe "#markdown", ->
+    Given -> @subject = new Page()
+    Given -> Markdown::source = @mdSource = "mdSource"
+    When -> @md = @subject.markdown
+    Then -> @md == @mdSource
+    Then -> expect(grunt.log.error).toHaveBeenCalledWith(jasmine.argThatMatches(/markdown.*deprecated/))
