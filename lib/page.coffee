@@ -1,7 +1,7 @@
 _ = require('underscore')
 grunt = require('grunt')
-pathlib = require('path')
 Markdown = require('./markdown')
+Path = require('./path')
 
 module.exports = class Page
   constructor: (@path, @htmlDirPath, @dateFormat) ->
@@ -16,20 +16,19 @@ module.exports = class Page
     _(@attributes).result(name)
 
   title: ->
-    return @attributes?['title'] if @attributes?['title']?
-    dasherized = @path.match(/\/\d{4}-\d{2}-\d{2}-([^/]*).md/)?[1]
-    title = dasherized?.replace(/-/g, " ")
-    title || @fileName()
+    @get('title') || titleFromFilename(@path) || @fileName()
 
   htmlPath: ->
     if @htmlDirPath.match(/\*/) #path contains wildcard use htmldirpath
-      pathlib.join(@path.replace('.md', '.html'))
+      new Path(@path).changeExtTo(".html").toString()
     else
       "#{@htmlDirPath}/#{@fileName()}"
 
   fileName: ->
-    name = @path.match(/\/([^/]*).md/)?[1]
-    "#{name}.html"
+    new Path(@path).changeExtTo(".html").filename()
 
   date: ->
     undefined
+
+titleFromFilename = (path) ->
+  new Path(path).basename().match(/\d{4}-\d{2}-\d{2}-([^/]*)/)?[1]?.replace(/-/g, " ")
