@@ -2,26 +2,29 @@ Post = null
 SandboxedModule = require('sandboxed-module')
 
 describe "Post", ->
-  Given -> Post = SandboxedModule.require '../lib/post',
-    requires:
-      './../lib/page': class
+  beforeEach ->
+    Post = SandboxedModule.require '../lib/post',
+      requires:
+        './../lib/page': class
 
   Given -> @subject = new Post
 
   describe "#time", ->
+    Given -> @subject.get = jasmine.createSpy('get')
+
     context "with date attribute", ->
-      Given -> @subject.attributes = date: "2000-01-01"
+      Given -> @subject.get.when("date").thenReturn(@time = "2000-01-01")
 
       context "with filename date", ->
         Given -> @subject.path = "app/posts/1999-01-01-some-title"
-        Then -> @subject.time() == @subject.attributes.date
+        Then -> @subject.time() == @time
 
       context "without filename date", ->
         Given -> @subject.path = "app/posts/some-title"
-        Then -> @subject.time() == @subject.attributes.date
+        Then -> @subject.time() == @time
 
     context "without date attribute", ->
-      Given -> @subject.attributes = {}
+      Given -> @subject.get.when("date").thenReturn(undefined)
 
       context "with filename date", ->
         Given -> @subject.path = "app/posts/1999-01-01-some-title"
