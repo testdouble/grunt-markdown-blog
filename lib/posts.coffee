@@ -5,8 +5,8 @@ module.exports = class Posts
     post1.time().localeCompare(post2.time(), numeric: true)
 
   @:: = new Array
-  constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator}) ->
-    posts = markdownFiles.map (file) -> new Post(file, htmlDir, dateFormat)
+  constructor: (markdownFiles, {layout, dateFormat, comparator}) ->
+    posts = markdownFiles.map (file) -> new Post(file.src[0], file.dest, dateFormat)
     posts.layout = layout
     posts.sort(comparator || timeComparator)
     posts.__proto__ = Posts::
@@ -25,7 +25,7 @@ module.exports = class Posts
   writeHtml: (generatesHtml, writesFile) ->
     for post in @
       html = generatesHtml.generate(@layout, post)
-      writesFile.write(html, post.htmlPath())
+      writesFile.write(html, post.path)
 
   older: (post) ->
     @[@indexOf(post) - 1] unless post is @oldest

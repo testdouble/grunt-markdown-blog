@@ -4,30 +4,25 @@ module.exports = class Config
   constructor: (@raw) ->
 
   forArchive: ->
-    htmlPath: @raw.paths.archive
+    destPath: @raw.paths.archive
     layoutPath: @raw.layouts.archive
 
   forFeed: ->
-    rssPath: @raw.paths.rss
+    destPath: @raw.paths.rss
     postCount: @raw.rssCount
 
   forIndex: ->
-    htmlPath: @raw.paths.index
+    destPath: @raw.paths.index
     layoutPath: @raw.layouts.index
 
   forPages: ->
-    # htmlDir: @raw.pathRoots.pages
+    files: expandFilesMapping(@raw.paths.pages)
     layoutPath: @raw.layouts.page
-    # src: ensureCompactArray(@raw.paths.pages)
-    files: grunt.task.normalizeMultiTaskFiles(@raw.paths.pages)
 
   forPosts: ->
-    # src = @raw.paths.markdown || @raw.paths.posts
-    # htmlDir: @raw.pathRoots.posts
+    files: expandFilesMapping(@raw.paths.posts)
     layoutPath: @raw.layouts.post
     dateFormat: @raw.dateFormat
-    # src: ensureCompactArray(src)
-    src: grunt.task.normalizeMultiTaskFiles(@raw.paths.posts)
 
-ensureCompactArray = (val) ->
-  [].concat(val).filter (v) -> v
+expandFilesMapping = (mapping) ->
+  grunt.task.normalizeMultiTaskFiles(mapping)

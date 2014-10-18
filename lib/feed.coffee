@@ -1,5 +1,5 @@
 module.exports = class Feed
-  constructor: ({@rssPath, @postCount}) ->
+  constructor: ({@destPath, @postCount}) ->
 
   writeRss: (generatesRss, writesFile) ->
-    writesFile.write generatesRss.generate(), @rssPath
+    writesFile.write generatesRss.generate(), @destPath

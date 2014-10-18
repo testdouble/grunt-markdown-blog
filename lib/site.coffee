@@ -14,4 +14,4 @@ module.exports = class Site
     @posts.htmlFor this, post
 
   urlFor: (post) ->
-    "#{@url}/#{post.htmlPath()}"
+    "#{@url}/#{post.path}"

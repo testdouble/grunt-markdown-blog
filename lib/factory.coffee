@@ -9,8 +9,8 @@ Pages = require('./pages')
 Posts = require('./posts')
 
 module.exports =
-  archiveFrom: ({htmlPath, layoutPath}) ->
-    unless htmlPath?
+  archiveFrom: ({destPath, layoutPath}) ->
+    unless destPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
       new NullHtml
     else unless layoutPath?
@@ -21,21 +21,21 @@ module.exports =
       new NullHtml
     else
       new Archive
-        htmlPath: htmlPath
+        destPath: destPath
         layout: new Layout(layoutPath)
 
-  feedFrom: ({rssPath, postCount}) ->
-    if rssPath? and postCount
+  feedFrom: ({destPath, postCount}) ->
+    if destPath? and postCount
       new Feed arguments...
-    else unless rssPath?
+    else unless destPath?
       grunt.log.writeln "RSS Feed skipped: destination path undefined"
       new NullFeed
     else unless postCount
       grunt.log.writeln "RSS Feed skipped: 0 posts"
       new NullFeed
 
-  indexFrom: (latestPost, {htmlPath, layoutPath}) ->
-    unless htmlPath?
+  indexFrom: (latestPost, {destPath, layoutPath}) ->
+    unless destPath?
       grunt.log.writeln "Index skipped: destination path undefined"
       new NullHtml
     else unless layoutPath?
@@ -46,11 +46,10 @@ module.exports =
       new NullHtml
     else
       new Index latestPost,
-        htmlPath: htmlPath
+        destPath: destPath
         layout: new Layout(layoutPath)
 
   pagesFrom: ({files, layoutPath}) ->
-
     unless files.length > 0
       grunt.log.writeln "Pages skipped: no page sources found"
       new Pages([], {})
@@ -64,12 +63,8 @@ module.exports =
       new Pages files,
         layout: new Layout(layoutPath)
 
-  postsFrom: ({src, layoutPath, dateFormat}) ->
-    new Posts([], {})
-
-  postsFromOrig: ({src, layoutPath, dateFormat}) ->
-    postSources = grunt.file.expand(src)
-    unless postSources.length > 0
+  postsFrom: ({files, layoutPath, dateFormat}) ->
+    unless files.length > 0
       grunt.log.writeln "Posts skipped: no post sources found"
       new Posts([], {})
     else unless layoutPath?
@@ -79,7 +74,6 @@ module.exports =
       grunt.fail.warn "Posts skipped: unable to read '#{layoutPath}'"
       new Posts([], {})
     else
-      new Posts postSources,
-        htmlDir: htmlDir
+      new Posts files,
         layout: new Layout(layoutPath)
         dateFormat: dateFormat

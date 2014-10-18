@@ -16,9 +16,5 @@ module.exports = class Pages
 
   writeHtml: (generatesHtml, writesFile) ->
     for page in @
-      # console.log("path ", page.path)
-      # console.log("htmlDirPath", page.htmlDirPath)
-      # console.log("htmlPath", page.htmlPath())
-      # console.log("fileName", page.fileName())
       html = generatesHtml.generate(@layout, page)
       writesFile.write(html, page.path)

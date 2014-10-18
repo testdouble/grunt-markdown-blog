@@ -26,17 +26,16 @@ module.exports = (grunt) ->
         archive: "app/templates/archive.us"
       paths:
         posts:
-          src: "app/posts/**/*.md"
+          cwd: "app/posts"
+          src: "**/*.md"
+          expand: true
         pages:
           cwd: "app/pages"
           src: "**/*.md"
-          dest: "dist"
+          expand: true
         index: "index.html"
         archive: "archive.html"
         rss: "index.xml"
-      pathRoots:
-        posts: "posts"
-        pages: "pages"
       dest: "dist"
       context:
         js: "app.js"
