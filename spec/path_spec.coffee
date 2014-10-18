@@ -22,11 +22,6 @@ describe "Path", ->
     Given -> @subject = new Path("path/to/file.txt")
     Then -> @subject.filename() == "file.txt"
 
-  describe "#changeExtTo", ->
-    Given -> @subject = new Path("path/to/file.txt")
-    When -> @path = @subject.changeExtTo(".md")
-    Then -> @path.toString() == "path/to/file.md"
-
   describe "#toString", ->
     Given -> @subject = new Path("path/to/file.txt")
     Then -> @subject.toString() == "path/to/file.txt"

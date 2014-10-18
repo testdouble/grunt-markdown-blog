@@ -16,8 +16,5 @@ module.exports = class Path
   filename: ->
     pathlib.basename(@path)
 
-  changeExtTo: (newExt) ->
-    new @constructor(pathlib.join(@dirname(), @basename() + newExt))
-
   toString: ->
     @path

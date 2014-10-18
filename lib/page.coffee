@@ -5,8 +5,7 @@ Path = require('./path')
 
 module.exports = class Page
   constructor: (srcPath, destPath) ->
-    @path = new Path(destPath).changeExtTo(".html")
-
+    @path = new Path(destPath)
     @_markdown = new Markdown(grunt.file.read(srcPath))
     @_attributes = @_markdown.header
     @markdown = @_markdown.source #back-compat

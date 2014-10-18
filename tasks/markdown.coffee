@@ -28,10 +28,12 @@ module.exports = (grunt) ->
         posts:
           cwd: "app/posts"
           src: "**/*.md"
+          ext: ".html"
           expand: true
         pages:
           cwd: "app/pages"
           src: "**/*.md"
+          ext: ".html"
           expand: true
         index: "index.html"
         archive: "archive.html"
