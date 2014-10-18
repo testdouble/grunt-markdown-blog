@@ -1,4 +1,5 @@
 _ = require('underscore')
+grunt = require('grunt')
 
 module.exports = class Config
   @defaults:
@@ -16,8 +17,12 @@ module.exports = class Config
       page: "app/templates/page.us"
       archive: "app/templates/archive.us"
     paths:
-      posts: "app/posts/*.md"
-      pages: "app/pages/**/*.md"
+      posts:
+        src: "app/posts/**/*.md"
+      pages:
+        cwd: "app/pages"
+        src: "**/*.md"
+        dest: "dist"
       index: "index.html"
       archive: "archive.html"
       rss: "index.xml"
@@ -48,20 +53,17 @@ module.exports = class Config
     layoutPath: @raw.layouts.index
 
   forPages: ->
-    htmlDir: @raw.pathRoots.pages
+    files: expandFilesMapping(@raw.paths.pages)
     layoutPath: @raw.layouts.page
-    src: ensureCompactArray(@raw.paths.pages)
 
   forPosts: ->
-    src = @raw.paths.markdown || @raw.paths.posts
-    htmlDir: @raw.pathRoots.posts
+    files: expandFilesMapping(@raw.paths.posts)
     layoutPath: @raw.layouts.post
     dateFormat: @raw.dateFormat
-    src: ensureCompactArray(src)
 
   forSiteWrapper: ->
     layoutPath: @raw.layouts.wrapper
     context: @raw.context
 
-ensureCompactArray = (val) ->
-  [].concat(val).filter (v) -> v
+expandFilesMapping = (mapping) ->
+  grunt.task.normalizeMultiTaskFiles(mapping)
