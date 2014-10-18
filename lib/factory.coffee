@@ -49,9 +49,9 @@ module.exports =
         htmlPath: htmlPath
         layout: new Layout(layoutPath)
 
-  pagesFrom: ({src, htmlDir, layoutPath}) ->
-    pageSources = grunt.file.expand(src)
-    unless pageSources.length > 0
+  pagesFrom: ({files, layoutPath}) ->
+
+    unless files.length > 0
       grunt.log.writeln "Pages skipped: no page sources found"
       new Pages([], {})
     else unless layoutPath?
@@ -61,11 +61,13 @@ module.exports =
       grunt.fail.warn "Pages skipped: unable to read '#{layoutPath}'"
       new Pages([], {})
     else
-      new Pages pageSources,
-        htmlDir: htmlDir
+      new Pages files,
         layout: new Layout(layoutPath)
 
-  postsFrom: ({src, htmlDir, layoutPath, dateFormat}) ->
+  postsFrom: ({src, layoutPath, dateFormat}) ->
+    new Posts([], {})
+
+  postsFromOrig: ({src, layoutPath, dateFormat}) ->
     postSources = grunt.file.expand(src)
     unless postSources.length > 0
       grunt.log.writeln "Posts skipped: no post sources found"
