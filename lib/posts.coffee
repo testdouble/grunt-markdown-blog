@@ -6,7 +6,7 @@ module.exports = class Posts
 
   @:: = new Array
   constructor: (markdownFiles, {layout, dateFormat, comparator}) ->
-    posts = markdownFiles.map (file) -> new Post(file.src[0], file.dest, dateFormat)
+    posts = markdownFiles.map (file) -> new Post(file, dateFormat)
     posts.layout = layout
     posts.sort(comparator || timeComparator)
     posts.__proto__ = Posts::

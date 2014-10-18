@@ -4,7 +4,7 @@ module.exports = class Pages
   @:: = new Array
   constructor: (markdownFiles, {layout}) ->
 
-    pages = markdownFiles.map (file) -> new Page(file.src[0], file.dest)
+    pages = markdownFiles.map (file) -> new Page(file)
     pages.__proto__ = Pages::
     pages.layout = layout
     return pages

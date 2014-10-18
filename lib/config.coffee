@@ -1,4 +1,7 @@
+_ = require('underscore')
 grunt = require('grunt')
+Path = require('./path')
+
 
 module.exports = class Config
   constructor: (@raw) ->
@@ -25,4 +28,6 @@ module.exports = class Config
     dateFormat: @raw.dateFormat
 
 expandFilesMapping = (mapping) ->
-  grunt.task.normalizeMultiTaskFiles(mapping)
+  _(grunt.task.normalizeMultiTaskFiles(mapping)).map (file) ->
+    src: file.src[0]
+    dest: new Path(file.dest)

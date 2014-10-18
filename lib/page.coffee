@@ -1,12 +1,11 @@
 _ = require('underscore')
 grunt = require('grunt')
 Markdown = require('./markdown')
-Path = require('./path')
 
 module.exports = class Page
-  constructor: (srcPath, destPath) ->
-    @path = new Path(destPath)
-    @_markdown = new Markdown(grunt.file.read(srcPath))
+  constructor: ({src, dest}) ->
+    @path = dest
+    @_markdown = new Markdown(grunt.file.read(src))
     @_attributes = @_markdown.header
     @markdown = @_markdown.source #back-compat
 
