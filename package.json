@@ -16,7 +16,7 @@
     "url": "https://github.com/testdouble/grunt-markdown-blog/issues"
   },
   "dependencies": {
-    "coffee-script": "~1.6.2",
+    "coffee-script": "~1.8.0",
     "highlight.js": "~7.3.0",
     "marked": "~0.2.8",
     "moment": "~2.0.0",
