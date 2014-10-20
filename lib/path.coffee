@@ -21,3 +21,6 @@ module.exports = class Path
 
   toString: ->
     @path
+
+  stripIndex: ->
+    new @constructor(@path.replace(/index\.html$/, ""))

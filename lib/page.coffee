@@ -24,6 +24,9 @@ module.exports = class Page
     else
       "#{@htmlDirPath}/#{@fileName()}"
 
+  webPath: ->
+    new Path(@htmlPath()).stripIndex().toString()
+
   fileName: ->
     new Path(@path).changeExtTo(".html").filename()
 

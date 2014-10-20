@@ -31,3 +31,13 @@ describe "Path", ->
     Given -> @subject = new Path("path/to/file.txt")
     Then -> @subject.toString() == "path/to/file.txt"
 
+  describe "#stripIndex", ->
+    When -> @subject = @subject.stripIndex()
+
+    context "with normal path", ->
+      Given -> @subject = new Path("path/to/file.text")
+      Then -> @subject.toString() == "path/to/file.text"
+
+    context "with index.html ending path", ->
+      Given -> @subject = new Path("path/to/index.html")
+      Then -> @subject.toString() == "path/to/"
