@@ -30,7 +30,7 @@
   "devDependencies": {
     "grunt-jasmine-bundle": "~0.2.0",
     "grunt-release": "~0.7.0",
-    "sandboxed-module": "~0.3.0"
+    "sandboxed-module": "~1.0.2"
   },
   "keywords": [
     "gruntplugin",

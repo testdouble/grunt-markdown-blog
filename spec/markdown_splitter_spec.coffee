@@ -2,6 +2,7 @@ SandboxedModule = require('sandboxed-module')
 
 Given ->
   MarkdownSplitter = SandboxedModule.require '../lib/markdown_splitter',
+    singleOnly: true
     requires: grunt: @grunt = jasmine.createSpyObj('grunt', ['warn'])
   @subject = new MarkdownSplitter
 
