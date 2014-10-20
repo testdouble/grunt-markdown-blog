@@ -28,7 +28,7 @@
     "grunt": "~0.4.0"
   },
   "devDependencies": {
-    "grunt-jasmine-bundle": "~0.1.4",
+    "grunt-jasmine-bundle": "~0.2.0",
     "grunt-release": "~0.7.0",
     "sandboxed-module": "~0.3.0"
   },
