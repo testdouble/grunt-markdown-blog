@@ -34,6 +34,44 @@ describe "Config", ->
           js: "app.js"
           css: "app.css"
 
+    describe "does not merge recursively", ->
+      When -> @subject = new Config
+        author: "top level"
+        layouts:
+          wrapper: "string"
+          index: undefined
+          post: null
+          page: false
+          # archive: ""
+      Then -> expect(@subject.raw).toEqual
+        author: "top level"
+        layouts:
+          wrapper: "string"
+          index: undefined
+          post: null
+          page: false
+          archive: undefined
+        # defaults
+        title: "my blog"
+        description: "the blog where I write things"
+        url: "http://www.myblog.com"
+        rssCount: 10
+        dateFormat: 'MMMM Do YYYY'
+        paths:
+          posts: "app/posts/*.md"
+          pages: "app/pages/**/*.md"
+          index: "index.html"
+          archive: "archive.html"
+          rss: "index.xml"
+        pathRoots:
+          posts: "posts"
+          pages: "pages"
+        dest: "dist"
+        context:
+          js: "app.js"
+          css: "app.css"
+
+
   describe "#forArchive", ->
     Given -> @options.paths.archive = @htmlPath = "htmlPath"
     Given -> @options.layouts.archive = @layoutPath = "layoutPath"
