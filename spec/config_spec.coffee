@@ -1,11 +1,4 @@
-SandboxedModule = require('sandboxed-module')
-{ grunt, Config } = {}
-
-
-beforeEach ->
-  Config = SandboxedModule.require '../lib/config',
-    requires:
-      'grunt': grunt = log: error: jasmine.createSpy('log-error')
+Config = require('../lib/config')
 
 describe "Config", ->
   Given -> @raw = layouts: {}, paths: {}, pathRoots: {}

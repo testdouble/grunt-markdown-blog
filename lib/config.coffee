@@ -1,5 +1,3 @@
-log = require('grunt').log
-
 module.exports = class Config
   constructor: (@raw) ->
 
