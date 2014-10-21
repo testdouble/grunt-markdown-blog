@@ -35,6 +35,15 @@ describe "Config", ->
           css: "app.css"
 
     describe "does not merge recursively", ->
+      Given -> Config.defaults =
+        author: "author"
+        description: "description"
+        layouts:
+          wrapper: "wrapper.us"
+          index: "index.us"
+          post: "post.us"
+          page: "page.us"
+          archive: "archive.us"
       When -> @subject = new Config
         author: "top level"
         layouts:
@@ -45,31 +54,13 @@ describe "Config", ->
           # archive: ""
       Then -> expect(@subject.raw).toEqual
         author: "top level"
+        description: "description"
         layouts:
           wrapper: "string"
           index: undefined
           post: null
           page: false
           archive: undefined
-        # defaults
-        title: "my blog"
-        description: "the blog where I write things"
-        url: "http://www.myblog.com"
-        rssCount: 10
-        dateFormat: 'MMMM Do YYYY'
-        paths:
-          posts: "app/posts/*.md"
-          pages: "app/pages/**/*.md"
-          index: "index.html"
-          archive: "archive.html"
-          rss: "index.xml"
-        pathRoots:
-          posts: "posts"
-          pages: "pages"
-        dest: "dist"
-        context:
-          js: "app.js"
-          css: "app.css"
 
 
   describe "#forArchive", ->
