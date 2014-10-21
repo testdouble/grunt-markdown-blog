@@ -1,36 +1,64 @@
 Config = require('../lib/config')
 
 describe "Config", ->
-  Given -> @raw = layouts: {}, paths: {}, pathRoots: {}
-  Given -> @subject = new Config(@raw)
+  Given -> @options = layouts: {}, paths: {}, pathRoots: {}
+  When -> @subject = new Config(@options)
 
-  Invariant -> @raw == @subject.raw
+  describe "#constructor", ->
+    describe "has defaults", ->
+      When -> @subject = new Config()
+      Then -> expect(@subject.raw).toEqual
+        author: "Full Name"
+        title: "my blog"
+        description: "the blog where I write things"
+        url: "http://www.myblog.com"
+        rssCount: 10
+        dateFormat: 'MMMM Do YYYY'
+        layouts:
+          wrapper: "app/templates/wrapper.us"
+          index: "app/templates/index.us"
+          post: "app/templates/post.us"
+          page: "app/templates/page.us"
+          archive: "app/templates/archive.us"
+        paths:
+          posts: "app/posts/*.md"
+          pages: "app/pages/**/*.md"
+          index: "index.html"
+          archive: "archive.html"
+          rss: "index.xml"
+        pathRoots:
+          posts: "posts"
+          pages: "pages"
+        dest: "dist"
+        context:
+          js: "app.js"
+          css: "app.css"
 
   describe "#forArchive", ->
-    Given -> @raw.paths.archive = @htmlPath = "htmlPath"
-    Given -> @raw.layouts.archive = @layoutPath = "layoutPath"
+    Given -> @options.paths.archive = @htmlPath = "htmlPath"
+    Given -> @options.layouts.archive = @layoutPath = "layoutPath"
     When -> @archiveConfig = @subject.forArchive()
     Then -> expect(@archiveConfig).toEqual {@htmlPath, @layoutPath}
 
   describe "#forFeed", ->
-    Given -> @raw.paths.rss = @rssPath = "some/path"
-    Given -> @raw.rssCount = @postCount = 2
+    Given -> @options.paths.rss = @rssPath = "some/path"
+    Given -> @options.rssCount = @postCount = 2
     When -> @feedConfig = @subject.forFeed()
     Then -> expect(@feedConfig).toEqual {@rssPath, @postCount}
 
   describe "#forIndex", ->
-    Given -> @raw.paths.index = @htmlPath = "htmlPath"
-    Given -> @raw.layouts.index = @layoutPath = "layoutPath"
+    Given -> @options.paths.index = @htmlPath = "htmlPath"
+    Given -> @options.layouts.index = @layoutPath = "layoutPath"
     When -> @indexConfig = @subject.forIndex()
     Then -> expect(@indexConfig).toEqual {@htmlPath, @layoutPath}
 
   describe "#forPages", ->
-    Given -> @raw.pathRoots.pages = @htmlDir = "htmlDir"
-    Given -> @raw.layouts.page = @layoutPath = "layoutPath"
+    Given -> @options.pathRoots.pages = @htmlDir = "htmlDir"
+    Given -> @options.layouts.page = @layoutPath = "layoutPath"
     When -> @pagesConfig = @subject.forPages()
 
     context "with single page source", ->
-      Given -> @raw.paths.pages = @path = "some/path/**/*"
+      Given -> @options.paths.pages = @path = "some/path/**/*"
       Then -> expect(@pagesConfig).toEqual {
         @htmlDir
         @layoutPath
@@ -38,7 +66,7 @@ describe "Config", ->
       }
 
     context "with multiple page sources", ->
-      Given -> @raw.paths.pages = ["a", null, undefined, "", "b"]
+      Given -> @options.paths.pages = ["a", null, undefined, "", "b"]
       Then -> expect(@pagesConfig).toEqual {
         @htmlDir
         @layoutPath
@@ -46,14 +74,14 @@ describe "Config", ->
       }
 
   describe "#forPosts", ->
-    Given -> @raw.pathRoots.posts = @htmlDir = "htmlDir"
-    Given -> @raw.layouts.post = @layoutPath = "layoutPath"
-    Given -> @raw.dateFormat = @dateFormat = "dateFormat"
+    Given -> @options.pathRoots.posts = @htmlDir = "htmlDir"
+    Given -> @options.layouts.post = @layoutPath = "layoutPath"
+    Given -> @options.dateFormat = @dateFormat = "dateFormat"
 
     When -> @postsConfig = @subject.forPosts()
 
     context "with single post source", ->
-      Given -> @raw.paths.posts = @path = "some/path/**/*"
+      Given -> @options.paths.posts = @path = "some/path/**/*"
       Then -> expect(@postsConfig).toEqual {
         @htmlDir
         @layoutPath
@@ -62,7 +90,7 @@ describe "Config", ->
       }
 
     context "with multiple post sources", ->
-      Given -> @raw.paths.posts = ["a", null, undefined, "", "b"]
+      Given -> @options.paths.posts = ["a", null, undefined, "", "b"]
       Then -> expect(@postsConfig).toEqual {
         @htmlDir
         @layoutPath
