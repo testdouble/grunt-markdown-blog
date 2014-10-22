@@ -32,6 +32,9 @@ module.exports = class Config
   constructor: (@options) ->
     @raw = _({}).extend(@constructor.defaults, @options)
 
+  destDir: ->
+    @raw.dest
+
   forArchive: ->
     htmlPath: @raw.paths.archive
     layoutPath: @raw.layouts.archive

@@ -134,3 +134,8 @@ describe "Config", ->
     When -> @wrapperConfig = @subject.forSiteWrapper()
 
     Then -> expect(@wrapperConfig).toEqual [@wrapper, @context]
+
+  describe "#destDir", ->
+    Given -> @options.dest = @dest = "dest"
+    When -> @destDir = @subject.destDir()
+    Then -> @destDir == @dest
