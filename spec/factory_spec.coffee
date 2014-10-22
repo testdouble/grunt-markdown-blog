@@ -184,3 +184,25 @@ describe "Factory", ->
           Then -> expect(Posts).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout, @dateFormat})
           Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
           ThenExpectNoGruntLogging()
+
+  describe "::siteWrapperFrom", ->
+    Given -> @context = "context"
+    When -> @siteWrapper = Factory.siteWrapperFrom({@layoutPath, @context})
+
+    context "without layout path", ->
+      Given -> @layoutPath = undefined
+      Then -> expect(@siteWrapper.htmlFor).toBeDefined()
+      Then -> expect(grunt.log.error).toHaveBeenCalled()
+
+    context "with layout path", ->
+      Given -> @layoutPath = "layoutPath"
+
+      context "invalid", ->
+        Given -> grunt.file.exists.andReturn(false)
+        Then -> expect(@siteWrapper.htmlFor).toBeDefined()
+        Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+
+      context "valid", ->
+        Given -> grunt.file.exists.andReturn(true)
+        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath, @context)
+        ThenExpectNoGruntLogging()

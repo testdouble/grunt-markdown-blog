@@ -81,3 +81,13 @@ module.exports =
         htmlDir: htmlDir
         layout: new Layout(layoutPath)
         dateFormat: dateFormat
+
+  siteWrapperFrom: ({layoutPath, context}) ->
+    unless layoutPath?
+      grunt.log.error "Site? skipped: source template undefined"
+      htmlFor: ->
+    else unless grunt.file.exists(layoutPath)
+      grunt.fail.warn "Site? skipped: unable to read '#{layoutPath}'"
+      htmlFor: ->
+    else
+      new Layout(layoutPath, context)
