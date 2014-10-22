@@ -1,5 +1,3 @@
-grunt = require('grunt')
-Config = require('../lib/config')
 Factory = require('../lib/factory')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
@@ -8,8 +6,7 @@ Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
-  constructor: (optionsFromGrunt) ->
-    @config = new Config(optionsFromGrunt)
+  constructor: (@config) ->
     @posts = Factory.postsFrom @config.forPosts()
     @pages = Factory.pagesFrom @config.forPages()
     @index = Factory.indexFrom @posts.newest(), @config.forIndex()
