@@ -15,7 +15,7 @@ module.exports = class MarkdownTask
     @site = new Site(@config.raw, @posts, @pages)
 
   run: ->
-    writesFile = new WritesFile(@config.raw.dest)
+    writesFile = new WritesFile(@config.destDir())
     wrapper = new Layout(@config.forSiteWrapper()...)
     generatesHtml = new GeneratesHtml(@site, wrapper)
 
