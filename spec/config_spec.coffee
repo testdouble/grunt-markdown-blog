@@ -128,12 +128,10 @@ describe "Config", ->
       }
 
   describe "#forSiteWrapper", ->
-    Given -> @options.layouts.wrapper = @wrapper = "wrapper"
+    Given -> @options.layouts.wrapper = @layoutPath = "wrapper"
     Given -> @options.context = @context = "context"
-
     When -> @wrapperConfig = @subject.forSiteWrapper()
-
-    Then -> expect(@wrapperConfig).toEqual [@wrapper, @context]
+    Then -> expect(@wrapperConfig).toEqual {@layoutPath, @context}
 
   describe "#destDir", ->
     Given -> @options.dest = @dest = "dest"

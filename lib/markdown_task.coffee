@@ -1,7 +1,6 @@
 Factory = require('../lib/factory')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
-Layout = require('../lib/layout')
 Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
@@ -16,7 +15,7 @@ module.exports = class MarkdownTask
 
   run: ->
     writesFile = new WritesFile(@config.destDir())
-    wrapper = new Layout(@config.forSiteWrapper()...)
+    wrapper = Factory.siteWrapperFrom @config.forSiteWrapper()
     generatesHtml = new GeneratesHtml(@site, wrapper)
 
     @posts.writeHtml generatesHtml, writesFile

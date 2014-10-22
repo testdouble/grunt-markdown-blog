@@ -60,7 +60,8 @@ module.exports = class Config
     src: ensureCompactArray(src)
 
   forSiteWrapper: ->
-    [ @raw.layouts.wrapper, @raw.context ]
+    layoutPath: @raw.layouts.wrapper
+    context: @raw.context
 
 ensureCompactArray = (val) ->
   [].concat(val).filter (v) -> v
