@@ -126,3 +126,11 @@ describe "Config", ->
         @dateFormat
         src: ["a", "b"]
       }
+
+  describe "#forSiteWrapper", ->
+    Given -> @options.layouts.wrapper = @wrapper = "wrapper"
+    Given -> @options.context = @context = "context"
+
+    When -> @wrapperConfig = @subject.forSiteWrapper()
+
+    Then -> expect(@wrapperConfig).toEqual [@wrapper, @context]

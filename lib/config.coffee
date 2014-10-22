@@ -56,5 +56,8 @@ module.exports = class Config
     dateFormat: @raw.dateFormat
     src: ensureCompactArray(src)
 
+  forSiteWrapper: ->
+    [ @raw.layouts.wrapper, @raw.context ]
+
 ensureCompactArray = (val) ->
   [].concat(val).filter (v) -> v
