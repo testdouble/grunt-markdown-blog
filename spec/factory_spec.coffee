@@ -4,18 +4,11 @@ SandboxedModule = require('sandboxed-module')
 ThenExpectNoGruntLogging = ->
   Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
   Then -> expect(grunt.log.error).not.toHaveBeenCalled()
-  Then -> expect(@gruntWarn).not.toHaveBeenCalled()
+  Then -> expect(grunt.warn).not.toHaveBeenCalled()
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
     requires:
-      'grunt': grunt =
-        log:
-          error: jasmine.createSpy('log-error')
-          writeln: jasmine.createSpy('log-writeln')
-        file:
-          exists: jasmine.createSpy('file-exists')
-          expand: jasmine.createSpy('file-expand')
       './archive': Archive = jasmine.createSpy('archive')
       './feed': Feed = jasmine.createSpy('feed')
       './index': Index = jasmine.createSpy('index')
@@ -25,9 +18,17 @@ beforeEach ->
       './null_html': NullHtml = jasmine.createSpy('null_html')
       './layout': Layout = jasmine.createSpy('layout').andReturn(@layout = jasmine.createStub("layout"))
 
+Given -> grunt =
+  log:
+    error: jasmine.createSpy('log-error')
+    writeln: jasmine.createSpy('log-writeln')
+  warn: jasmine.createSpy('warn')
+  file:
+    exists: jasmine.createSpy('file-exists')
+    expand: jasmine.createSpy('file-expand')
+
 describe "Factory", ->
-  Given -> @gruntWarn = jasmine.createSpy('fail-warn')
-  Given -> @subject = new Factory(@gruntWarn)
+  Given -> @subject = new Factory(grunt)
 
   describe "::archiveFrom", ->
     When -> @archive = @subject.archiveFrom({@htmlPath, @layoutPath})
@@ -51,7 +52,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> @archive instanceof NullHtml
-          Then -> expect(@gruntWarn).toHaveBeenCalled()
+          Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -105,7 +106,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> @index instanceof NullHtml
-          Then -> expect(@gruntWarn).toHaveBeenCalled()
+          Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -141,7 +142,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> expect(Pages).toHaveBeenCalledWith([], {})
-          Then -> expect(@gruntWarn).toHaveBeenCalled()
+          Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -177,7 +178,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> expect(Posts).toHaveBeenCalledWith([], {})
-          Then -> expect(@gruntWarn).toHaveBeenCalled()
+          Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -200,7 +201,7 @@ describe "Factory", ->
       context "invalid", ->
         Given -> grunt.file.exists.andReturn(false)
         Then -> expect(@siteWrapper.htmlFor).toBeDefined()
-        Then -> expect(@gruntWarn).toHaveBeenCalled()
+        Then -> expect(grunt.warn).toHaveBeenCalled()
 
       context "valid", ->
         Given -> grunt.file.exists.andReturn(true)

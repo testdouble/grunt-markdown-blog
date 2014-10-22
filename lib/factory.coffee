@@ -1,4 +1,4 @@
-grunt = require('grunt')
+grunt = null
 Layout = require('./layout')
 Feed = require('./feed')
 NullFeed = require('./null_feed')
@@ -9,7 +9,8 @@ Pages = require('./pages')
 Posts = require('./posts')
 
 module.exports = class Factory
-  constructor: (@warn) ->
+  constructor: (g) ->
+    grunt = g
 
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
@@ -19,7 +20,7 @@ module.exports = class Factory
       grunt.log.error "Archive skipped: source template undefined"
       new NullHtml
     else unless grunt.file.exists(layoutPath)
-      @warn "Archive skipped: unable to read '#{layoutPath}'"
+      grunt.warn "Archive skipped: unable to read '#{layoutPath}'"
       new NullHtml
     else
       new Archive
@@ -44,7 +45,7 @@ module.exports = class Factory
       grunt.log.error "Index skipped: source template undefined"
       new NullHtml
     else unless grunt.file.exists(layoutPath)
-      @warn "Index skipped: unable to read '#{layoutPath}'"
+      grunt.warn "Index skipped: unable to read '#{layoutPath}'"
       new NullHtml
     else
       new Index latestPost,
@@ -60,7 +61,7 @@ module.exports = class Factory
       grunt.log.error "Pages skipped: source template undefined"
       new Pages([], {})
     else unless grunt.file.exists(layoutPath)
-      @warn "Pages skipped: unable to read '#{layoutPath}'"
+      grunt.warn "Pages skipped: unable to read '#{layoutPath}'"
       new Pages([], {})
     else
       new Pages pageSources,
@@ -76,7 +77,7 @@ module.exports = class Factory
       grunt.log.error "Posts skipped: source template undefined"
       new Posts([], {})
     else unless grunt.file.exists(layoutPath)
-      @warn "Posts skipped: unable to read '#{layoutPath}'"
+      grunt.warn "Posts skipped: unable to read '#{layoutPath}'"
       new Posts([], {})
     else
       new Posts postSources,
@@ -89,7 +90,7 @@ module.exports = class Factory
       grunt.log.error "Site? skipped: source template undefined"
       htmlFor: ->
     else unless grunt.file.exists(layoutPath)
-      @warn "Site? skipped: unable to read '#{layoutPath}'"
+      grunt.warn "Site? skipped: unable to read '#{layoutPath}'"
       htmlFor: ->
     else
       new Layout(layoutPath, context)
