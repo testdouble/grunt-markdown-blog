@@ -1,4 +1,3 @@
-grunt = null
 Layout = require('./layout')
 Feed = require('./feed')
 NullFeed = require('./null_feed')
@@ -8,10 +7,7 @@ NullHtml = require('./null_html')
 Pages = require('./pages')
 Posts = require('./posts')
 
-module.exports = class Factory
-  constructor: (g) ->
-    grunt = g
-
+module.exports = (grunt) ->
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Archive skipped: destination path undefined"

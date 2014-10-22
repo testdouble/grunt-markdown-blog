@@ -6,7 +6,7 @@ WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
   constructor: (grunt, @config) ->
-    factory = new Factory(grunt)
+    factory = Factory(grunt)
     @posts = factory.postsFrom @config.forPosts()
     @pages = factory.pagesFrom @config.forPages()
     @index = factory.indexFrom @posts.newest(), @config.forIndex()

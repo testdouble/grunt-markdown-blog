@@ -28,7 +28,7 @@ Given -> grunt =
     expand: jasmine.createSpy('file-expand')
 
 describe "Factory", ->
-  Given -> @subject = new Factory(grunt)
+  Given -> @subject = Factory(grunt)
 
   describe "::archiveFrom", ->
     When -> @archive = @subject.archiveFrom({@htmlPath, @layoutPath})
