@@ -1,5 +1,4 @@
 Layout = null
-NullLayout = null
 SandboxedModule = require('sandboxed-module')
 
 describe "Layout", ->
@@ -11,7 +10,6 @@ describe "Layout", ->
     requires:
       'grunt': @grunt =
         file:
-          exists: jasmine.createSpy("grunt.file.exists").andReturn(true)
           read: jasmine.createSpy("grunt.file.read").andReturn(@templateContents)
       'underscore': @_ = do =>
         _ = jasmine.createSpy("underscore")
@@ -19,25 +17,16 @@ describe "Layout", ->
         _.extend = jasmine.createSpy("extend").andReturn(@extendedContext)
         _.template = jasmine.createSpy("template").andReturn(@layout)
         _.andReturn(_)
-      './null_layout': NullLayout = jasmine.createSpy("NullLayout")
 
   When -> @subject = new Layout @templatePath, @context
 
-  context "with valid template file", ->
-    Given -> @grunt.file.exists.andReturn(true)
-    Then -> @subject instanceof Layout
-
+  describe "#constructor", ->
     describe "reads template file", ->
       Then -> expect(@grunt.file.read).toHaveBeenCalledWith @templatePath
 
     describe "parses file as underscore template", ->
       Then -> expect(@_).toHaveBeenCalledWith @templateContents
       Then -> expect(@_.template).toHaveBeenCalled()
-
-
-  context "with invalid template file", ->
-    Given -> @grunt.file.exists.andReturn(false)
-    Then -> @subject instanceof NullLayout
 
 
   describe "#htmlFor", ->
