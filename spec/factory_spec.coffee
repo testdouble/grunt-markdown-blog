@@ -4,7 +4,7 @@ SandboxedModule = require('sandboxed-module')
 ThenExpectNoGruntLogging = ->
   Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
   Then -> expect(grunt.log.error).not.toHaveBeenCalled()
-  Then -> expect(grunt.fail.warn).not.toHaveBeenCalled()
+  Then -> expect(@gruntWarn).not.toHaveBeenCalled()
 
 beforeEach ->
   Factory = SandboxedModule.require '../lib/factory',
@@ -13,8 +13,6 @@ beforeEach ->
         log:
           error: jasmine.createSpy('log-error')
           writeln: jasmine.createSpy('log-writeln')
-        fail:
-          warn: jasmine.createSpy('fail-warn')
         file:
           exists: jasmine.createSpy('file-exists')
           expand: jasmine.createSpy('file-expand')
@@ -28,9 +26,11 @@ beforeEach ->
       './layout': Layout = jasmine.createSpy('layout').andReturn(@layout = jasmine.createStub("layout"))
 
 describe "Factory", ->
+  Given -> @gruntWarn = jasmine.createSpy('fail-warn')
+  Given -> @subject = new Factory(@gruntWarn)
 
   describe "::archiveFrom", ->
-    When -> @archive = Factory.archiveFrom({@htmlPath, @layoutPath})
+    When -> @archive = @subject.archiveFrom({@htmlPath, @layoutPath})
 
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
@@ -51,7 +51,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> @archive instanceof NullHtml
-          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+          Then -> expect(@gruntWarn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -61,7 +61,7 @@ describe "Factory", ->
           ThenExpectNoGruntLogging()
 
   describe "::feedFrom", ->
-    When -> @feed = Factory.feedFrom({@rssPath, @postCount})
+    When -> @feed = @subject.feedFrom({@rssPath, @postCount})
 
     context "without rss path", ->
       Given -> @rssPath = undefined
@@ -84,7 +84,7 @@ describe "Factory", ->
 
   describe "::indexFrom", ->
     Given -> @latestPost = "latestPost"
-    When -> @index = Factory.indexFrom(@latestPost, {@htmlPath, @layoutPath})
+    When -> @index = @subject.indexFrom(@latestPost, {@htmlPath, @layoutPath})
 
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
@@ -105,7 +105,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> @index instanceof NullHtml
-          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+          Then -> expect(@gruntWarn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -118,7 +118,7 @@ describe "Factory", ->
     Given -> @src = []
     Given -> @htmlDir = "htmlDir"
 
-    When -> @pages = Factory.pagesFrom({@src, @htmlDir, @layoutPath})
+    When -> @pages = @subject.pagesFrom({@src, @htmlDir, @layoutPath})
 
     context "without pages", ->
       Given -> grunt.file.expand.andReturn(@expandedSrc = [])
@@ -141,7 +141,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> expect(Pages).toHaveBeenCalledWith([], {})
-          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+          Then -> expect(@gruntWarn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -154,7 +154,7 @@ describe "Factory", ->
     Given -> @htmlDir = "htmlDir"
     Given -> @dateFormat = "dateFormat"
 
-    When -> @posts = Factory.postsFrom({@src, @htmlDir, @layoutPath, @dateFormat})
+    When -> @posts = @subject.postsFrom({@src, @htmlDir, @layoutPath, @dateFormat})
 
     context "without posts", ->
       Given -> grunt.file.expand.andReturn(@expandedSrc = [])
@@ -177,7 +177,7 @@ describe "Factory", ->
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
           Then -> expect(Posts).toHaveBeenCalledWith([], {})
-          Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+          Then -> expect(@gruntWarn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
@@ -187,7 +187,7 @@ describe "Factory", ->
 
   describe "::siteWrapperFrom", ->
     Given -> @context = "context"
-    When -> @siteWrapper = Factory.siteWrapperFrom({@layoutPath, @context})
+    When -> @siteWrapper = @subject.siteWrapperFrom({@layoutPath, @context})
 
     context "without layout path", ->
       Given -> @layoutPath = undefined
@@ -200,7 +200,7 @@ describe "Factory", ->
       context "invalid", ->
         Given -> grunt.file.exists.andReturn(false)
         Then -> expect(@siteWrapper.htmlFor).toBeDefined()
-        Then -> expect(grunt.fail.warn).toHaveBeenCalled()
+        Then -> expect(@gruntWarn).toHaveBeenCalled()
 
       context "valid", ->
         Given -> grunt.file.exists.andReturn(true)

@@ -8,7 +8,9 @@ NullHtml = require('./null_html')
 Pages = require('./pages')
 Posts = require('./posts')
 
-module.exports =
+module.exports = class Factory
+  constructor: (@warn) ->
+
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
@@ -17,7 +19,7 @@ module.exports =
       grunt.log.error "Archive skipped: source template undefined"
       new NullHtml
     else unless grunt.file.exists(layoutPath)
-      grunt.fail.warn "Archive skipped: unable to read '#{layoutPath}'"
+      @warn "Archive skipped: unable to read '#{layoutPath}'"
       new NullHtml
     else
       new Archive
@@ -42,7 +44,7 @@ module.exports =
       grunt.log.error "Index skipped: source template undefined"
       new NullHtml
     else unless grunt.file.exists(layoutPath)
-      grunt.fail.warn "Index skipped: unable to read '#{layoutPath}'"
+      @warn "Index skipped: unable to read '#{layoutPath}'"
       new NullHtml
     else
       new Index latestPost,
@@ -58,7 +60,7 @@ module.exports =
       grunt.log.error "Pages skipped: source template undefined"
       new Pages([], {})
     else unless grunt.file.exists(layoutPath)
-      grunt.fail.warn "Pages skipped: unable to read '#{layoutPath}'"
+      @warn "Pages skipped: unable to read '#{layoutPath}'"
       new Pages([], {})
     else
       new Pages pageSources,
@@ -74,7 +76,7 @@ module.exports =
       grunt.log.error "Posts skipped: source template undefined"
       new Posts([], {})
     else unless grunt.file.exists(layoutPath)
-      grunt.fail.warn "Posts skipped: unable to read '#{layoutPath}'"
+      @warn "Posts skipped: unable to read '#{layoutPath}'"
       new Posts([], {})
     else
       new Posts postSources,
@@ -87,7 +89,7 @@ module.exports =
       grunt.log.error "Site? skipped: source template undefined"
       htmlFor: ->
     else unless grunt.file.exists(layoutPath)
-      grunt.fail.warn "Site? skipped: unable to read '#{layoutPath}'"
+      @warn "Site? skipped: unable to read '#{layoutPath}'"
       htmlFor: ->
     else
       new Layout(layoutPath, context)
