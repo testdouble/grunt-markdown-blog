@@ -5,18 +5,19 @@ Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
 module.exports = class MarkdownTask
-  constructor: (@config) ->
-    @posts = Factory.postsFrom @config.forPosts()
-    @pages = Factory.pagesFrom @config.forPages()
-    @index = Factory.indexFrom @posts.newest(), @config.forIndex()
-    @archive = Factory.archiveFrom @config.forArchive()
-    @feed = Factory.feedFrom @config.forFeed()
+  constructor: (grunt, @config) ->
+    factory = Factory(grunt)
+    @posts = factory.postsFrom @config.forPosts()
+    @pages = factory.pagesFrom @config.forPages()
+    @index = factory.indexFrom @posts.newest(), @config.forIndex()
+    @archive = factory.archiveFrom @config.forArchive()
+    @feed = factory.feedFrom @config.forFeed()
+    @wrapper = factory.siteWrapperFrom @config.forSiteWrapper()
     @site = new Site(@config.raw, @posts, @pages)
 
   run: ->
     writesFile = new WritesFile(@config.destDir())
-    wrapper = Factory.siteWrapperFrom @config.forSiteWrapper()
-    generatesHtml = new GeneratesHtml(@site, wrapper)
+    generatesHtml = new GeneratesHtml(@site, @wrapper)
 
     @posts.writeHtml generatesHtml, writesFile
     @pages.writeHtml generatesHtml, writesFile
