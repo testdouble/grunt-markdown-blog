@@ -1,8 +1,8 @@
 Feed = require('../lib/feed')
 
 describe "Feed", ->
-  Given -> @rssPath = "some/path"
-  Given -> @subject = new Feed({@rssPath, @postCount})
+  Given -> @destPath = "some/path"
+  Given -> @subject = new Feed({@destPath, @postCount})
 
   describe "#writeRss", ->
     Given -> @generatesRss = jasmine.createStubObj('generatesRss', generate: @rss = "rss")
@@ -11,4 +11,4 @@ describe "Feed", ->
     When -> @subject.writeRss(@generatesRss, @writesFile)
 
     Then -> expect(@generatesRss.generate).toHaveBeenCalled()
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@rss, @rssPath)
+    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@rss, @destPath)

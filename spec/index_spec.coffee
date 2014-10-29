@@ -2,9 +2,9 @@ Index = require('../lib/index')
 
 describe "Index", ->
   Given -> @latestPost = "latestPost"
-  Given -> @htmlPath = "htmlPath"
+  Given -> @destPath = "destPath"
   Given -> @layout = "layout"
-  Given -> @subject = new Index(@latestPost, {@htmlPath, @layout})
+  Given -> @subject = new Index(@latestPost, {@destPath, @layout})
 
   describe "#writeHtml", ->
     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html = "html")
@@ -13,4 +13,4 @@ describe "Index", ->
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
     Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@layout, @latestPost)
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @destPath)

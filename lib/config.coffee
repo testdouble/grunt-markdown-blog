@@ -36,15 +36,15 @@ module.exports = class Config
     @raw.dest
 
   forArchive: ->
-    htmlPath: @raw.paths.archive
+    destPath: @raw.paths.archive
     layoutPath: @raw.layouts.archive
 
   forFeed: ->
-    rssPath: @raw.paths.rss
+    destPath: @raw.paths.rss
     postCount: @raw.rssCount
 
   forIndex: ->
-    htmlPath: @raw.paths.index
+    destPath: @raw.paths.index
     layoutPath: @raw.layouts.index
 
   forPages: ->

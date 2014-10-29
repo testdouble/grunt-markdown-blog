@@ -52,14 +52,14 @@ describe "Posts", ->
       Then -> expect(@writesFile.write).not.toHaveBeenCalled()
 
     context "with 3 posts", ->
-      Given -> @htmlPath = "htmlPath"
-      Given -> @post = jasmine.createStubObj('post', htmlPath: @htmlPath)
+      Given -> @destPath = "destPath"
+      Given -> @post = jasmine.createStubObj('post', htmlPath: @destPath)
       When -> @subject.splice 0, @subject.length, @post, @post, @post
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
       Then -> @generatesHtml.generate.callCount == 3
       Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @post)
       Then -> @writesFile.write.callCount == 3
-      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @destPath)
 
   describe '', ->
     Given -> [@post1, @post2, @post3] = ["oldest", "middle", "newest"]

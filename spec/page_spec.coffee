@@ -71,17 +71,17 @@ describe "Page", ->
       Given -> @subject.path = "some/weird/path.md"
       Then -> @title == "path.html"
 
-  describe "#htmlPath", ->
+  describe "#destPath", ->
     Given -> @subject = new Page("#{@path = "path/to/pages"}/#{@name = "page"}.md")
-    When -> @htmlPath = @subject.htmlPath()
+    When -> @destPath = @subject.htmlPath()
 
     context "with wildcards in htmlDirPath", ->
       Given -> @subject.htmlDirPath = "some/*/path"
-      Then -> @htmlPath == "#{@path}/#{@name}.html"
+      Then -> @destPath == "#{@path}/#{@name}.html"
 
     context "without wildcards in htmlDirPath", ->
       Given -> @subject.htmlDirPath = "some/path"
-      Then -> @htmlPath == "#{@subject.htmlDirPath}/#{@name}.html"
+      Then -> @destPath == "#{@subject.htmlDirPath}/#{@name}.html"
 
   describe "#fileName", ->
     Given -> @subject = new Page("/path/to/pages/mypage.md")

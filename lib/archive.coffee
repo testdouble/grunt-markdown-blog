@@ -1,5 +1,5 @@
 module.exports = class Archive
-  constructor: ({@htmlPath, @layout}) ->
+  constructor: ({@destPath, @layout}) ->
 
   writeHtml: (generatesHtml, writesFile) ->
-    writesFile.write generatesHtml.generate(@layout), @htmlPath
+    writesFile.write generatesHtml.generate(@layout), @destPath

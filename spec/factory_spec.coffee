@@ -31,15 +31,15 @@ describe "Factory", ->
   Given -> @subject = Factory(grunt)
 
   describe "::archiveFrom", ->
-    When -> @archive = @subject.archiveFrom({@htmlPath, @layoutPath})
+    When -> @archive = @subject.archiveFrom({@destPath, @layoutPath})
 
-    context "without htmlPath", ->
-      Given -> @htmlPath = undefined
+    context "without destPath", ->
+      Given -> @destPath = undefined
       Then -> @archive instanceof NullHtml
       Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
-    context "with htmlPath", ->
-      Given -> @htmlPath = "htmlPath"
+    context "with destPath", ->
+      Given -> @destPath = "destPath"
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
@@ -57,20 +57,20 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @archive instanceof Archive
-          Then -> expect(Archive).toHaveBeenCalledWith({@htmlPath, @layout})
+          Then -> expect(Archive).toHaveBeenCalledWith({@destPath, @layout})
           Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
           ThenExpectNoGruntLogging()
 
   describe "::feedFrom", ->
-    When -> @feed = @subject.feedFrom({@rssPath, @postCount})
+    When -> @feed = @subject.feedFrom({@destPath, @postCount})
 
     context "without rss path", ->
-      Given -> @rssPath = undefined
+      Given -> @destPath = undefined
       Then -> @feed instanceof NullFeed
       Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with rss path", ->
-      Given -> @rssPath = "some/path"
+      Given -> @destPath = "some/path"
 
       context "without posts", ->
         Given -> @postCount = 0
@@ -80,20 +80,20 @@ describe "Factory", ->
       context "with posts", ->
         Given -> @postCount = 2
         Then -> @feed instanceof Feed
-        Then -> expect(Feed).toHaveBeenCalledWith({@rssPath, @postCount})
+        Then -> expect(Feed).toHaveBeenCalledWith({@destPath, @postCount})
         ThenExpectNoGruntLogging()
 
   describe "::indexFrom", ->
     Given -> @latestPost = "latestPost"
-    When -> @index = @subject.indexFrom(@latestPost, {@htmlPath, @layoutPath})
+    When -> @index = @subject.indexFrom(@latestPost, {@destPath, @layoutPath})
 
-    context "without htmlPath", ->
-      Given -> @htmlPath = undefined
+    context "without destPath", ->
+      Given -> @destPath = undefined
       Then -> @index instanceof NullHtml
       And -> expect(grunt.log.writeln).toHaveBeenCalled()
 
-    context "with htmlPath", ->
-      Given -> @htmlPath = "htmlPath"
+    context "with destPath", ->
+      Given -> @destPath = "destPath"
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
@@ -111,7 +111,7 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @index instanceof Index
-          Then -> expect(Index).toHaveBeenCalledWith(@latestPost, {@htmlPath, @layout})
+          Then -> expect(Index).toHaveBeenCalledWith(@latestPost, {@destPath, @layout})
           Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
           ThenExpectNoGruntLogging()
 

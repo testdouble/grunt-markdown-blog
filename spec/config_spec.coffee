@@ -64,22 +64,22 @@ describe "Config", ->
 
 
   describe "#forArchive", ->
-    Given -> @options.paths.archive = @htmlPath = "htmlPath"
+    Given -> @options.paths.archive = @destPath = "destPath"
     Given -> @options.layouts.archive = @layoutPath = "layoutPath"
     When -> @archiveConfig = @subject.forArchive()
-    Then -> expect(@archiveConfig).toEqual {@htmlPath, @layoutPath}
+    Then -> expect(@archiveConfig).toEqual {@destPath, @layoutPath}
 
   describe "#forFeed", ->
-    Given -> @options.paths.rss = @rssPath = "some/path"
+    Given -> @options.paths.rss = @destPath = "some/path"
     Given -> @options.rssCount = @postCount = 2
     When -> @feedConfig = @subject.forFeed()
-    Then -> expect(@feedConfig).toEqual {@rssPath, @postCount}
+    Then -> expect(@feedConfig).toEqual {@destPath, @postCount}
 
   describe "#forIndex", ->
-    Given -> @options.paths.index = @htmlPath = "htmlPath"
+    Given -> @options.paths.index = @destPath = "destPath"
     Given -> @options.layouts.index = @layoutPath = "layoutPath"
     When -> @indexConfig = @subject.forIndex()
-    Then -> expect(@indexConfig).toEqual {@htmlPath, @layoutPath}
+    Then -> expect(@indexConfig).toEqual {@destPath, @layoutPath}
 
   describe "#forPages", ->
     Given -> @options.pathRoots.pages = @htmlDir = "htmlDir"

@@ -1,9 +1,9 @@
 Archive = require('../lib/archive')
 
 describe "Archive", ->
-  Given -> @htmlPath = "htmlPath"
+  Given -> @destPath = "destPath"
   Given -> @layout = "layout"
-  Given -> @subject = new Archive({@htmlPath, @layout})
+  Given -> @subject = new Archive({@destPath, @layout})
 
   describe "#writeHtml", ->
     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html = "html")
@@ -12,4 +12,4 @@ describe "Archive", ->
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
     Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@layout)
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @destPath)

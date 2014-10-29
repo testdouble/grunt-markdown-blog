@@ -8,8 +8,8 @@ Pages = require('./pages')
 Posts = require('./posts')
 
 module.exports = (grunt) ->
-  archiveFrom: ({htmlPath, layoutPath}) ->
-    unless htmlPath?
+  archiveFrom: ({destPath, layoutPath}) ->
+    unless destPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
       new NullHtml
     else unless layoutPath?
@@ -20,21 +20,21 @@ module.exports = (grunt) ->
       new NullHtml
     else
       new Archive
-        htmlPath: htmlPath
+        destPath: destPath
         layout: new Layout(layoutPath)
 
-  feedFrom: ({rssPath, postCount}) ->
-    if rssPath? and postCount
+  feedFrom: ({destPath, postCount}) ->
+    if destPath? and postCount
       new Feed arguments...
-    else unless rssPath?
+    else unless destPath?
       grunt.log.writeln "RSS Feed skipped: destination path undefined"
       new NullFeed
     else unless postCount
       grunt.log.writeln "RSS Feed skipped: 0 posts"
       new NullFeed
 
-  indexFrom: (latestPost, {htmlPath, layoutPath}) ->
-    unless htmlPath?
+  indexFrom: (latestPost, {destPath, layoutPath}) ->
+    unless destPath?
       grunt.log.writeln "Index skipped: destination path undefined"
       new NullHtml
     else unless layoutPath?
@@ -45,7 +45,7 @@ module.exports = (grunt) ->
       new NullHtml
     else
       new Index latestPost,
-        htmlPath: htmlPath
+        destPath: destPath
         layout: new Layout(layoutPath)
 
   pagesFrom: ({src, htmlDir, layoutPath}) ->
