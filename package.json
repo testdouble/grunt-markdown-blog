@@ -23,7 +23,7 @@
     "rss": "~1.0.0",
     "underscore": "~1.7.0",
     "underscore.string": "~2.3.3",
-    "grunt": "^1.0.0"
+    "grunt": ">=0.4.1"
   },
   "devDependencies": {
     "grunt-jasmine-bundle": "~0.2.0",
