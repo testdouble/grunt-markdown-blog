@@ -8,6 +8,9 @@
     "email": "justin@testdouble.com",
     "url": "http://testdouble.com/"
   },
+  "scripts": {
+    "test": "grunt"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/testdouble/grunt-markdown-blog.git"
@@ -17,6 +20,7 @@
   },
   "dependencies": {
     "coffee-script": "~1.8.0",
+    "grunt": "~0.4.1",
     "highlight.js": "~7.3.0",
     "marked": "~0.2.8",
     "moment": "~2.8.3",
@@ -25,7 +29,6 @@
     "underscore.string": "~2.3.3"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
     "grunt-jasmine-bundle": "~0.2.0",
     "grunt-release": "~0.7.0",
     "sandboxed-module": "~1.0.2"
