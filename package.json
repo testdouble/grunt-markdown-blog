@@ -22,10 +22,10 @@
     "moment": "~2.8.3",
     "rss": "~1.0.0",
     "underscore": "~1.7.0",
-    "underscore.string": "~2.3.3",
-    "grunt": ">=0.4.1"
+    "underscore.string": "~2.3.3"
   },
   "devDependencies": {
+    "grunt": "~0.4.1",
     "grunt-jasmine-bundle": "~0.2.0",
     "grunt-release": "~0.7.0",
     "sandboxed-module": "~1.0.2"
