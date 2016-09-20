@@ -22,10 +22,8 @@
     "moment": "~2.8.3",
     "rss": "~1.0.0",
     "underscore": "~1.7.0",
-    "underscore.string": "~2.3.3"
-  },
-  "peerDependencies": {
-    "grunt": ">=0.4.0"
+    "underscore.string": "~2.3.3",
+    "grunt": "^1.0.0"
   },
   "devDependencies": {
     "grunt-jasmine-bundle": "~0.2.0",
