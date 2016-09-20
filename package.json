@@ -25,7 +25,7 @@
     "underscore.string": "~2.3.3"
   },
   "peerDependencies": {
-    "grunt": "~0.4.0"
+    "grunt": ">=0.4.0"
   },
   "devDependencies": {
     "grunt-jasmine-bundle": "~0.2.0",
