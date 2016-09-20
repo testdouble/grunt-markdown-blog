@@ -1,10 +1,10 @@
 _ = require('underscore')
+pug = require('pug')
 grunt = require('grunt')
 
 module.exports = class Layout
   constructor: (@layoutPath, context = {}) ->
-    # TODO change you to a pug.
-    @layout = _(grunt.file.read(@layoutPath)).template()
+    @layout = pug.compileFile(@layoutPath)
     @context = context
 
   htmlFor: (specificContext) ->
