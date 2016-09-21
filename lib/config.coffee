@@ -13,7 +13,7 @@ module.exports = class Config
       wrapper: "app/templates/wrapper.pug"
       index: "app/templates/index.pug"
       post: "app/templates/post.pug"
-      page: "app/templates/page.ug"
+      page: "app/templates/page.pug"
       archive: "app/templates/archive.pug"
     paths:
       posts: "app/posts/*.md"
