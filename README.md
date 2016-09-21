@@ -56,11 +56,11 @@ markdown:
     rssCount: 10 #<-- remove, comment, or set to zero to disable RSS generation
     dateFormat: 'MMMM Do YYYY'
     layouts:
-      wrapper: "app/templates/wrapper.us"
-      index: "app/templates/index.us"
-      post: "app/templates/post.us"
-      page: "app/templates/page.us" #<-- optional static pages
-      archive: "app/templates/archive.us"
+      wrapper: "app/templates/wrapper.pug"
+      index: "app/templates/index.pug"
+      post: "app/templates/post.pug"
+      page: "app/templates/page.pug" #<-- optional static pages
+      archive: "app/templates/archive.pug"
     paths:
       posts: "posts/*.md"
       pages: "pages/**/*.md" #<-- optional static pages
@@ -89,7 +89,7 @@ If you use a watch plugin with grunt, you can also do something like this for de
 ``` coffeescript
 watch:
   markdown:
-    files: ["app/posts/*.md", "app/pages/**/*.md", "app/templates/*.us"]
+    files: ["app/posts/*.md", "app/pages/**/*.md", "app/templates/*.pug"]
     tasks: ["markdown:dev"]
 ```
 

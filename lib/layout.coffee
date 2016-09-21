@@ -1,4 +1,5 @@
 _ = require('underscore')
+_.mixin(require('underscore.string').exports())
 pug = require('pug')
 grunt = require('grunt')
 
@@ -8,4 +9,4 @@ module.exports = class Layout
     @context = context
 
   htmlFor: (specificContext) ->
-    @layout(_({}).extend(@context, specificContext))
+    @layout(_({}).extend(_: _, @context, specificContext))

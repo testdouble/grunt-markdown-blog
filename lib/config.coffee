@@ -10,11 +10,11 @@ module.exports = class Config
     rssCount: 10
     dateFormat: 'MMMM Do YYYY'
     layouts:
-      wrapper: "app/templates/wrapper.us"
-      index: "app/templates/index.us"
-      post: "app/templates/post.us"
-      page: "app/templates/page.us"
-      archive: "app/templates/archive.us"
+      wrapper: "app/templates/wrapper.pug"
+      index: "app/templates/index.pug"
+      post: "app/templates/post.pug"
+      page: "app/templates/page.ug"
+      archive: "app/templates/archive.pug"
     paths:
       posts: "app/posts/*.md"
       pages: "app/pages/**/*.md"
