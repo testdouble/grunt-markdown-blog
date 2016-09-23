@@ -4,7 +4,7 @@ MarkdownSplitter = require('./markdown_splitter')
 
 options =
   highlight: (code, lang) ->
-    highlighted = if highlight.LANGUAGES[lang]?
+    highlighted = if highlight.listLanguages()[lang]?
       highlight.highlight(lang, code, true)
     else
       highlight.highlightAuto(code)
