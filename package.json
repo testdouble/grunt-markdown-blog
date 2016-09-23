@@ -23,7 +23,7 @@
     "coffee-script": "~1.8.0",
     "grunt": "~0.4.1",
     "highlight.js": "~7.3.0",
-    "marked": "~0.2.8",
+    "marked": "^0.3.6",
     "moment": "~2.8.3",
     "pug": "^2.0.0-beta6",
     "rss": "~1.0.0",
