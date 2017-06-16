@@ -24,6 +24,9 @@ module.exports = class Page
     else
       "#{@htmlDirPath}/#{@fileName()}"
 
+  prettyPath: ->
+    @htmlPath().replace(/\.html$/, '')
+
   fileName: ->
     new Path(@path).changeExtTo(".html").filename()
 
