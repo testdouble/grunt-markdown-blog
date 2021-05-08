@@ -1,5 +1,5 @@
 moment = require('moment')
-Page = require("./../lib/page")
+Page = require("./page")
 
 module.exports = class Post extends Page
   date: ->
