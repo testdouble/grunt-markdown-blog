@@ -1,4 +1,4 @@
-SandboxedModule = require('sandboxed-module')
+td = require('testdouble')
 { Factory, grunt, Archive, Feed, Index, Pages, Posts, NullFeed, NullHtml, Layout } = {}
 
 ThenExpectNoGruntLogging = ->
@@ -7,16 +7,19 @@ ThenExpectNoGruntLogging = ->
   Then -> expect(grunt.warn).not.toHaveBeenCalled()
 
 beforeEach ->
-  Factory = SandboxedModule.require '../lib/factory',
-    requires:
-      './archive': Archive = jasmine.createSpy('archive')
-      './feed': Feed = jasmine.createSpy('feed')
-      './index': Index = jasmine.createSpy('index')
-      './pages': Pages = jasmine.createSpy('pages')
-      './posts': Posts = jasmine.createSpy('posts')
-      './null_feed': NullFeed = jasmine.createSpy('null_feed')
-      './null_html': NullHtml = jasmine.createSpy('null_html')
-      './layout': Layout = jasmine.createSpy('layout').andReturn(@layout = jasmine.createStub("layout"))
+
+  Archive  = td.replace('../lib/archive')
+  Feed     = td.replace('../lib/feed')
+  Index    = td.replace('../lib/index')
+  Pages    = td.replace('../lib/pages')
+  Posts    = td.replace('../lib/posts')
+  NullFeed = td.replace('../lib/null_feed')
+  NullHtml = td.replace('../lib/null_html')
+  Layout   = td.replace('../lib/layout')
+  Factory  = require('../lib/factory')
+
+afterEach ->
+  td.reset()
 
 Given -> grunt =
   log:
@@ -27,7 +30,7 @@ Given -> grunt =
     exists: jasmine.createSpy('file-exists')
     expand: jasmine.createSpy('file-expand')
 
-describe "Factory", ->
+describe.only "Factory", ->
   Given -> @subject = Factory(grunt)
 
   describe "::archiveFrom", ->
@@ -57,8 +60,8 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @archive instanceof Archive
-          Then -> expect(Archive).toHaveBeenCalledWith({@htmlPath, @layout})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          Then -> td.verify(Archive({@htmlPath, layout: td.matchers.isA(Layout)}))
+          Then -> td.verify(Layout(@layoutPath))
           ThenExpectNoGruntLogging()
 
   describe "::feedFrom", ->
@@ -80,7 +83,7 @@ describe "Factory", ->
       context "with posts", ->
         Given -> @postCount = 2
         Then -> @feed instanceof Feed
-        Then -> expect(Feed).toHaveBeenCalledWith({@rssPath, @postCount})
+        Then -> td.verify(Feed({@rssPath, @postCount}))
         ThenExpectNoGruntLogging()
 
   describe "::indexFrom", ->
@@ -111,8 +114,8 @@ describe "Factory", ->
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
           Then -> @index instanceof Index
-          Then -> expect(Index).toHaveBeenCalledWith(@latestPost, {@htmlPath, @layout})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          Then -> td.verify(Index(@latestPost, {@htmlPath, layout: td.matchers.isA(Layout)}))
+          Then -> td.verify(Layout(@layoutPath))
           ThenExpectNoGruntLogging()
 
   describe "::pagesFrom", ->
@@ -124,7 +127,7 @@ describe "Factory", ->
     context "without pages", ->
       Given -> grunt.file.expand.andReturn(@expandedSrc = [])
       Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
-      Then -> expect(Pages).toHaveBeenCalledWith([], {})
+      Then -> td.verify(Pages([], {}))
       Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with pages", ->
@@ -133,7 +136,7 @@ describe "Factory", ->
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> expect(Pages).toHaveBeenCalledWith([], {})
+        Then -> td.verify(Pages([], {}))
         Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
@@ -141,13 +144,13 @@ describe "Factory", ->
 
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
-          Then -> expect(Pages).toHaveBeenCalledWith([], {})
+          Then -> td.verify(Pages([], {}))
           Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
-          Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          Then -> td.verify(Pages(@expandedSrc, {@htmlDir, layout: td.matchers.isA(Layout)}))
+          Then -> td.verify(Layout(@layoutPath))
           ThenExpectNoGruntLogging()
 
   describe "::postsFrom", ->
@@ -160,7 +163,7 @@ describe "Factory", ->
     context "without posts", ->
       Given -> grunt.file.expand.andReturn(@expandedSrc = [])
       Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
-      Then -> expect(Posts).toHaveBeenCalledWith([], {})
+      Then -> td.verify(Posts([], {}))
       Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with posts", ->
@@ -169,7 +172,7 @@ describe "Factory", ->
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> expect(Posts).toHaveBeenCalledWith([], {})
+        Then -> td.verify(Posts([], {}))
         Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
@@ -177,13 +180,13 @@ describe "Factory", ->
 
         context "invalid", ->
           Given -> grunt.file.exists.andReturn(false)
-          Then -> expect(Posts).toHaveBeenCalledWith([], {})
+          Then -> td.verify(Posts([], {}))
           Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
           Given -> grunt.file.exists.andReturn(true)
-          Then -> expect(Posts).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout, @dateFormat})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
+          Then -> td.verify(Posts(@expandedSrc, {@htmlDir, layout: td.matchers.isA(Layout), @dateFormat}))
+          Then -> td.verify(Layout(@layoutPath))
           ThenExpectNoGruntLogging()
 
   describe "::siteWrapperFrom", ->
@@ -205,5 +208,5 @@ describe "Factory", ->
 
       context "valid", ->
         Given -> grunt.file.exists.andReturn(true)
-        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath, @context)
+        Then -> td.verify(Layout(@layoutPath, @context))
         ThenExpectNoGruntLogging()
