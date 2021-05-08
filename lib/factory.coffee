@@ -1,11 +1,11 @@
-Layout = require('./layout')
-Feed = require('./feed')
+Archive  = require('./archive')
+Feed     = require('./feed')
+Index    = require('./index')
+Layout   = require('./layout')
 NullFeed = require('./null_feed')
-Archive = require('./archive')
-Index = require('./index')
 NullHtml = require('./null_html')
-Pages = require('./pages')
-Posts = require('./posts')
+Pages    = require('./pages')
+Posts    = require('./posts')
 
 module.exports = (grunt) ->
   archiveFrom: ({htmlPath, layoutPath}) ->
