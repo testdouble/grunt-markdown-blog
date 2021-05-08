@@ -1,7 +1,7 @@
-coffeeScript = require('coffee-script')
-grunt = require('grunt')
+coffeeScript = require('coffeescript')
 
 module.exports = class MarkdownSplitter
+  constructor: (@logger = require('grunt')) ->
 
   split: (source = "") ->
     inHeader = false
@@ -43,5 +43,5 @@ module.exports = class MarkdownSplitter
                   #{source}
                   ---
                   """
-        grunt.warn(message)
+        @logger.warn(message)
         throw message

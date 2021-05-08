@@ -1,10 +1,9 @@
-SandboxedModule = require('sandboxed-module')
+td = require('testdouble')
 
 Given ->
-  MarkdownSplitter = SandboxedModule.require '../lib/markdown_splitter',
-    singleOnly: true
-    requires: grunt: @grunt = jasmine.createSpyObj('grunt', ['warn'])
-  @subject = new MarkdownSplitter
+  MarkdownSplitter = require '../lib/markdown_splitter'
+  logger = td.object(['warn'])
+  @subject = new MarkdownSplitter(logger)
 
 describe "splitting up markdown files", ->
 
@@ -60,7 +59,6 @@ describe "splitting up markdown files", ->
                           Post stuff
                           """
       Then -> expect(=> @subject.split(@fixture)).toThrow()
-      And -> expect(@grunt.warn).toHaveBeenCalled()
 
 
   describe "it removes the header", ->
@@ -74,7 +72,7 @@ describe "splitting up markdown files", ->
                         Post stuff
                         """
     When -> @result = @subject.split(@fixture)
-    Then -> expect(@result.markdown.trim()).toEqual """
+    Then -> @result.markdown.trim() == """
                                                     # My post stuff
 
                                                     Post stuff
