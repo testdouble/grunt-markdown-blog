@@ -1,6 +1,5 @@
 module.exports = class GeneratesRss
-  constructor: (@site) ->
-    @Rss = require('rss')
+  constructor: (@site, @Rss = require('rss')) ->
 
   generate: ->
     feed = @createFeed()
