@@ -1,11 +1,10 @@
 Post = null
-SandboxedModule = require('sandboxed-module')
+td = require('testdouble')
 
 describe "Post", ->
   beforeEach ->
-    Post = SandboxedModule.require '../lib/post',
-      requires:
-        './../lib/page': class
+    Page = td.replace '../lib/page'
+    Post = require '../lib/post'
 
   Given -> @subject = new Post
 
