@@ -2,6 +2,14 @@ highlighter = require('highlight.js')
 marked = require('marked')
 MarkdownSplitter = require('./markdown_splitter')
 
+marked.setOptions
+  langPrefix: "hljs language-"
+  highlight: (code, lang) ->
+    if highlighter.listLanguages().includes(lang.toLowerCase())
+      return highlighter.highlight(code, { language: lang }).value
+    else
+      return highlighter.highlightAuto(code).value
+
 module.exports = class Markdown
   constructor: (fullSource, compiler = marked, splitter = MarkdownSplitter) ->
     @compiler = compiler
@@ -9,11 +17,4 @@ module.exports = class Markdown
     {@header, markdown: @source} = @splitter.split(fullSource)
 
   compile: ->
-    @compiler(@source, {
-      highlight: (code, lang) ->
-        highlighted = if highlighter.listLanguages()[lang]?
-          highlighter.highlight(lang, code, true)
-        else
-          highlighter.highlightAuto(code)
-        highlighted.value
-    })
+    @compiler.parse(@source)

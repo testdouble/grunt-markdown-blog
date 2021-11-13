@@ -1,7 +1,7 @@
 Markdown = null
 
 beforeEach ->
-  @compiler = td.func("compiler")
+  @compiler = td.object("compiler", ["parse"])
   @splitter = td.constructor(["split"])
   Markdown = require "../lib/markdown"
 
@@ -18,4 +18,4 @@ describe "Markdown", ->
     When -> @subject.compile()
     Then -> @subject.header == @header
     Then -> @subject.source == @markdown
-    And  -> td.verify(@compiler(@subject.source, td.matchers.isA(Object)))
+    And  -> td.verify(@compiler.parse(@subject.source))
