@@ -28,7 +28,7 @@
     "pug": "^3.0.2",
     "rss": "^1.2.2",
     "underscore": "~1.7.0",
-    "underscore.string": "~2.3.3"
+    "underscore.string": "~3.3.5"
   },
   "devDependencies": {
     "grunt-jasmine-bundle": "^0.4.0",
