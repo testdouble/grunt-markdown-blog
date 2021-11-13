@@ -1,17 +1,19 @@
 Markdown = null
-td = require('testdouble')
+
+beforeEach ->
+  @compiler = td.func('compiler')
+  @splitter = td.constructor(['split'])
+  Markdown = require '../lib/markdown'
+
+afterEach ->
+  td.reset()
 
 describe "Markdown", ->
-  Given ->
-    @compiler = td.func('compiler')
-    @splitter = td.constructor(['split'])
-    Markdown = require '../lib/markdown'
-
   Given -> @header = "attributes"
   Given -> @markdown = "markdown"
-  Given -> td.when(@splitter::split(td.matchers.anything())).thenReturn({@header, @markdown})
 
   describe "#compile", ->
+    Given -> td.when(@splitter::split(td.matchers.anything())).thenReturn({@header, @markdown})
     Given -> @subject = new Markdown("input source", @compiler, @splitter)
     When -> @subject.compile()
     Then -> @subject.header == @header

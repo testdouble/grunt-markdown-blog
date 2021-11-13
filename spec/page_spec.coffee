@@ -1,23 +1,29 @@
 Page = null
-td = require('testdouble')
+reader = null
+Markdown = null
+
+beforeEach ->
+  Markdown = td.replace('../lib/markdown', td.constructor(['compile']))
+  @reader = td.object('reader', ['read'])
+  Page = require('../lib/page')
+
+afterEach ->
+  td.reset()
 
 describe "Page", ->
   Given ->
     @reader = td.object(['read'])
-    @markdown = td.replace('../lib/markdown')
-    Page = require '../lib/page'
 
   describe "#constructor", ->
     Given -> @path = "path"
     Given -> td.when(@reader.read(@path)).thenReturn(@source = "source")
-    Given -> @markdown::header = @header = "attributes"
     When -> @subject = new Page(@path, '', '', @reader)
-    Then -> td.verify(@markdown(@source))
+    Then -> td.verify(Markdown(@source))
     Then -> @subject.attributes == @header
 
   describe "#content", ->
     Given -> @subject = new Page('', '', '', @reader)
-    When -> td.when(@markdown::compile()).thenReturn(@parsedMarkdown = "content")
+    When -> td.when(@subject._markdown.compile()).thenReturn(@parsedMarkdown = "content")
     Then -> @subject.content() == @parsedMarkdown
 
   describe "#get", ->

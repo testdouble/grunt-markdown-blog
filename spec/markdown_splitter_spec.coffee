@@ -1,5 +1,3 @@
-td = require('testdouble')
-
 Given ->
   MarkdownSplitter = require '../lib/markdown_splitter'
   logger = td.object(['warn'])
