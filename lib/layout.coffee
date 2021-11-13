@@ -1,7 +1,6 @@
 _ = require('underscore')
 _.mixin(require('underscore.string').exports())
 pug = require('pug')
-grunt = require('grunt')
 
 module.exports = class Layout
   constructor: (@layoutPath, context = {}) ->
