@@ -51,7 +51,7 @@ describe "Config", ->
           index: undefined
           post: null
           page: false
-          # archive: ""
+          archive: undefined
       Then -> expect(@subject.raw).toEqual
         author: "top level"
         description: "description"
