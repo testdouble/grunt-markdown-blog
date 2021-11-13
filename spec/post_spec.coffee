@@ -1,11 +1,15 @@
+Page = null
 Post = null
-td = require('testdouble')
+
+
+beforeEach ->
+  Page = td.replace('../lib/page')
+  Post = require '../lib/post'
+
+afterEach ->
+  td.reset()
 
 describe "Post", ->
-  beforeEach ->
-    Page = td.replace '../lib/page'
-    Post = require '../lib/post'
-
   Given -> @subject = new Post
 
   describe "#time", ->

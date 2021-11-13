@@ -1,14 +1,14 @@
 Post = require './post'
 
 module.exports = class Posts
-  timeComparator = (post1, post2) ->
-    post1.time().localeCompare(post2.time(), numeric: true)
-
   constructor: (markdownFiles, {htmlDir, layout, dateFormat, comparator}) ->
     posts = markdownFiles.map (file) -> new Post(file, htmlDir, dateFormat)
     posts.sort(comparator || timeComparator)
     posts.layout = layout
     @posts = posts
+
+  timeComparator = (post1, post2) ->
+    post1.time().localeCompare(post2.time(), numeric: true)
 
   oldest: ->
     @posts[0]

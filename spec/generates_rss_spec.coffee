@@ -1,4 +1,3 @@
-td = require('testdouble')
 Rss = null
 GeneratesRss = null
 
@@ -15,6 +14,7 @@ describe "GeneratesRss", ->
       rss: "path/feed.xml"
     author: "author"
     posts: []
+    getPosts: -> []
     urlFor: (post) -> "url/#{post.title()}"
 
   When -> @subject = new GeneratesRss(@site, Rss)
@@ -28,7 +28,7 @@ describe "GeneratesRss", ->
   Then -> @feed == @feedXml
 
   context "with posts", ->
-    Given -> @site.posts = [
+    Given -> @site.getPosts = -> [
       {
         title: -> "post1 title"
         content: -> "post1 content"

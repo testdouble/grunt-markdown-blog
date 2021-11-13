@@ -1,3 +1,5 @@
+global.td = require('testdouble')
+
 jasmine.constructSpy = (classNameToFake, methodsToSpy = []) ->
   spies = class extends jasmine.createSpy(classNameToFake)
   methodsToSpy.forEach (methodName) ->

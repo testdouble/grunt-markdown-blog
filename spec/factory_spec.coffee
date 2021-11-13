@@ -1,15 +1,23 @@
-td = require('testdouble')
 { Factory, grunt, Archive, Feed, Index, Pages, Posts, NullFeed, NullHtml, Layout } = {}
 
 beforeEach ->
-  Archive  = td.replace('../lib/archive')
-  Feed     = td.replace('../lib/feed')
-  Index    = td.replace('../lib/index')
-  Pages    = td.replace('../lib/pages')
-  Posts    = td.replace('../lib/posts')
-  NullFeed = td.replace('../lib/null_feed')
-  NullHtml = td.replace('../lib/null_html')
-  Layout   = td.replace('../lib/layout')
+  # this replace syntax might look odd but doing this significantly
+  # sped up the tests, here's a benchmark:
+  #
+  # without an explicit td.constructor
+  # - Finished in 38.471 seconds
+  #
+  # with an explicit td.constructor
+  # - Finished in 23.8 seconds
+
+  Archive  = td.replace('../lib/archive', td.constructor('Archive'))
+  Feed     = td.replace('../lib/feed', td.constructor('Feed'))
+  Index    = td.replace('../lib/index', td.constructor('Index'))
+  Pages    = td.replace('../lib/pages', td.constructor('Pages'))
+  Posts    = td.replace('../lib/posts', td.constructor('Posts'))
+  NullFeed = td.replace('../lib/null_feed', td.constructor('NullFeed'))
+  NullHtml = td.replace('../lib/null_html', td.constructor('NullHtml'))
+  Layout   = td.replace('../lib/layout', td.constructor('Layout'))
   Factory  = require('../lib/factory')
 
 afterEach ->
