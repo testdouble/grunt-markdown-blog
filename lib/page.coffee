@@ -5,12 +5,11 @@ Path = require('./path')
 
 module.exports = class Page
   constructor: (@path, @htmlDirPath, @dateFormat, @reader = grunt.file) ->
-    @_markdown = new Markdown(@reader.read(@path))
-    @attributes = @_markdown.header
-    @markdown = @_markdown.source #back-compat
+    @markdown = new Markdown(@reader.read(@path))
+    @attributes = @markdown.header
 
   content: ->
-    @_markdown.compile()
+    @markdown.compile()
 
   get: (name) ->
     _(@attributes).result(name)

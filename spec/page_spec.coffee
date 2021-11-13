@@ -23,7 +23,7 @@ describe "Page", ->
 
   describe "#content", ->
     Given -> @subject = new Page("", "", "", @reader)
-    When -> td.when(@subject._markdown.compile()).thenReturn(@parsedMarkdown = "content")
+    When -> td.when(@subject.markdown.compile()).thenReturn(@parsedMarkdown = "content")
     Then -> @subject.content() == @parsedMarkdown
 
   describe "#get", ->
