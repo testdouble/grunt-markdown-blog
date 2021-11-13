@@ -1,4 +1,4 @@
-Archive = require('../lib/archive')
+Archive = require("../lib/archive")
 
 describe "Archive", ->
   Given -> @htmlPath = "htmlPath"
@@ -8,9 +8,9 @@ describe "Archive", ->
   describe "#writeHtml", ->
     Given -> @html = "html"
     Given ->
-      @generatesHtml = td.object('generatesHtml', ['generate'])
+      @generatesHtml = td.object("generatesHtml", ["generate"])
       td.when(@generatesHtml.generate(@layout)).thenReturn(@html)
-    Given -> @writesFile = td.object('writesFile', ['write'])
+    Given -> @writesFile = td.object("writesFile", ["write"])
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 

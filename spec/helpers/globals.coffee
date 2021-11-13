@@ -1,0 +1,1 @@
+global.td = require("testdouble")

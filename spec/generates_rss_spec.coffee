@@ -1,9 +1,9 @@
 Rss = null
 GeneratesRss = null
 
-Given -> Rss = td.constructor(['item', 'xml'])
+Given -> Rss = td.constructor(["item", "xml"])
 Given -> td.when(Rss::xml()).thenReturn(@feedXml = "feedXml")
-Given -> GeneratesRss = require '../lib/generates_rss'
+Given -> GeneratesRss = require "../lib/generates_rss"
 
 describe "GeneratesRss", ->
   Given -> @site =

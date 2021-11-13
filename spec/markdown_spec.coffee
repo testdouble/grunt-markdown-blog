@@ -1,9 +1,9 @@
 Markdown = null
 
 beforeEach ->
-  @compiler = td.func('compiler')
-  @splitter = td.constructor(['split'])
-  Markdown = require '../lib/markdown'
+  @compiler = td.func("compiler")
+  @splitter = td.constructor(["split"])
+  Markdown = require "../lib/markdown"
 
 afterEach ->
   td.reset()

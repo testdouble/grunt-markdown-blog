@@ -1,4 +1,4 @@
-Path = require('../lib/path')
+Path = require("../lib/path")
 
 describe "Path", ->
 
