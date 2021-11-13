@@ -27,7 +27,7 @@ describe "Pages", ->
     Given -> @html = "html"
     Given ->
       @config.layout.htmlFor = td.function("layout.htmlFor")
-      td.when(@config.layout.htmlFor(site: @site, post: @page)).thenReturn(@html)
+      td.when(@config.layout.htmlFor(site: @site, page: @page)).thenReturn(@html)
     When -> @htmlFor = @subject.htmlFor(@site, @page)
     Then -> @htmlFor == @html
 

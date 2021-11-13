@@ -7,9 +7,7 @@ module.exports = class Pages
     @pages = pages
 
   htmlFor: (site, page) ->
-    # knowingly set as 'post' for backcompat
-    # TODO: deprecate page-as-post in context object
-    @pages.layout.htmlFor {site, post: page}
+    @pages.layout.htmlFor {site, page}
 
   writeHtml: (generatesHtml, writesFile) ->
     for page in @pages
