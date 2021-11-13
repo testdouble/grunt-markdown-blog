@@ -4,9 +4,18 @@ GeneratesRss = require('../lib/generates_rss')
 Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
+Archive  = require('../lib/archive')
+Feed     = require('../lib/feed')
+Index    = require('../lib/index')
+Layout   = require('../lib/layout')
+NullFeed = require('../lib/null_feed')
+NullHtml = require('../lib/null_html')
+Pages    = require('../lib/pages')
+Posts    = require('../lib/posts')
+
 module.exports = class MarkdownTask
   constructor: (grunt, @config) ->
-    factory = Factory(grunt)
+    factory = Factory(grunt, { Archive, Feed, Index, Layout, NullFeed, NullHtml, Pages, Posts })
     @posts = factory.postsFrom @config.forPosts()
     @pages = factory.pagesFrom @config.forPages()
     @index = factory.indexFrom @posts.newest(), @config.forIndex()

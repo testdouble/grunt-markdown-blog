@@ -1,6 +1,6 @@
 Given ->
-  MarkdownSplitter = require '../lib/markdown_splitter'
-  logger = td.object(['warn'])
+  MarkdownSplitter = require "../lib/markdown_splitter"
+  logger = td.object(["warn"])
   @subject = new MarkdownSplitter(logger)
 
 describe "splitting up markdown files", ->
@@ -23,10 +23,9 @@ describe "splitting up markdown files", ->
                           Post stuff
                           """
       When -> @result = @subject.split(@fixture)
-      Then -> expect(@result.header).toEqual
-        foo: "bar"
-        baz: 5
-        biz: jasmine.argThat (fe) -> fe() == "beez"
+      Then -> @result.header.foo == "bar"
+      And -> @result.header.baz == 5
+      And -> @result.header.biz() == "beez"
 
     context "coffeescript", ->
       Given -> @fixture = """
@@ -41,10 +40,9 @@ describe "splitting up markdown files", ->
                           Post stuff
                           """
       When -> @result = @subject.split(@fixture)
-      Then -> expect(@result.header).toEqual
-        foo: "bar"
-        baz: 5
-        biz: jasmine.argThat (fe) -> fe() == "beez"
+      Then -> @result.header.foo == "bar"
+      And -> @result.header.baz == 5
+      And -> @result.header.biz() == "beez"
 
     context "neither", ->
       Given -> @fixture = """

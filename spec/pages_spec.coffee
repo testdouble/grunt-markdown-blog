@@ -1,59 +1,56 @@
-# spy = jasmine.createSpy
-# Page = null
-# Pages = null
-# SandboxedModule = require('sandboxed-module')
+Page = null
+Pages = null
 
-# beforeEach ->
-#   Pages = SandboxedModule.require '../lib/pages',
-#     requires:
-#       './page': Page = jasmine.constructSpy("Page", ["fileName"])
+beforeEach ->
+  Page  = td.replace("../lib/page", td.constructor(["fileName"]))
+  Pages = require "../lib/pages"
 
-# describe "Pages", ->
-#   Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'layout']
-#   Given -> @markdownFiles = [ spy(), spy() ]
+afterEach ->
+  td.reset()
 
-#   When -> @subject = new Pages(@markdownFiles, @config)
+describe "Pages", ->
+  Given -> @config = td.object("config", ["htmlDir", "layout"])
+  Given -> @markdownFiles = [ "page1", "page2" ]
+  When -> @subject = new Pages(@markdownFiles, @config)
 
-#   describe "is array-like", ->
-#     Then -> @subject instanceof Pages
-#     Then -> @subject instanceof Array
-#     Then -> @subject.length == 2
+  describe "has an array of pages", ->
+    Then -> @subject.pages.length == 2
 
+  describe "builds pages", ->
+    Given -> @markdownFiles = [ @page = td.function("page") ]
+    Then -> @subject.pages[0] instanceof Page
+    Then -> td.verify(Page(@page, @config.htmlDir))
 
-#   describe "builds pages", ->
-#     Given -> @markdownFiles = [ @page = spy('page') ]
+  describe "#htmlFor", ->
+    Given -> @site = "site"
+    Given -> @page = "page"
+    Given -> @html = "html"
+    Given ->
+      @config.layout.htmlFor = td.function("layout.htmlFor")
+      td.when(@config.layout.htmlFor(site: @site, post: @page)).thenReturn(@html)
+    When -> @htmlFor = @subject.htmlFor(@site, @page)
+    Then -> @htmlFor == @html
 
-#     Then -> @subject[0] instanceof Page
-#     Then -> expect(Page).toHaveBeenCalledWith(@page, @config.htmlDir)
+  describe "#writeHtml", ->
+    Given -> @html = "html"
+    Given -> @generatesHtml = td.object("generatesHtml", ["generate"])
+    Given -> @writesFile = td.object("writesFile", ["write"])
 
+    context "without pages", ->
+      Given -> @markdownFiles = []
+      When -> @subject.writeHtml(@generatesHtml, @writesFile)
+      Then -> td.verify(@generatesHtml.generate(), {times: 0, ignoreExtraArgs: true })
+      Then -> td.verify(@writesFile.write(), {times: 0, ignoreExtraArgs: true })
 
-#   describe "#htmlFor", ->
-#     Given -> @site = "site"
-#     Given -> @page = "page"
-#     Given -> @html = "html"
-#     Given -> @config.layout.htmlFor = jasmine.createSpy('layout.htmlFor').andReturn(@html)
-#     When -> @htmlFor = @subject.htmlFor(@site, @page)
-#     Then -> expect(@config.layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @page)
-#     Then -> @htmlFor == @html
-
-
-#   describe "#writeHtml", ->
-#     Given -> @html = "html"
-#     Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
-#     Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
-
-#     context "without pages", ->
-#       Given -> @markdownFiles = []
-#       When -> @subject.writeHtml(@generatesHtml, @writesFile)
-#       Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
-#       Then -> expect(@writesFile.write).not.toHaveBeenCalled()
-
-#     context "with 3 pages", ->
-#       Given -> @htmlPath = "htmlPath"
-#       Given -> @page = jasmine.createStubObj('page', htmlPath: @htmlPath)
-#       When -> @subject.splice 0, @subject.length, @page, @page, @page
-#       When -> @subject.writeHtml(@generatesHtml, @writesFile)
-#       Then -> @generatesHtml.generate.callCount == 3
-#       Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @page)
-#       Then -> @writesFile.write.callCount == 3
-#       Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+    context "with 3 pages", ->
+      Given -> @htmlPath = "htmlPath"
+      Given ->
+        @page = td.object("page", ["htmlPath"])
+        td.when(@page.htmlPath()).thenReturn(@htmlPath)
+      When ->
+        @subject.pages = [@page, @page, @page]
+        @subject.pages.layout = @config.layout
+      When ->
+        td.when(@generatesHtml.generate(@config.layout, @page)).thenReturn(@html)
+      When -> @subject.writeHtml(@generatesHtml, @writesFile)
+      Then -> td.verify(@writesFile.write(@html, @htmlPath), { times: 3})

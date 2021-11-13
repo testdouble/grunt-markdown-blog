@@ -1,21 +1,16 @@
-GeneratesHtml = require('../lib/generates_html')
+GeneratesHtml = require("../lib/generates_html")
 
 describe "GeneratesHtml", ->
-  Given -> @site = "siteStub"
-  Given -> @fullHtml = "fullHtmlStub"
-  Given -> @wrapper = jasmine.createStubObj("wrapper", htmlFor: @fullHtml)
+  Given ->
+    @site = "siteStub"
+    @post = "postStub"
+    @fullHtml = "fullHtmlStub"
+    @templateHtml = "templateHtmlStub"
+    @wrapper = td.object("wrapper", ["htmlFor"])
+    @template = td.object("template", ["htmlFor"])
 
   describe "#generate", ->
-    Given -> @post = "postStub"
-    Given -> @templateHtml = "templateHtmlStub"
-    Given -> @template = jasmine.createStubObj("template", htmlFor: @templateHtml)
-
+    Given -> td.when(@template.htmlFor({ site: @site, post: @post })).thenReturn(@templateHtml)
+    Given -> td.when(@wrapper.htmlFor({ site: @site, post: @post, yield: @templateHtml })).thenReturn(@fullHtml)
     When -> @resultHtml = new GeneratesHtml(@site, @wrapper).generate(@template, @post)
-
-    Then -> expect(@template.htmlFor).toHaveBeenCalledWith jasmine.argThat (context) =>
-        context.site == @site && context.post == @post
-
-    Then -> expect(@wrapper.htmlFor).toHaveBeenCalledWith jasmine.argThat (context) =>
-        context.site == @site && context.post == @post && context.yield == @templateHtml
-
     Then -> @resultHtml == @fullHtml

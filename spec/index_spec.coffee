@@ -1,4 +1,4 @@
-Index = require('../lib/index')
+Index = require("../lib/index")
 
 describe "Index", ->
   Given -> @latestPost = "latestPost"
@@ -7,10 +7,10 @@ describe "Index", ->
   Given -> @subject = new Index(@latestPost, {@htmlPath, @layout})
 
   describe "#writeHtml", ->
-    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html = "html")
-    Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
-
+    Given ->
+      @html = "html"
+      @generatesHtml = td.object("generatesHtml", ["generate"])
+      td.when(@generatesHtml.generate(@layout, @latestPost)).thenReturn(@html)
+    Given -> @writesFile = td.object("writesFile", ["write"])
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
-
-    Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@layout, @latestPost)
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+    Then -> td.verify(@writesFile.write(@html, @htmlPath))

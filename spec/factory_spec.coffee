@@ -1,85 +1,80 @@
-{ Factory, grunt, Archive, Feed, Index, Pages, Posts, NullFeed, NullHtml, Layout } = {}
+Factory = null
+grunt = null
 
 beforeEach ->
-  # this replace syntax might look odd but doing this significantly
-  # sped up the tests, here's a benchmark:
-  #
-  # without an explicit td.constructor
-  # - Finished in 38.471 seconds
-  #
-  # with an explicit td.constructor
-  # - Finished in 23.8 seconds
+  @deps = {
+    Archive : td.constructor("Archive")
+    Feed    : td.constructor("Feed")
+    Index   : td.constructor("Index")
+    Pages   : td.constructor("Pages")
+    Posts   : td.constructor("Posts")
+    NullFeed: td.constructor("NullFeed")
+    NullHtml: td.constructor("NullHtml")
+    Layout  : td.constructor("Layout")
+  }
 
-  Archive  = td.replace('../lib/archive', td.constructor('Archive'))
-  Feed     = td.replace('../lib/feed', td.constructor('Feed'))
-  Index    = td.replace('../lib/index', td.constructor('Index'))
-  Pages    = td.replace('../lib/pages', td.constructor('Pages'))
-  Posts    = td.replace('../lib/posts', td.constructor('Posts'))
-  NullFeed = td.replace('../lib/null_feed', td.constructor('NullFeed'))
-  NullHtml = td.replace('../lib/null_html', td.constructor('NullHtml'))
-  Layout   = td.replace('../lib/layout', td.constructor('Layout'))
-  Factory  = require('../lib/factory')
+  Factory  = require("../lib/factory")
 
 afterEach ->
   td.reset()
 
 Given -> grunt =
   log:
-    error: td.func('log-error')
-    writeln: td.func('log-writeln')
-  warn: td.func('warn')
+    error: td.func("log-error")
+    writeln: td.func("log-writeln")
+  warn: td.func("warn")
   file:
-    exists: td.func('file-exists')
-    expand: td.func('file-expand')
+    exists: td.func("file-exists")
+    expand: td.func("file-expand")
 
 describe "Factory", ->
-  Given -> @subject = Factory(grunt)
+  Given -> @subject = Factory(grunt, @deps)
 
   describe "::archiveFrom", ->
     When -> @archive = @subject.archiveFrom({@htmlPath, @layoutPath})
 
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
-      Then -> @archive instanceof NullHtml
+      Then -> @archive instanceof @deps.NullHtml
 
     context "with htmlPath", ->
       Given -> @htmlPath = "htmlPath"
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> @archive instanceof NullHtml
+        Then -> @archive instanceof @deps.NullHtml
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
-          Then -> @archive instanceof NullHtml
+          Then -> @archive instanceof @deps.NullHtml
 
         context "valid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
-          Then -> td.verify(Archive({@htmlPath, layout: td.matchers.isA(Layout)}))
-          Then -> td.verify(Layout(@layoutPath))
-          Then -> @archive instanceof Archive
+          Then -> td.verify(@deps.Archive({@htmlPath, layout: td.matchers.isA(@deps.Layout)}))
+          Then -> td.verify(@deps.Layout(@layoutPath))
+          Then -> @archive instanceof @deps.Archive
 
   describe "::feedFrom", ->
     When -> @feed = @subject.feedFrom({@rssPath, @postCount})
 
     context "without rss path", ->
       Given -> @rssPath = undefined
-      Then -> @feed instanceof NullFeed
+      Then -> @feed instanceof @deps.NullFeed
 
     context "with rss path", ->
       Given -> @rssPath = "some/path"
 
       context "without posts", ->
         Given -> @postCount = 0
-        Then -> @feed instanceof NullFeed
+        Then -> @feed instanceof @deps.NullFeed
 
       context "with posts", ->
         Given -> @postCount = 2
-        Then -> td.verify(Feed({@rssPath, @postCount}))
-        Then -> @feed instanceof Feed
+        Then -> td.verify(@deps.Feed({@rssPath, @postCount}))
+        Then -> @feed instanceof @deps.Feed
 
   describe "::indexFrom", ->
     Given -> @latestPost = "latestPost"
@@ -87,27 +82,27 @@ describe "Factory", ->
 
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
-      Then -> @index instanceof NullHtml
+      Then -> @index instanceof @deps.NullHtml
 
     context "with htmlPath", ->
       Given -> @htmlPath = "htmlPath"
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> @index instanceof NullHtml
+        Then -> @index instanceof @deps.NullHtml
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
-          Then -> @index instanceof NullHtml
+          Then -> @index instanceof @deps.NullHtml
 
         context "valid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
-          Then -> td.verify(Index(@latestPost, {@htmlPath, layout: td.matchers.isA(Layout)}))
-          Then -> td.verify(Layout(@layoutPath))
-          Then -> @index instanceof Index
+          Then -> td.verify(@deps.Index(@latestPost, {@htmlPath, layout: td.matchers.isA(@deps.Layout)}))
+          Then -> td.verify(@deps.Layout(@layoutPath))
+          Then -> @index instanceof @deps.Index
 
   describe "::pagesFrom", ->
     Given -> @src = []
@@ -116,26 +111,26 @@ describe "Factory", ->
 
     context "without pages", ->
       Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = [])
-      Then -> td.verify(Pages([], {}))
+      Then -> td.verify(@deps.Pages([], {}))
 
     context "with pages", ->
       Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = ["some/page"])
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> td.verify(Pages([], {}))
+        Then -> td.verify(@deps.Pages([], {}))
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
-          Then -> td.verify(Pages([], {}))
+          Then -> td.verify(@deps.Pages([], {}))
 
         context "valid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
-          Then -> td.verify(Pages(@expandedSrc, {@htmlDir, layout: td.matchers.isA(Layout)}))
-          Then -> td.verify(Layout(@layoutPath))
+          Then -> td.verify(@deps.Pages(@expandedSrc, {@htmlDir, layout: td.matchers.isA(@deps.Layout)}))
+          Then -> td.verify(@deps.Layout(@layoutPath))
 
   describe "::postsFrom", ->
     Given -> @src = ["path/to/posts/**/*"]
@@ -146,26 +141,26 @@ describe "Factory", ->
 
     context "without posts", ->
       Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = [])
-      Then -> td.verify(Posts([], {}))
+      Then -> td.verify(@deps.Posts([], {}))
 
     context "with posts", ->
       Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = ["some/post"])
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> td.verify(Posts([], {}))
+        Then -> td.verify(@deps.Posts([], {}))
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
-          Then -> td.verify(Posts([], {}))
+          Then -> td.verify(@deps.Posts([], {}))
 
         context "valid", ->
           Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
-          Then -> td.verify(Posts(@expandedSrc, {@htmlDir, layout: td.matchers.isA(Layout), @dateFormat}))
-          Then -> td.verify(Layout(@layoutPath))
+          Then -> td.verify(@deps.Posts(@expandedSrc, {@htmlDir, layout: td.matchers.isA(@deps.Layout), @dateFormat}))
+          Then -> td.verify(@deps.Layout(@layoutPath))
 
   describe "::siteWrapperFrom", ->
     Given -> @context = "context"
@@ -184,4 +179,4 @@ describe "Factory", ->
 
       context "valid", ->
         Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
-        Then -> td.verify(Layout(@layoutPath, @context))
+        Then -> td.verify(@deps.Layout(@layoutPath, @context))

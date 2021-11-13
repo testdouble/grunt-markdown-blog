@@ -1,13 +1,4 @@
-Archive  = require('./archive')
-Feed     = require('./feed')
-Index    = require('./index')
-Layout   = require('./layout')
-NullFeed = require('./null_feed')
-NullHtml = require('./null_html')
-Pages    = require('./pages')
-Posts    = require('./posts')
-
-module.exports = (grunt) ->
+module.exports = (grunt, { Archive, Feed, Index, Layout, NullFeed, NullHtml, Pages, Posts }) ->
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
