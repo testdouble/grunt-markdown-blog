@@ -1,69 +1,66 @@
 Post = null
 Posts = null
-SandboxedModule = require('sandboxed-module')
 
 beforeEach ->
-  Posts = SandboxedModule.require '../lib/posts',
-    requires:
-      './post': Post = jasmine.constructSpy("Post", ["fileName"])
+  Post  = td.replace("../lib/post", td.constructor(["fileName"]))
+  Posts = require "../lib/posts"
 
+afterEach ->
+  td.reset()
 
 describe "Posts", ->
-  Given -> @markdownFiles = [ "md1", "md2" ]
-  Given -> @config = jasmine.createSpyObj 'config', ['htmlDir', 'layout', 'dateFormat', 'comparator']
+  Given -> @config = td.object "config", ["htmlDir", "layout", "dateFormat", "comparator"]
+  Given -> @markdownFiles = [ "post1", "post2" ]
+  When  -> @subject = new Posts(@markdownFiles, @config)
 
-  When -> @subject = new Posts(@markdownFiles, @config)
-
-  describe "is array-like", ->
-    Then -> @subject instanceof Posts
-    Then -> @subject instanceof Array
-    Then -> @subject.length == 2
-
+  describe "has posts", ->
+    Then -> @subject.posts.length == 2
 
   describe "builds posts", ->
-    Given -> @markdownFiles = [ @post1 = jasmine.createSpy('post1') ]
-
-    Then -> @subject[0] instanceof Post
-    Then -> expect(Post).toHaveBeenCalledWith(@post1, @config.htmlDir, @config.dateFormat)
-
+    Given -> @markdownFiles = [ "post1" ]
+    Then -> @subject.posts[0] instanceof Post
+    Then -> td.verify(Post("post1", @config.htmlDir, @config.dateFormat))
 
   describe "is sorted automatically", ->
-    Then -> expect(@config.comparator).toHaveBeenCalled()
-
+    Then -> td.verify(@config.comparator(td.matchers.isA(Post), td.matchers.isA(Post)))
 
   describe "#htmlFor", ->
     Given -> @site = "site"
     Given -> @post = "post"
     Given -> @html = "html"
-    Given -> @config.layout.htmlFor = jasmine.createSpy('layout.htmlFor').andReturn(@html)
+    Given ->
+      @config.layout.htmlFor = td.function("layout.htmlFor")
+      td.when(@config.layout.htmlFor(site: @site, post: @post)).thenReturn(@html)
     When -> @htmlFor = @subject.htmlFor(@site, @post)
-    Then -> expect(@config.layout.htmlFor).toHaveBeenCalledWith(site: @site, post: @post)
     Then -> @htmlFor == @html
 
   describe "#writeHtml", ->
     Given -> @html = "html"
-    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html)
-    Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
+    Given -> @generatesHtml = td.object("generatesHtml", ["generate"])
+    Given -> @writesFile = td.object("writesFile", ["write"])
 
-    context "without posts", ->
+    context "without pages", ->
       Given -> @markdownFiles = []
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
-      Then -> expect(@generatesHtml.generate).not.toHaveBeenCalled()
-      Then -> expect(@writesFile.write).not.toHaveBeenCalled()
+      Then -> td.verify(@generatesHtml.generate(), {times: 0, ignoreExtraArgs: true })
+      Then -> td.verify(@writesFile.write(), {times: 0, ignoreExtraArgs: true })
 
     context "with 3 posts", ->
       Given -> @htmlPath = "htmlPath"
-      Given -> @post = jasmine.createStubObj('post', htmlPath: @htmlPath)
-      When -> @subject.splice 0, @subject.length, @post, @post, @post
+      Given ->
+        @post = td.object("post", ["htmlPath"])
+        td.when(@post.htmlPath()).thenReturn(@htmlPath)
+      When ->
+        @subject.posts = [@post, @post, @post]
+        @subject.posts.layout = @config.layout
+      When ->
+        td.when(@generatesHtml.generate(@config.layout, @post)).thenReturn(@html)
       When -> @subject.writeHtml(@generatesHtml, @writesFile)
-      Then -> @generatesHtml.generate.callCount == 3
-      Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@config.layout, @post)
-      Then -> @writesFile.write.callCount == 3
-      Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+      Then -> td.verify(@writesFile.write(@html, @htmlPath), { times: 3})
 
-  describe '', ->
+  describe "", ->
     Given -> [@post1, @post2, @post3] = ["oldest", "middle", "newest"]
-    When -> @subject.splice 0, @subject.length, @post1, @post2, @post3
+    When -> @subject.posts = [@post1, @post2, @post3]
 
     describe "#oldest", ->
       When -> @oldest = @subject.oldest()
@@ -78,7 +75,7 @@ describe "Posts", ->
 
       context "given the oldest post", ->
         Given -> @post = @post1
-        Then -> expect(@older).toBeUndefined()
+        Then -> @older == undefined
 
       context "given a newer post", ->
         Given -> @post = @post2
@@ -89,7 +86,7 @@ describe "Posts", ->
 
       context "given the latest post", ->
         Given -> @post = @post3
-        Then -> expect(@newer).toBeUndefined()
+        Then -> @newer == undefined
 
       context "given an older post", ->
         Given -> @post = @post2

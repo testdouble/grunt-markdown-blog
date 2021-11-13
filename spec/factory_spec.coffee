@@ -1,34 +1,40 @@
-SandboxedModule = require('sandboxed-module')
-{ Factory, grunt, Archive, Feed, Index, Pages, Posts, NullFeed, NullHtml, Layout } = {}
-
-ThenExpectNoGruntLogging = ->
-  Then -> expect(grunt.log.writeln).not.toHaveBeenCalled()
-  Then -> expect(grunt.log.error).not.toHaveBeenCalled()
-  Then -> expect(grunt.warn).not.toHaveBeenCalled()
+Factory = null
+grunt = null
+Archive  = null
+Feed     = null
+Index    = null
+Layout   = null
+NullFeed = null
+NullHtml = null
+Pages    = null
+Posts    = null
 
 beforeEach ->
-  Factory = SandboxedModule.require '../lib/factory',
-    requires:
-      './archive': Archive = jasmine.createSpy('archive')
-      './feed': Feed = jasmine.createSpy('feed')
-      './index': Index = jasmine.createSpy('index')
-      './pages': Pages = jasmine.createSpy('pages')
-      './posts': Posts = jasmine.createSpy('posts')
-      './null_feed': NullFeed = jasmine.createSpy('null_feed')
-      './null_html': NullHtml = jasmine.createSpy('null_html')
-      './layout': Layout = jasmine.createSpy('layout').andReturn(@layout = jasmine.createStub("layout"))
+  Archive  = td.constructor("Archive")
+  Feed     = td.constructor("Feed")
+  Index    = td.constructor("Index")
+  Layout   = td.constructor("Layout")
+  NullFeed = td.constructor("NullFeed")
+  NullHtml = td.constructor("NullHtml")
+  Pages    = td.constructor("Pages")
+  Posts    = td.constructor("Posts")
+
+  Factory  = require("../lib/factory")
+
+afterEach ->
+  td.reset()
 
 Given -> grunt =
   log:
-    error: jasmine.createSpy('log-error')
-    writeln: jasmine.createSpy('log-writeln')
-  warn: jasmine.createSpy('warn')
+    error: td.func("log-error")
+    writeln: td.func("log-writeln")
+  warn: td.func("warn")
   file:
-    exists: jasmine.createSpy('file-exists')
-    expand: jasmine.createSpy('file-expand')
+    exists: td.func("file-exists")
+    expand: td.func("file-expand")
 
 describe "Factory", ->
-  Given -> @subject = Factory(grunt)
+  Given -> @subject = Factory(grunt, { Archive, Feed, Index, Pages, Posts, NullFeed, NullHtml, Layout })
 
   describe "::archiveFrom", ->
     When -> @archive = @subject.archiveFrom({@htmlPath, @layoutPath})
@@ -36,7 +42,6 @@ describe "Factory", ->
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
       Then -> @archive instanceof NullHtml
-      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with htmlPath", ->
       Given -> @htmlPath = "htmlPath"
@@ -44,22 +49,19 @@ describe "Factory", ->
       context "without layout path", ->
         Given -> @layoutPath = undefined
         Then -> @archive instanceof NullHtml
-        Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
-          Given -> grunt.file.exists.andReturn(false)
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
           Then -> @archive instanceof NullHtml
-          Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
-          Given -> grunt.file.exists.andReturn(true)
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
+          Then -> td.verify(Archive({@htmlPath, layout: td.matchers.isA(Layout)}))
+          Then -> td.verify(Layout(@layoutPath))
           Then -> @archive instanceof Archive
-          Then -> expect(Archive).toHaveBeenCalledWith({@htmlPath, @layout})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
-          ThenExpectNoGruntLogging()
 
   describe "::feedFrom", ->
     When -> @feed = @subject.feedFrom({@rssPath, @postCount})
@@ -67,7 +69,6 @@ describe "Factory", ->
     context "without rss path", ->
       Given -> @rssPath = undefined
       Then -> @feed instanceof NullFeed
-      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with rss path", ->
       Given -> @rssPath = "some/path"
@@ -75,13 +76,11 @@ describe "Factory", ->
       context "without posts", ->
         Given -> @postCount = 0
         Then -> @feed instanceof NullFeed
-        Then -> expect(grunt.log.writeln).toHaveBeenCalled()
 
       context "with posts", ->
         Given -> @postCount = 2
+        Then -> td.verify(Feed({@rssPath, @postCount}))
         Then -> @feed instanceof Feed
-        Then -> expect(Feed).toHaveBeenCalledWith({@rssPath, @postCount})
-        ThenExpectNoGruntLogging()
 
   describe "::indexFrom", ->
     Given -> @latestPost = "latestPost"
@@ -90,7 +89,6 @@ describe "Factory", ->
     context "without htmlPath", ->
       Given -> @htmlPath = undefined
       Then -> @index instanceof NullHtml
-      And -> expect(grunt.log.writeln).toHaveBeenCalled()
 
     context "with htmlPath", ->
       Given -> @htmlPath = "htmlPath"
@@ -98,57 +96,47 @@ describe "Factory", ->
       context "without layout path", ->
         Given -> @layoutPath = undefined
         Then -> @index instanceof NullHtml
-        Then -> expect(grunt.log.error).toHaveBeenCalled()
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
-          Given -> grunt.file.exists.andReturn(false)
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
           Then -> @index instanceof NullHtml
-          Then -> expect(grunt.warn).toHaveBeenCalled()
 
         context "valid", ->
-          Given -> grunt.file.exists.andReturn(true)
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
+          Then -> td.verify(Index(@latestPost, {@htmlPath, layout: td.matchers.isA(Layout)}))
+          Then -> td.verify(Layout(@layoutPath))
           Then -> @index instanceof Index
-          Then -> expect(Index).toHaveBeenCalledWith(@latestPost, {@htmlPath, @layout})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
-          ThenExpectNoGruntLogging()
 
   describe "::pagesFrom", ->
     Given -> @src = []
     Given -> @htmlDir = "htmlDir"
-
     When -> @pages = @subject.pagesFrom({@src, @htmlDir, @layoutPath})
 
     context "without pages", ->
-      Given -> grunt.file.expand.andReturn(@expandedSrc = [])
-      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
-      Then -> expect(Pages).toHaveBeenCalledWith([], {})
-      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+      Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = [])
+      Then -> td.verify(Pages([], {}))
 
     context "with pages", ->
-      Given -> grunt.file.expand.andReturn(@expandedSrc = ["some/page"])
-      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
+      Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = ["some/page"])
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> expect(Pages).toHaveBeenCalledWith([], {})
-        Then -> expect(grunt.log.error).toHaveBeenCalled()
+        Then -> td.verify(Pages([], {}))
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
-          Given -> grunt.file.exists.andReturn(false)
-          Then -> expect(Pages).toHaveBeenCalledWith([], {})
-          Then -> expect(grunt.warn).toHaveBeenCalled()
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
+          Then -> td.verify(Pages([], {}))
 
         context "valid", ->
-          Given -> grunt.file.exists.andReturn(true)
-          Then -> expect(Pages).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
-          ThenExpectNoGruntLogging()
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
+          Then -> td.verify(Pages(@expandedSrc, {@htmlDir, layout: td.matchers.isA(Layout)}))
+          Then -> td.verify(Layout(@layoutPath))
 
   describe "::postsFrom", ->
     Given -> @src = ["path/to/posts/**/*"]
@@ -158,33 +146,27 @@ describe "Factory", ->
     When -> @posts = @subject.postsFrom({@src, @htmlDir, @layoutPath, @dateFormat})
 
     context "without posts", ->
-      Given -> grunt.file.expand.andReturn(@expandedSrc = [])
-      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
-      Then -> expect(Posts).toHaveBeenCalledWith([], {})
-      Then -> expect(grunt.log.writeln).toHaveBeenCalled()
+      Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = [])
+      Then -> td.verify(Posts([], {}))
 
     context "with posts", ->
-      Given -> grunt.file.expand.andReturn(@expandedSrc = ["some/post"])
-      Then -> expect(grunt.file.expand).toHaveBeenCalledWith(@src)
+      Given -> td.when(grunt.file.expand(@src)).thenReturn(@expandedSrc = ["some/post"])
 
       context "without layout path", ->
         Given -> @layoutPath = undefined
-        Then -> expect(Posts).toHaveBeenCalledWith([], {})
-        Then -> expect(grunt.log.error).toHaveBeenCalled()
+        Then -> td.verify(Posts([], {}))
 
       context "with layout path", ->
         Given -> @layoutPath = "layoutPath"
 
         context "invalid", ->
-          Given -> grunt.file.exists.andReturn(false)
-          Then -> expect(Posts).toHaveBeenCalledWith([], {})
-          Then -> expect(grunt.warn).toHaveBeenCalled()
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
+          Then -> td.verify(Posts([], {}))
 
         context "valid", ->
-          Given -> grunt.file.exists.andReturn(true)
-          Then -> expect(Posts).toHaveBeenCalledWith(@expandedSrc, {@htmlDir, @layout, @dateFormat})
-          Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath)
-          ThenExpectNoGruntLogging()
+          Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
+          Then -> td.verify(Posts(@expandedSrc, {@htmlDir, layout: td.matchers.isA(Layout), @dateFormat}))
+          Then -> td.verify(Layout(@layoutPath))
 
   describe "::siteWrapperFrom", ->
     Given -> @context = "context"
@@ -193,17 +175,14 @@ describe "Factory", ->
     context "without layout path", ->
       Given -> @layoutPath = undefined
       Then -> expect(@siteWrapper.htmlFor).toBeDefined()
-      Then -> expect(grunt.log.error).toHaveBeenCalled()
 
     context "with layout path", ->
       Given -> @layoutPath = "layoutPath"
 
       context "invalid", ->
-        Given -> grunt.file.exists.andReturn(false)
+        Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(false)
         Then -> expect(@siteWrapper.htmlFor).toBeDefined()
-        Then -> expect(grunt.warn).toHaveBeenCalled()
 
       context "valid", ->
-        Given -> grunt.file.exists.andReturn(true)
-        Then -> expect(Layout).toHaveBeenCalledWith(@layoutPath, @context)
-        ThenExpectNoGruntLogging()
+        Given -> td.when(grunt.file.exists(@layoutPath)).thenReturn(true)
+        Then -> td.verify(Layout(@layoutPath, @context))

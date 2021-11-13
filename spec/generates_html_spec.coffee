@@ -1,21 +1,26 @@
-GeneratesHtml = require('../lib/generates_html')
+GeneratesHtml = require("../lib/generates_html")
 
 describe "GeneratesHtml", ->
-  Given -> @site = "siteStub"
-  Given -> @fullHtml = "fullHtmlStub"
-  Given -> @wrapper = jasmine.createStubObj("wrapper", htmlFor: @fullHtml)
+  Given ->
+    @site = "siteStub"
+    @post = "postStub"
+    @page = "pageStub"
+    @fullHtml = "fullHtmlStub"
+    @templateHtml = "templateHtmlStub"
+    @wrapper = td.object("wrapper", ["htmlFor"])
+    @template = td.object("template", ["htmlFor"])
+    @subject = new GeneratesHtml(@site, @wrapper)
 
-  describe "#generate", ->
-    Given -> @post = "postStub"
-    Given -> @templateHtml = "templateHtmlStub"
-    Given -> @template = jasmine.createStubObj("template", htmlFor: @templateHtml)
-
-    When -> @resultHtml = new GeneratesHtml(@site, @wrapper).generate(@template, @post)
-
-    Then -> expect(@template.htmlFor).toHaveBeenCalledWith jasmine.argThat (context) =>
-        context.site == @site && context.post == @post
-
-    Then -> expect(@wrapper.htmlFor).toHaveBeenCalledWith jasmine.argThat (context) =>
-        context.site == @site && context.post == @post && context.yield == @templateHtml
-
+  describe "#generate posts", ->
+    Given -> td.when(@template.htmlFor({ site: @site, post: @post, page: @post })).thenReturn(@templateHtml)
+    Given -> td.when(@wrapper.htmlFor({ site: @site, post: @post, page: @post, yield: @templateHtml })).thenReturn(@fullHtml)
+    When -> @resultHtml = @subject.generate(@template, @post)
     Then -> @resultHtml == @fullHtml
+
+  describe "#generate pages", ->
+    Given -> td.when(@template.htmlFor({ site: @site, page: @page, post: @page })).thenReturn(@templateHtml)
+    Given -> td.when(@wrapper.htmlFor({ site: @site, page: @page, post: @page, yield: @templateHtml })).thenReturn(@fullHtml)
+    When -> @resultHtml = @subject.generate(@template, @page)
+    Then -> @resultHtml == @fullHtml
+
+

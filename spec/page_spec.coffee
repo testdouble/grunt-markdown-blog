@@ -1,35 +1,34 @@
 Page = null
-SandboxedModule = require('sandboxed-module')
+reader = null
+Markdown = null
+
+beforeEach ->
+  Markdown = td.replace("../lib/markdown", td.constructor(["compile"]))
+  @reader = td.object("reader", ["read"])
+  Page = require("../lib/page")
+
+afterEach ->
+  td.reset()
 
 describe "Page", ->
-  Given -> Page = SandboxedModule.require '../lib/page',
-    requires:
-      'grunt': @grunt = file: read: jasmine.createSpy('grunt.file.read')
-      './markdown': @markdown = jasmine.constructSpy('Markdown', ['compile'])
+  Given ->
+    @reader = td.object(["read"])
 
   describe "#constructor", ->
     Given -> @path = "path"
-    Given -> @grunt.file.read.andReturn(@source = "source")
-    Given -> @markdown::header = @header = "attributes"
-
-    When -> @subject = new Page(@path)
-
-    Then -> expect(@grunt.file.read).toHaveBeenCalledWith(@path)
-    Then -> expect(@markdown).toHaveBeenCalledWith(@source)
+    Given -> td.when(@reader.read(@path)).thenReturn(@source = "source")
+    When -> @subject = new Page(@path, "", "", @reader)
+    Then -> td.verify(Markdown(@source))
     Then -> @subject.attributes == @header
 
   describe "#content", ->
-    Given -> @subject = new Page()
-    Given -> @markdown::compile.andReturn(@parsedMarkdown = "content")
-
-    When -> @content = @subject.content()
-
-    Then -> expect(@markdown::compile).toHaveBeenCalled()
-    Then -> @content == @parsedMarkdown
+    Given -> @subject = new Page("", "", "", @reader)
+    When -> td.when(@subject.markdown.compile()).thenReturn(@parsedMarkdown = "content")
+    Then -> @subject.content() == @parsedMarkdown
 
   describe "#get", ->
-    Given -> @subject = new Page()
-    When -> @myattr = @subject.get('myattr')
+    Given -> @subject = new Page("", "", "", @reader)
+    When -> @myattr = @subject.get("myattr")
 
     context "undefined attribute", ->
       Given -> @subject.attributes = {}
@@ -52,7 +51,7 @@ describe "Page", ->
       Then -> @myattr == @value()
 
   describe "#title", ->
-    Given -> @subject = new Page()
+    Given -> @subject = new Page("", "", "", @reader)
     When -> @title = @subject.title()
 
     context "from attribute", ->
@@ -72,7 +71,7 @@ describe "Page", ->
       Then -> @title == "path.html"
 
   describe "#htmlPath", ->
-    Given -> @subject = new Page("#{@path = "path/to/pages"}/#{@name = "page"}.md")
+    Given -> @subject = new Page("#{@path = "path/to/pages"}/#{@name = "page"}.md", "", "", @reader)
     When -> @htmlPath = @subject.htmlPath()
 
     context "with wildcards in htmlDirPath", ->
@@ -84,9 +83,9 @@ describe "Page", ->
       Then -> @htmlPath == "#{@subject.htmlDirPath}/#{@name}.html"
 
   describe "#fileName", ->
-    Given -> @subject = new Page("/path/to/pages/mypage.md")
+    Given -> @subject = new Page("/path/to/pages/mypage.md", "", "", @reader)
     Then -> @subject.fileName() == "mypage.html"
 
   describe "#date", ->
-    Given -> @subject = new Page()
+    Given -> @subject = new Page("", "", "", @reader)
     Then -> @subject.date() == undefined

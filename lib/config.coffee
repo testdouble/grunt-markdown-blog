@@ -53,7 +53,7 @@ module.exports = class Config
     src: ensureCompactArray(@raw.paths.pages)
 
   forPosts: ->
-    src = @raw.paths.markdown || @raw.paths.posts
+    src = @raw.paths.posts
     htmlDir: @raw.pathRoots.posts
     layoutPath: @raw.layouts.post
     dateFormat: @raw.dateFormat

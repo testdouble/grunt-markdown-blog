@@ -4,13 +4,12 @@ Markdown = require('./markdown')
 Path = require('./path')
 
 module.exports = class Page
-  constructor: (@path, @htmlDirPath, @dateFormat) ->
-    @_markdown = new Markdown(grunt.file.read(@path))
-    @attributes = @_markdown.header
-    @markdown = @_markdown.source #back-compat
+  constructor: (@path, @htmlDirPath, @dateFormat, @reader = grunt.file) ->
+    @markdown = new Markdown(@reader.read(@path))
+    @attributes = @markdown.header
 
   content: ->
-    @_markdown.compile()
+    @markdown.compile()
 
   get: (name) ->
     _(@attributes).result(name)

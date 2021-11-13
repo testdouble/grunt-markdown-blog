@@ -1,4 +1,4 @@
-Config = require('../lib/config')
+Config = require("../lib/config")
 
 describe "Config", ->
   Given -> @options = layouts: {}, paths: {}, pathRoots: {}
@@ -13,7 +13,7 @@ describe "Config", ->
         description: "the blog where I write things"
         url: "http://www.myblog.com"
         rssCount: 10
-        dateFormat: 'MMMM Do YYYY'
+        dateFormat: "MMMM Do YYYY"
         layouts:
           wrapper: "app/templates/wrapper.pug"
           index: "app/templates/index.pug"
@@ -51,7 +51,7 @@ describe "Config", ->
           index: undefined
           post: null
           page: false
-          # archive: ""
+          archive: undefined
       Then -> expect(@subject.raw).toEqual
         author: "top level"
         description: "description"

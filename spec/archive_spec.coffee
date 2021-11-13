@@ -1,4 +1,4 @@
-Archive = require('../lib/archive')
+Archive = require("../lib/archive")
 
 describe "Archive", ->
   Given -> @htmlPath = "htmlPath"
@@ -6,10 +6,12 @@ describe "Archive", ->
   Given -> @subject = new Archive({@htmlPath, @layout})
 
   describe "#writeHtml", ->
-    Given -> @generatesHtml = jasmine.createStubObj('generatesHtml', generate: @html = "html")
-    Given -> @writesFile = jasmine.createSpyObj('writesFile', ['write'])
+    Given -> @html = "html"
+    Given ->
+      @generatesHtml = td.object("generatesHtml", ["generate"])
+      td.when(@generatesHtml.generate(@layout)).thenReturn(@html)
+    Given -> @writesFile = td.object("writesFile", ["write"])
 
     When -> @subject.writeHtml(@generatesHtml, @writesFile)
 
-    Then -> expect(@generatesHtml.generate).toHaveBeenCalledWith(@layout)
-    Then -> expect(@writesFile.write).toHaveBeenCalledWith(@html, @htmlPath)
+    Then -> td.verify(@writesFile.write(@html, @htmlPath))

@@ -1,8 +1,10 @@
 # grunt-markdown-blog
 
+[![Node.js CI](https://github.com/testdouble/grunt-markdown-blog/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/testdouble/grunt-markdown-blog/actions/workflows/node.js.yml)
+
 This is a grunt multi-task for generating static blogs from posts written in markdown. It was designed to be used with [Lineman](https://github.com/testdouble/lineman), but should be generally useful to someone trying to accomplish the same.
 
-Here's an easy-to-clone repo that uses it: [testdouble/lineman-blog](https://github.com/testdouble/lineman-blog)
+Here's an easy-to-clone repo that uses it: [linemanjs/lineman-blog-template](https://github.com/linemanjs/lineman-blog-template)
 
 # Features
 
@@ -92,5 +94,3 @@ watch:
     files: ["app/posts/*.md", "app/pages/**/*.md", "app/templates/*.pug"]
     tasks: ["markdown:dev"]
 ```
-
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/testdouble/grunt-markdown-blog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)

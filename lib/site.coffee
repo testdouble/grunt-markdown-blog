@@ -15,3 +15,9 @@ module.exports = class Site
 
   urlFor: (post) ->
     "#{@url}/#{post.htmlPath()}"
+
+  getPosts: ->
+    @posts.posts
+
+  getPages: ->
+    @pages.pages
