@@ -18,10 +18,10 @@ module.exports = class Page
     @get('title') || titleFromFilename(@path) || @fileName()
 
   htmlPath: ->
-    if @htmlDirPath.match(/\*/) #path contains wildcard use htmldirpath
-      new Path(@path).changeExtTo(".html").toString()
-    else
+    if @htmlDirPath
       "#{@htmlDirPath}/#{@fileName()}"
+    else
+      "#{@fileName()}"
 
   prettyPath: ->
     @htmlPath().replace(/\.html$/, '')

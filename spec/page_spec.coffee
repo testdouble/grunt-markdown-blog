@@ -74,11 +74,11 @@ describe "Page", ->
     Given -> @subject = new Page("#{@path = "path/to/pages"}/#{@name = "page"}.md", "", "", @reader)
     When -> @htmlPath = @subject.htmlPath()
 
-    context "with wildcards in htmlDirPath", ->
-      Given -> @subject.htmlDirPath = "some/*/path"
-      Then -> @htmlPath == "#{@path}/#{@name}.html"
+    context "without htmlDirPath (the root)", ->
+      Given -> @subject.htmlDirPath = null
+      Then -> @htmlPath == "#{@name}.html"
 
-    context "without wildcards in htmlDirPath", ->
+    context "with htmlDirPath", ->
       Given -> @subject.htmlDirPath = "some/path"
       Then -> @htmlPath == "#{@subject.htmlDirPath}/#{@name}.html"
 
