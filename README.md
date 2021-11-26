@@ -54,7 +54,6 @@ markdown:
     title: "my blog"
     description: "my blog where I write things"
     url: "http://myblog.com"
-    disqus: "my_disqus_id" #<-- just remove or comment this line to disable disqus support
     rssCount: 10 #<-- remove, comment, or set to zero to disable RSS generation
     dateFormat: 'MMMM Do YYYY'
     layouts:

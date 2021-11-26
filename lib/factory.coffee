@@ -1,4 +1,4 @@
-module.exports = (grunt, { Archive, Feed, Index, Layout, NullFeed, NullHtml, Pages, Posts }) ->
+module.exports = (grunt, { Archive, Feeds, Index, Layout, NullFeed, NullHtml, Pages, Posts }) ->
   archiveFrom: ({htmlPath, layoutPath}) ->
     unless htmlPath?
       grunt.log.writeln "Archive skipped: destination path undefined"
@@ -14,11 +14,14 @@ module.exports = (grunt, { Archive, Feed, Index, Layout, NullFeed, NullHtml, Pag
         htmlPath: htmlPath
         layout: new Layout(layoutPath)
 
-  feedFrom: ({rssPath, postCount}) ->
-    if rssPath? and postCount
-      new Feed arguments...
+  feedsFrom: ({rssPath, jsonPath, postCount}) ->
+    if rssPath? and jsonPath? and postCount
+      new Feeds arguments...
     else unless rssPath?
       grunt.log.writeln "RSS Feed skipped: destination path undefined"
+      new NullFeed
+    else unless jsonPath?
+      grunt.log.writeln "JSON Feed skipped: destination path undefined"
       new NullFeed
     else unless postCount
       grunt.log.writeln "RSS Feed skipped: 0 posts"

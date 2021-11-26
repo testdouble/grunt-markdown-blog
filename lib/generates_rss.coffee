@@ -1,24 +1,36 @@
 module.exports = class GeneratesRss
-  constructor: (@site, @Rss = require('rss')) ->
+  constructor: (@site, @FeedGenerator = require('feed').Feed) ->
 
   generate: ->
     feed = @createFeed()
     @addPostsTo(feed)
-    feed.xml()
+    return
+      rss: feed.rss2()
+      json: feed.json1()
 
   createFeed: ->
-    new @Rss
+    new @FeedGenerator
       title: @site.title
+      link: @site.url
       description: @site.description
-      feed_url: "#{@site.url}/#{@site.paths.rss}"
-      site_url: @site.url
-      author: @site.author
+      language: "#{@site.language}"
+      image: "#{@site.image}"
+      favicon: "#{@site.favicon}"
+      copyright: "Copyright © #{new Date().getFullYear()}, #{@site.author}"
+      feedLinks:
+        rss: "#{@site.url}/#{@site.paths.rss}"
+        json: "#{@site.url}/#{@site.paths.json}"
+      author:
+        name: @site.author
+        link: @site.authorUrl
 
   addPostsTo: (feed) ->
     if @site.rssCount > 0
       @site.getPosts().slice(-@site.rssCount).reverse().forEach (post) =>
-        feed.item
+        feed.addItem
           title: post.title()
-          description: post.content()
+          id: @site.urlFor(post)
           url: @site.urlFor(post)
-          date: post.time()
+          description: post.description()
+          content: post.content()
+          date: new Date(post.time())

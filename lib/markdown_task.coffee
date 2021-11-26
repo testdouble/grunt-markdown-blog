@@ -5,7 +5,7 @@ Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
 Archive  = require('../lib/archive')
-Feed     = require('../lib/feed')
+Feeds    = require('../lib/feeds')
 Index    = require('../lib/index')
 Layout   = require('../lib/layout')
 NullFeed = require('../lib/null_feed')
@@ -15,12 +15,12 @@ Posts    = require('../lib/posts')
 
 module.exports = class MarkdownTask
   constructor: (grunt, @config) ->
-    factory = Factory(grunt, { Archive, Feed, Index, Layout, NullFeed, NullHtml, Pages, Posts })
+    factory = Factory(grunt, { Archive, Feeds, Index, Layout, NullFeed, NullHtml, Pages, Posts })
     @posts = factory.postsFrom @config.forPosts()
     @pages = factory.pagesFrom @config.forPages()
     @index = factory.indexFrom @posts.newest(), @config.forIndex()
     @archive = factory.archiveFrom @config.forArchive()
-    @feed = factory.feedFrom @config.forFeed()
+    @feeds = factory.feedsFrom @config.forFeeds()
     @wrapper = factory.siteWrapperFrom @config.forSiteWrapper()
     @site = new Site(@config.raw, @posts, @pages)
 
@@ -33,4 +33,4 @@ module.exports = class MarkdownTask
     @index.writeHtml generatesHtml, writesFile
     @archive.writeHtml generatesHtml, writesFile
 
-    @feed.writeRss new GeneratesRss(@site), writesFile
+    @feeds.writeFeeds new GeneratesRss(@site), writesFile

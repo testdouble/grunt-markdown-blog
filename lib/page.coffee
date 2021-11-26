@@ -8,6 +8,9 @@ module.exports = class Page
     @markdown = new Markdown(@reader.read(@path))
     @attributes = @markdown.header
 
+  description: ->
+    @get('description')
+
   content: ->
     @markdown.compile()
 

@@ -2,13 +2,16 @@ _ = require('underscore')
 
 module.exports = class Config
   @defaults:
-    author: "Full Name"
     title: "my blog"
+    url: "https://www.myblog.com"
     description: "the blog where I write things"
-    url: "http://www.myblog.com"
-    # disqus: "agile" #<-- define a disqus name for use in your templates
-    rssCount: 10
+    language: "en" # https://html.spec.whatwg.org/multipage/dom.html#attr-lang
+    image: "https://www.myblog.com/image.png"
+    favicon: "https://www.myblog.com/favicon.ico"
     dateFormat: 'MMMM Do YYYY'
+    rssCount: 10
+    author: "Full Name"
+    authorUrl: "https://twitter.com/mytwitteraccount"
     layouts:
       wrapper: "app/templates/wrapper.pug"
       index: "app/templates/index.pug"
@@ -21,6 +24,7 @@ module.exports = class Config
       index: "index.html"
       archive: "archive.html"
       rss: "index.xml"
+      json: "index.json"
     pathRoots:
       posts: "posts"
       pages: "pages"
@@ -39,8 +43,9 @@ module.exports = class Config
     htmlPath: @raw.paths.archive
     layoutPath: @raw.layouts.archive
 
-  forFeed: ->
+  forFeeds: ->
     rssPath: @raw.paths.rss
+    jsonPath: @raw.paths.json
     postCount: @raw.rssCount
 
   forIndex: ->
