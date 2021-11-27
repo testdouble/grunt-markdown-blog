@@ -3,11 +3,12 @@ _ = require('underscore')
 module.exports = class Config
   @defaults:
     author: "Full Name"
+    authorUrl: "https://twitter.com/fullname"
     title: "my blog"
     description: "the blog where I write things"
-    url: "http://www.myblog.com"
+    url: "https://www.myblog.com"
     # disqus: "agile" #<-- define a disqus name for use in your templates
-    rssCount: 10
+    feedCount: 10
     dateFormat: 'MMMM Do YYYY'
     layouts:
       wrapper: "app/templates/wrapper.pug"
@@ -21,6 +22,7 @@ module.exports = class Config
       index: "index.html"
       archive: "archive.html"
       rss: "index.xml"
+      json: "index.json"
     pathRoots:
       posts: "posts"
       pages: "pages"
@@ -41,7 +43,8 @@ module.exports = class Config
 
   forFeed: ->
     rssPath: @raw.paths.rss
-    postCount: @raw.rssCount
+    jsonPath: @raw.paths.json
+    postCount: @raw.feedCount
 
   forIndex: ->
     htmlPath: @raw.paths.index

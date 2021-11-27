@@ -1,6 +1,7 @@
 Factory = require('../lib/factory')
 GeneratesHtml = require('../lib/generates_html')
 GeneratesRss = require('../lib/generates_rss')
+GeneratesJsonFeed = require('../lib/generates_json_feed')
 Site = require('../lib/site')
 WritesFile = require('../lib/writes_file')
 
@@ -34,3 +35,4 @@ module.exports = class MarkdownTask
     @archive.writeHtml generatesHtml, writesFile
 
     @feed.writeRss new GeneratesRss(@site), writesFile
+    @feed.writeJson new GeneratesJsonFeed(@site), writesFile

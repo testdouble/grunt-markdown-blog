@@ -64,14 +64,14 @@ describe "Factory", ->
           Then -> @archive instanceof Archive
 
   describe "::feedFrom", ->
-    When -> @feed = @subject.feedFrom({@rssPath, @postCount})
+    When -> @feed = @subject.feedFrom({@rssPath, @jsonPath, @postCount})
 
     context "without rss path", ->
       Given -> @rssPath = undefined
       Then -> @feed instanceof NullFeed
 
     context "with rss path", ->
-      Given -> @rssPath = "some/path"
+      Given -> @rssPath = "some/path.xml"
 
       context "without posts", ->
         Given -> @postCount = 0
@@ -79,7 +79,23 @@ describe "Factory", ->
 
       context "with posts", ->
         Given -> @postCount = 2
-        Then -> td.verify(Feed({@rssPath, @postCount}))
+        Then -> td.verify(Feed({@rssPath, @jsonPath, @postCount}))
+        Then -> @feed instanceof Feed
+
+    context "without json path", ->
+      Given -> @jsonPath = undefined
+      Then -> @feed instanceof NullFeed
+
+    context "with rss path", ->
+      Given -> @jsonPath = "some/path.json"
+
+      context "without posts", ->
+        Given -> @postCount = 0
+        Then -> @feed instanceof NullFeed
+
+      context "with posts", ->
+        Given -> @postCount = 2
+        Then -> td.verify(Feed({@rssPath, @jsonPath, @postCount}))
         Then -> @feed instanceof Feed
 
   describe "::indexFrom", ->

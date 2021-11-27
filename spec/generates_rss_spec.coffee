@@ -41,16 +41,16 @@ describe "GeneratesRss", ->
       }
     ]
 
-    context "rssCount less than number of posts", ->
-      Given -> @site.rssCount = 1
+    context "feedCount less than number of posts", ->
+      Given -> @site.feedCount = 1
       Then -> td.verify Rss::item { title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time" }
 
-    context "rssCount equal to number of posts", ->
-      Given -> @site.rssCount = 2
+    context "feedCount equal to number of posts", ->
+      Given -> @site.feedCount = 2
       Then -> td.verify Rss::item { title: "post1 title", description: "post1 content", url: "url/post1 title", date: "post1 time" }
       Then -> td.verify Rss::item { title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time" }
 
-    context "rssCount greater than number of posts", ->
-      Given -> @site.rssCount = 3
+    context "feedCount greater than number of posts", ->
+      Given -> @site.feedCount = 3
       Then -> td.verify Rss::item { title: "post1 title", description: "post1 content", url: "url/post1 title", date: "post1 time" }
       Then -> td.verify Rss::item { title: "post2 title", description: "post2 content", url: "url/post2 title", date: "post2 time" }

@@ -9,10 +9,11 @@ describe "Config", ->
       When -> @subject = new Config()
       Then -> expect(@subject.raw).toEqual
         author: "Full Name"
+        authorUrl: "https://twitter.com/fullname"
         title: "my blog"
         description: "the blog where I write things"
-        url: "http://www.myblog.com"
-        rssCount: 10
+        url: "https://www.myblog.com"
+        feedCount: 10
         dateFormat: "MMMM Do YYYY"
         layouts:
           wrapper: "app/templates/wrapper.pug"
@@ -26,6 +27,7 @@ describe "Config", ->
           index: "index.html"
           archive: "archive.html"
           rss: "index.xml"
+          json: "index.json"
         pathRoots:
           posts: "posts"
           pages: "pages"
@@ -71,7 +73,7 @@ describe "Config", ->
 
   describe "#forFeed", ->
     Given -> @options.paths.rss = @rssPath = "some/path"
-    Given -> @options.rssCount = @postCount = 2
+    Given -> @options.feedCount = @postCount = 2
     When -> @feedConfig = @subject.forFeed()
     Then -> expect(@feedConfig).toEqual {@rssPath, @postCount}
 

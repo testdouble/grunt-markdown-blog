@@ -17,6 +17,9 @@ module.exports = class Page
   title: ->
     @get('title') || titleFromFilename(@path) || @fileName()
 
+  description: ->
+    @get('description')
+
   htmlPath: ->
     if @htmlDirPath
       "#{@htmlDirPath}/#{@fileName()}"

@@ -15,8 +15,8 @@ module.exports = class GeneratesRss
       author: @site.author
 
   addPostsTo: (feed) ->
-    if @site.rssCount > 0
-      @site.getPosts().slice(-@site.rssCount).reverse().forEach (post) =>
+    if @site.feedCount > 0
+      @site.getPosts().slice(-@site.feedCount).reverse().forEach (post) =>
         feed.item
           title: post.title()
           description: post.content()
