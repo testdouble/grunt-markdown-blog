@@ -1,7 +1,7 @@
 {
   "name": "grunt-markdown-blog",
   "description": "Generates a blog from markdown posts & pug templates",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "license": "MIT",
   "homepage": "https://github.com/testdouble/grunt-markdown-blog",
   "author": {
